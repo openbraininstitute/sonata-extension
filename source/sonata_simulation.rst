@@ -126,6 +126,8 @@ example::
        "spikes_file": "out.h5"
   }
 
+.. _conditions:
+
 conditions
 ----------
 
@@ -147,6 +149,8 @@ Parameters defining global experimental conditions.
                                                           The format is a dictionary with keys being the SUFFIX names of MOD files (unique names of mechanisms) and values being dictionaries of variable names in the MOD files and their values. Read about `NMODL2 SUFFIX description here <https://nrn.readthedocs.io/en/8.2.0/hoc/modelspec/programmatic/mechanisms/nmodl2.html#suffix>`_.
    modifications                              Optional    List of dictionaries with each member describing a modification that mimics experimental manipulations to the circuit. They are executed in the order as being read from the file.
    =============================== ========== =========== ====================================
+
+
 
 Parameters required for modifications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -513,7 +517,7 @@ List of dictionaries to adjust the synaptic strength or other properties of edge
    target                         text       Mandatory    node_set specifying postsynaptic nodes.
    weight                         float      Optional     Multiplier of ``conductance`` used to adjust synaptic strength. The final [NetCon weight](https://nrn.readthedocs.io/en/8.2.6/python/modelspec/programmatic/network/netcon.html#NetCon.weight) in NEURON is computed as ``weight * conductance``, where ``conductance`` is obtained from the ``edges.h5`` file.
    spont_minis                    float      Optional     Synapses affected by this connection_override section will spontaneously trigger with the given rate.
-   synapse_configure              text       Optional     Provide a snippet of hoc code which is to be executed on the synapse objects affected by this connection_override. Use '%s' to indicate where a reference to the synapse object should be filled.
+   synapse_configure              text       Optional     Provide a HOC snippet for synapse objects in ``connection_override``, using ``%s`` for the synapse reference (e.g. ``%s.NMDA_ratio = 1 %s.Fac = 2``). Global variables can also be overridden without ``%s`` (e.g., ``tau_d_NMDA_ProbAMPANMDA_EMS = 3``). but these changes **do not account for delays, synapse type, or file order** (which may depend on the edge file order). Use with caution, as unintended interactions may occur. In fact, it is strongly suggested to use the method described in :ref:`conditions` to modify global synapse variables. However, this method takes priority. A safe approach is to modify global variables, if needed, only once in the entire file. Their values remain constant throughout the simulation, as all changes are applied at the start.
    modoverride                    text       Optional     Changes the synapse helper files used to instantiate the synapses in this connection. A synapse helper initializes the synapse object and the parameters of the synapse model. By default, AMPANMDAHelper.hoc / GABAABHelper.hoc are used for excitatory / inhibitory synapses. The value of this field determines the prefix of the helper file to use e.g. "GluSynapse" would lead to GluSynapseHelper.hoc being used. That helper will use the additional parameters of the plastic synapse model read from the SONATA edges file using Neurodamus. This is required when using the GluSynapse.mod model and will fail for other models, or if the parameters are not present in the edges file.
    synapse_delay_override         float      Optional     Value to override the synaptic delay time originally set in the edge file, and to be given to netcon object. Given in ms.
    delay                          float      Optional     Adjustments from weight of this connection_override are applied after specified delay has elapsed in ms. Note that only weight modifications are applied so all other fields (spont_minis, synapse_configure, modoverride, synapse_delay_override) are ignored.
