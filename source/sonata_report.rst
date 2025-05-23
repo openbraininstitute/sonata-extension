@@ -36,6 +36,8 @@ Only ``ms`` is supported.
 Frame oriented, element recordings
 ----------------------------------
 
+.. _compartment_report_main:
+
 Compartment report
 ^^^^^^^^^^^^^^^^^^
 
@@ -85,6 +87,84 @@ For a full compartment reports, you need to specify both ``"sections": "all"`` a
             "end_time": 1000
         }
     }
+
+Extension of Compartment report
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To enable fine-grained control over which specific compartments are recorded, SONATA supports an extension using a ``compartment_sets.json`` file. This allows users to define sets of explicit compartment targets (e.g., ``dend[10](0.1)``) for selected node_id.
+
+File: ``compartment_sets.json``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This JSON file defines named sets of compartment targets. Each set specifies the population and a list of `(node_id, section_name, location)` tuples.
+
+.. code-block:: json
+
+  {
+    "example_compartment_set": {
+      "population": "S1nonbarrel_neurons",
+      "compartment_set": [
+        [0, "dend[10]", 0.1],
+        [1, "dend[4]", 0.1],
+        [2, "dend[3]", 0.1],
+        [3, "dend[6]", 0.3]
+      ]
+    }
+  }
+
+*   ``population``: The name of the node population these targets belong to.
+*   ``compartment_set``: A list of tuples, where each tuple is ``[node_id, section_name, location]``.
+    *   ``node_id``: The ID of the node within the specified ``population``.
+    *   ``section_name``: The name of the section (e.g., "soma[0]", "dend[10]").
+    *   ``location``: The fractional distance along the section (0.0 to 1.0).
+
+This file is typically placed alongside other simulation configuration files, for example:
+
+.. code-block:: text
+
+  simulation/
+  ├── node_sets.json
+  ├── compartment_sets.json
+  └── simulation_config.json
+
+Simulation Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+To use compartment sets, first declare the ``compartment_sets.json`` at the top level of your ``simulation_config.json``. Then, in your compartment report definition, set ``"sections": "compartment_set"`` and use the ``"compartments"`` field to specify the name of the desired set from your ``compartment_sets.json`` file.
+
+.. code-block:: json
+  :emphasize-lines: 2, 7, 8
+
+  {
+    "compartment_sets_file": "circuit/compartment_sets.json",  // Path to your compartment sets file
+
+    "reports": {
+      "dend_report_v": {                            // Name of the report
+        "type": "compartment",
+        "sections": "compartment_set",              // Use "compartment_set"
+        "compartments": "example_compartment_set",  // Name of the set from compartment_sets.json
+        "variable_name": "v",
+        "unit": "mV",
+        "dt": 0.1,
+        "start_time": 0.0,
+        "end_time": 100.0
+      }
+      // ... other reports ...
+    }
+    // ... other global configurations ...
+  }
+
+Key changes:
+
+*   **``sections``**:
+    *   When set to ``"compartment_set"``, it indicates that the report targets are defined by a named set in the ``compartment_sets.json`` file.
+    *   Previously supported values for ``sections`` include ``"soma"``, ``"axon"``, ``"dend"``, ``"apic"``, or ``"all"``. These continue to function as before, typically used with the ``cells`` key to specify target populations.
+*   **``compartments``**:
+    *   If ``sections`` is ``"compartment_set"``, this field **must** contain the name of a key (a specific compartment set) defined in your ``compartment_sets.json`` file (e.g., ``"example_compartment_set"``).
+    *   For other ``sections`` types (``"soma"``, ``"axon"``, ``"dend"``, ``"apic"``, or ``"all"``), ``compartments`` typically takes values like ``"center"`` or ``"all"``.
+*   **``cells``**: The ``cells`` key (e.g., ``"cells": "Mosaic"`` or ``"cells": ["popA", 123]``) is **not allowed** and should cause an error if ``sections`` is ``"compartment_set"``. The selection of cells and their specific compartments is entirely managed by the chosen compartment set from ``compartment_sets.json``.
+
+The output HDF5 report format for these targeted compartment reports remains the same as described in the main :ref:`compartment_report_main` section.
 
 
 Soma report
