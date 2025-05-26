@@ -104,18 +104,19 @@ This JSON file defines named sets of compartment targets. Each set specifies the
     "example_compartment_set": {
       "population": "S1nonbarrel_neurons",
       "compartment_set": [
-        [0, "dend[10]", 0.1],
-        [1, "dend[4]", 0.1],
-        [2, "dend[3]", 0.1],
-        [3, "dend[6]", 0.3]
+        [0, "dend", 10, 0.1],
+        [1, "dend", 4, 0.1],
+        [2, "dend", 3, 0.1],
+        [3, "dend", 6, 0.3]
       ]
     }
   }
 
 *   ``population``: The name of the node population these targets belong to.
-*   ``compartment_set``: A list of tuples, where each tuple is ``[node_id, section_name, location]``.
+*   ``compartment_set``: A list of list, where each list is ``[node_id, section_name, section_number, location]``.
     *   ``node_id``: The ID of the node within the specified ``population``.
-    *   ``section_name``: The name of the section (e.g., "soma[0]", "dend[10]").
+    *   ``section_name``: The name of the section (e.g., "soma", "dend", "apic"). This should not contain the section number e.g. "dend[10]"
+    *   ``section_number``: The number of the section (e.g., "soma", "dend", "apic").
     *   ``location``: The fractional distance along the section (0.0 to 1.0).
 
 This file is typically placed alongside other simulation configuration files, for example:
