@@ -113,10 +113,10 @@ This JSON file defines named sets of compartment targets. Each set specifies the
   }
 
 *   ``population``: The name of the node population these targets belong to.
-*   ``compartment_set``: A list of list, where each list is ``[node_id, section_name, section_number, location]``.
+*   ``compartment_set``: A list of list, where each list is ``[node_id, section_name, section_index, location]``.
     *   ``node_id``: The ID of the node within the specified ``population``.
-    *   ``section_name``: The name of the section (e.g., "soma", "dend", "apic"). This should not contain the section number e.g. "dend[10]"
-    *   ``section_number``: The number of the section (e.g., "soma", "dend", "apic").
+    *   ``section_name``: The name of the  NEURON section (e.g., "soma", "dend", "apic"). This should not contain the section_index e.g. ``"dend[10]"``
+    *   ``section_index``: The number of the NEURON section index e.g. for dend[10], ``section_index`` is 10.
     *   ``location``: The fractional distance along the section (0.0 to 1.0).
 
 This file is typically placed alongside other simulation configuration files, for example:
