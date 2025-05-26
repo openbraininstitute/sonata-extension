@@ -96,7 +96,7 @@ To enable fine-grained control over which specific compartments are recorded, SO
 File: ``compartment_sets.json``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This JSON file defines named sets of compartment targets. Each set specifies the population and a list of `(node_id, section_name, location)` tuples.
+This JSON file defines named sets of compartment targets. Each set specifies the population and a list of `[node_id, section_name, section_index, location]` lists.
 
 .. code-block:: json
 
@@ -115,18 +115,10 @@ This JSON file defines named sets of compartment targets. Each set specifies the
 *   ``population``: The name of the node population these targets belong to.
 *   ``compartment_set``: A list of list, where each list is ``[node_id, section_name, section_index, location]``.
     *   ``node_id``: The ID of the node within the specified ``population``.
-    *   ``section_name``: The name of the  NEURON section (e.g., "soma", "dend", "apic"). This should not contain the ``section_index`` e.g. ``"dend[10]"``
+    *   ``section_name``: The name of the  NEURON section (e.g., "soma", "dend", "apic" and "axon"). This should not contain the ``section_index`` e.g. ``"dend[10]"``.
     *   ``section_index``: The number of the NEURON section index e.g. for dend[10], ``section_index`` is 10. Smallest ``section_index`` is 0 in NEURON.
-    *   ``location``: The fractional distance along the section (0.0 to 1.0).
+    *   ``location``: The fractional distance along the section (0<= location <=1).
 
-This file is typically placed alongside other simulation configuration files, for example:
-
-.. code-block:: text
-
-  simulation/
-  ├── node_sets.json
-  ├── compartment_sets.json
-  └── simulation_config.json
 
 Simulation Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,7 +126,6 @@ Simulation Configuration
 To use compartment sets, first declare the ``compartment_sets.json`` at the top level of your ``simulation_config.json``. Then, in your compartment report definition, set ``"sections": "compartment_set"`` and use the ``"compartments"`` field to specify the name of the desired set from your ``compartment_sets.json`` file.
 
 .. code-block:: json
-  :emphasize-lines: 2, 7, 8
 
   {
     "compartment_sets_file": "circuit/compartment_sets.json",  // Path to your compartment sets file
@@ -166,7 +157,7 @@ Key changes:
 *   **``cells``**: The ``cells`` key (e.g., ``"cells": "Mosaic"`` or ``"cells": ["popA", 123]``) is **not allowed** and should cause an error if ``sections`` is ``"compartment_set"``. The selection of cells and their specific compartments is entirely managed by the chosen compartment set from ``compartment_sets.json``.
 
 The output HDF5 report format for these targeted compartment reports remains the same as described in the main :ref:`compartment_report_main` section.
-
+The ordering of axon/apic/dend/soma and the gid, type pair in report can only show up once.
 
 Soma report
 ^^^^^^^^^^^
