@@ -119,6 +119,26 @@ This JSON file defines named sets of compartment targets. Each set specifies the
     *   ``section_index``: The number of the NEURON section index e.g. for dend[10], ``section_index`` is 10. Smallest ``section_index`` is 0 in NEURON.
     *   ``location``: The fractional distance along the section (0<= location <=1).
 
+The order of gids in ``compartment_set`` is need not be necessary. Such entries are acceptable:
+
+.. code-block:: json
+    "compartment_set": [
+        [0, "apic", 1, 0.1],
+        [0, "dend", 10, 0.1],
+        [0, "apic", 2, 0.1],
+        [0, "dend", 10, 0.7],
+        [1, "dend", 10, 0.7],
+        [0, "dend", 10, 0.4],
+        ]
+
+However, there should be a warning if they are the same, but even complete duplicates can be handled such as
+
+.. code-block:: json
+    "compartment_set": [
+        [0, "dend", 10, 0.7],
+        [1, "dend", 10, 0.4],
+        [0, "dend", 10, 0.7],
+        ]
 
 Simulation Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,7 +177,6 @@ Key changes:
 *   **``cells``**: The ``cells`` key (e.g., ``"cells": "Mosaic"`` or ``"cells": ["popA", 123]``) is **not allowed** and should cause an error if ``sections`` is ``"compartment_set"``. The selection of cells and their specific compartments is entirely managed by the chosen compartment set from ``compartment_sets.json``.
 
 The output HDF5 report format for these targeted compartment reports remains the same as described in the main :ref:`compartment_report_main` section.
-The ordering of axon/apic/dend/soma and the gid, type pair in report can only show up once.
 
 Soma report
 ^^^^^^^^^^^
