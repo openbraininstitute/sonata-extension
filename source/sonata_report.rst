@@ -121,20 +121,24 @@ This JSON file defines named sets of compartment targets. Each set specifies the
 The order of ``node_id`` in ``compartment_set`` is not necessary. Such entries are acceptable:
 
 .. code-block:: json
-    "compartment_set": [
-        [0, 1, 0.1],
-        [2, 5, 0.7],
-        [0, 2, 0.3]
+    {
+        "compartment_set": [
+            [0, 1, 0.1],
+            [2, 5, 0.7],
+            [0, 2, 0.3]
         ]
+    }
 
 However, there should be a warning if they are the same, but even complete duplicates can be handled such as
 
 .. code-block:: json
-    "compartment_set": [
-        [0, 1, 0.1],
-        [2, 5, 0.7],
-        [0, 1, 0.1]
-        ]
+    {
+        "compartment_set": [
+            [0, 1, 0.1],
+            [2, 5, 0.7],
+            [0, 1, 0.1]
+            ]
+    }
 
 Here, ``[0, 1, 0.1]`` was repeated. A warning is issued but the recording continues with duplicate entry in the report.
 
