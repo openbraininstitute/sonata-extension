@@ -111,13 +111,12 @@ This JSON file defines named sets of compartment targets. Each set specifies the
     }
   }
 
+*   ``population``: The name of the node population of the ``node_id``s in ``compartment_set``.
+*   ``compartment_set``: A list of list, where each list is ``[node_id, section_id, offset]``. Each of the ``[node_id, section_id, offset]`` list is referred to as a ``CompartmentLocation``.
+*   ``node_id``: The ID of the node within the specified ``population``.
+*   ``section_index``: The global index of a given section within its cell. NOTE: this is NOT the NEURON section index (e.g. 10 for ``dend[10]``). The ``section_index`` is calculated similar to ``get_section_index`` function of the neurodamus repository in `neurodamus.reports.py <https://github.com/openbraininstitute/neurodamus/blob/1e8b00e55bcc08e9047d6c9a48d068c463c53aef/neurodamus/report.py#L6>`_.
+*   ``offset``: The fractional distance along the section (0<= offset <=1). NOTE: offset for a section is similar to the NEURON segment location e.g. 0.5 in ``dend[10](0.5)``.
 
-*   ``population``: The name of the node population these targets belong to.
-*   ``compartment_set``: A list of list, where each list is ``[node_id, section_id, offset]``.
-    *   ``node_id``: The ID of the node within the specified ``population``.
-    *   ``section_index``: The global index of a given section within its cell. NOTE: this is NOT the NEURON section index (e.g. 10 for dend[10]). The ``section_index`` is calculated similar to ``get_section_index`` function of 
-        the neurodamus repository in `neurodamus.reports.py <https://github.com/openbraininstitute/neurodamus/blob/1e8b00e55bcc08e9047d6c9a48d068c463c53aef/neurodamus/report.py#L6>`_.
-    *   ``offset``: The fractional distance along the section (0<= offset <=1).
 
 The order of ``node_id`` in ``compartment_set`` is not necessary. Such entries are acceptable:
 
