@@ -96,7 +96,7 @@ To enable fine-grained control over which specific compartments are recorded, SO
 File: ``compartment_sets.json``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This JSON file defines named sets of compartment targets. Each set specifies the population and a list of `[node_id, section_name, section_index, location]` lists.
+This JSON file defines named sets of compartment targets. Each set specifies the population and a list of ``[node_id, section_id, offset]`` lists.
 
 .. code-block:: json
 
@@ -104,41 +104,39 @@ This JSON file defines named sets of compartment targets. Each set specifies the
     "example_compartment_set": {
       "population": "S1nonbarrel_neurons",
       "compartment_set": [
-        [0, "dend", 10, 0.1],
-        [1, "dend", 4, 0.1],
-        [2, "dend", 3, 0.1],
-        [3, "dend", 6, 0.3]
+        [0, 1, 0.1],
+        [3, 5, 0.7],
+        [0, 2, 0.3]
       ]
     }
   }
-
+[node_id, section_id, offset]
 *   ``population``: The name of the node population these targets belong to.
-*   ``compartment_set``: A list of list, where each list is ``[node_id, section_name, section_index, location]``.
+*   ``compartment_set``: A list of list, where each list is ``[node_id, section_id, offset]``.
     *   ``node_id``: The ID of the node within the specified ``population``.
-    *   ``section_name``: The name of the  NEURON section. Currently, only ``"soma"``, ``"dend"``, ``"apic"`` and ``"axon"`` are supported. This should not contain the ``section_index`` e.g. ``"dend[10]"``.
-    *   ``section_index``: The number of the NEURON section index e.g. for dend[10], ``section_index`` is 10. Smallest ``section_index`` is 0 in NEURON.
-    *   ``location``: The fractional distance along the section (0<= location <=1).
+    *   ``section_index``: The global index of a given section within its cell. NOTE: this is NOT the NEURON section index (e.g. 10 for dend[10]). The ``section_index`` is calculated similar to ``get_section_index`` function of 
+        the neurodamus repository in :ref:`neurodamus.reports.py <https://github.com/openbraininstitute/neurodamus/blob/1e8b00e55bcc08e9047d6c9a48d068c463c53aef/neurodamus/report.py#L6>`_.
+    *   ``offset``: The fractional distance along the section (0<= offset <=1).
 
-The order of gids in ``compartment_set`` is need not be necessary. Such entries are acceptable:
+The order of ``node_id`` in ``compartment_set`` is not necessary. Such entries are acceptable:
 
 .. code-block:: json
     "compartment_set": [
-        [0, "apic", 1, 0.1],
-        [0, "dend", 10, 0.1],
-        [0, "apic", 2, 0.1],
-        [0, "dend", 10, 0.7],
-        [1, "dend", 10, 0.7],
-        [0, "dend", 10, 0.4],
+        [0, 1, 0.1],
+        [2, 5, 0.7],
+        [0, 2, 0.3]
         ]
 
 However, there should be a warning if they are the same, but even complete duplicates can be handled such as
 
 .. code-block:: json
     "compartment_set": [
-        [0, "dend", 10, 0.7],
-        [1, "dend", 10, 0.4],
-        [0, "dend", 10, 0.7],
+        [0, 1, 0.1],
+        [2, 5, 0.7],
+        [0, 1, 0.1]
         ]
+
+Here, ``[0, 1, 0.1]`` was repeated. A warning is issued but the recording continues with duplicate entry in the report.
 
 Simulation Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~
