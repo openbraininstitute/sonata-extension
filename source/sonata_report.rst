@@ -121,6 +121,7 @@ This JSON file defines named sets of compartment targets. Each set specifies the
 The order of ``node_id`` in ``compartment_set`` is not necessary. Such entries are acceptable:
 
 .. code-block:: json
+    
     {
         "compartment_set": [
             [0, 1, 0.1],
@@ -132,6 +133,7 @@ The order of ``node_id`` in ``compartment_set`` is not necessary. Such entries a
 However, there should be a warning if they are the same, but even complete duplicates can be handled such as
 
 .. code-block:: json
+
     {
         "compartment_set": [
             [0, 1, 0.1],
