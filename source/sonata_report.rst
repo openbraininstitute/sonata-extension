@@ -115,7 +115,7 @@ This JSON file defines named sets of compartment targets. Each set specifies the
 * ``compartment_set``: A list of lists, where each list is ``[node_id, section_id, offset]``. Each of the ``[node_id, section_id, offset]`` lists is referred to as a ``CompartmentLocation``.
 * ``node_id``: The ID of the node within the specified ``population``.
 * ``section_id``: The global index of a given section within its cell.
-* ``offset``: The fractional distance along the section (0<= offset <=1). NOTE: offset for a section is similar to the NEURON segment location e.g. 0.5 in ``dend[10](0.5)``.
+* ``offset``: The fractional distance along the section (0<= offset <=1). NOTE: offset for a section encodes for the NEURON segment location e.g. 0.5 in ``dend[10](0.5)``.
 
 .. note::
    The ``section_id`` is NOT the NEURON section index (e.g. 10 for ``dend[10]``).
