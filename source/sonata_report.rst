@@ -88,13 +88,13 @@ For a full compartment reports, you need to specify both ``"sections": "all"`` a
         }
     }
 
-Extension of Compartment report
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Fine-grained Compartment report
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To enable fine-grained control over which specific compartments are recorded, SONATA supports an extension using a ``compartment_sets.json`` file. This allows users to define sets of explicit compartment targets (e.g., ``dend[10](0.1)``) for selected node_id.
 
-File: ``compartment_sets.json``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+File: compartment_sets.json
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This JSON file defines named sets of compartment targets. Each set specifies the population and a list of ``[node_id, section_id, offset]`` lists:
 
@@ -105,49 +105,33 @@ This JSON file defines named sets of compartment targets. Each set specifies the
       "population": "S1nonbarrel_neurons",
       "compartment_set": [
         [0, 1, 0.1],
-        [3, 5, 0.7],
         [0, 2, 0.3]
+        [3, 5, 0.7],
       ]
     }
   }
 
-*   ``population``: The name of the node population of the ``node_id``\s in ``compartment_set``.
-*   ``compartment_set``: A list of lists, where each list is ``[node_id, section_id, offset]``. Each of the ``[node_id, section_id, offset]`` lists is referred to as a ``CompartmentLocation``.
-*   ``node_id``: The ID of the node within the specified ``population``.
-*   ``section_index``: The global index of a given section within its cell. NOTE: this is NOT the NEURON section index (e.g. 10 for ``dend[10]``). The ``section_index`` is calculated similar to ``get_section_index`` function of the neurodamus repository in `neurodamus.reports.py <https://github.com/openbraininstitute/neurodamus/blob/1e8b00e55bcc08e9047d6c9a48d068c463c53aef/neurodamus/report.py#L6>`_.
-*   ``offset``: The fractional distance along the section (0<= offset <=1). NOTE: offset for a section is similar to the NEURON segment location e.g. 0.5 in ``dend[10](0.5)``.
+* ``population``: The name of the node population of the ``node_id``\s in ``compartment_set``.
+* ``compartment_set``: A list of lists, where each list is ``[node_id, section_id, offset]``. Each of the ``[node_id, section_id, offset]`` lists is referred to as a ``CompartmentLocation``.
+* ``node_id``: The ID of the node within the specified ``population``.
+* ``section_id``: The global index of a given section within its cell.
+* ``offset``: The fractional distance along the section (0<= offset <=1). NOTE: offset for a section is similar to the NEURON segment location e.g. 0.5 in ``dend[10](0.5)``.
 
+.. note::
+   The ``section_id`` is NOT the NEURON section index (e.g. 10 for ``dend[10]``).
+   The ``section_index`` is calculated similar to ``get_section_index`` function of the neurodamus repository in `neurodamus.reports.py <https://github.com/openbraininstitute/neurodamus/blob/1e8b00e55bcc08e9047d6c9a48d068c463c53aef/neurodamus/report.py#L6>`_.
 
-The code preserves the order of ``node_id`` in ``compartment_set``. Such entries are acceptable:
+.. warning::
+   The ``compartment_set`` list must be fully sorted, first by ``node_id``, then ``section_id``, and finally ``offset``.
+   In addition, exact duplicates are not allowed.
+   Breaking either of these rules results in a malformed ``compartment_set``.
 
-.. code-block:: json
-    
-    {
-        "compartment_set": [
-            [0, 1, 0.1],
-            [2, 5, 0.7],
-            [0, 2, 0.3]
-        ]
-    }
-
-However, there should be a warning if they are the same, but even complete duplicates can be handled such as
-
-.. code-block:: json
-
-    {
-        "compartment_set": [
-            [0, 1, 0.1],
-            [2, 5, 0.7],
-            [0, 1, 0.1]
-            ]
-    }
-
-Here, ``[0, 1, 0.1]`` was repeated. A warning is issued but the recording continues with duplicate entry in the report.
 
 Simulation Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-To use compartment sets, first declare the ``compartment_sets.json`` at the top level of your ``simulation_config.json``. Then, in your compartment report definition, set ``"sections": "compartment_set"`` and use the ``"compartments"`` field to specify the name of the desired set from your ``compartment_sets.json`` file.
+To use compartment sets, first declare the ``compartment_sets.json`` at the top level of your ``simulation_config.json``.
+Then, in your compartment report definition, set ``"sections": "compartment_set"`` and use the ``"compartments"`` field to specify the name of the desired set from your ``compartment_sets.json`` file.
 
 .. code-block:: json
 
@@ -158,7 +142,7 @@ To use compartment sets, first declare the ``compartment_sets.json`` at the top 
       "dend_report_v": {                            // Name of the report
         "type": "compartment",
         "sections": "compartment_set",              // Use "compartment_set"
-        "compartments": "example_compartment_set",  // Name of the set from compartment_sets.json
+        "compartments": "example_compartment_set",  // Name of the set from compartment_sets.json, see above.
         "variable_name": "v",
         "unit": "mV",
         "dt": 0.1,
@@ -172,13 +156,19 @@ To use compartment sets, first declare the ``compartment_sets.json`` at the top 
 
 Key changes:
 
-*   **``sections``**:
-    *   When set to ``"compartment_set"``, it indicates that the report targets are defined by a named set in the ``compartment_sets.json`` file.
-    *   Previously supported values for ``sections`` include ``"soma"``, ``"axon"``, ``"dend"``, ``"apic"``, or ``"all"``. These continue to function as before, typically used with the ``cells`` key to specify target populations.
-*   **``compartments``**:
-    *   If ``sections`` is ``"compartment_set"``, this field **must** contain the name of a key (a specific compartment set) defined in your ``compartment_sets.json`` file (e.g., ``"example_compartment_set"``).
-    *   For other ``sections`` types (``"soma"``, ``"axon"``, ``"dend"``, ``"apic"``, or ``"all"``), ``compartments`` typically takes values like ``"center"`` or ``"all"``.
-*   **``cells``**: The ``cells`` key (e.g., ``"cells": "Mosaic"`` or ``"cells": ["popA", 123]``) is **not allowed** and should cause an error if ``sections`` is ``"compartment_set"``. The selection of cells and their specific compartments is entirely managed by the chosen compartment set from ``compartment_sets.json``.
+**sections**:
+
+* When set to ``"compartment_set"``, it indicates that the report targets are defined by a named set in the ``compartment_sets.json`` file.
+* Previously supported values for ``sections`` include ``"soma"``, ``"axon"``, ``"dend"``, ``"apic"``, or ``"all"``. These continue to function as before, typically used with the ``cells`` key to specify target populations.
+
+**compartments**:
+
+* If ``sections`` is ``"compartment_set"``, this field **must** contain the name of a key (a specific compartment set) defined in your ``compartment_sets.json`` file (e.g., ``"example_compartment_set"``).
+* For other ``sections`` types (``"soma"``, ``"axon"``, ``"dend"``, ``"apic"``, or ``"all"``), ``compartments`` typically takes values like ``"center"`` or ``"all"``.
+
+**cells**:
+
+* The ``cells`` key (e.g., ``"cells": "Mosaic"`` or ``"cells": ["popA", 123]``) is **not allowed** and should cause an error if ``sections`` is ``"compartment_set"``. The selection of cells and their specific compartments is entirely managed by the chosen compartment set from ``compartment_sets.json``.
 
 The output HDF5 report format for these targeted compartment reports remains the same as described in the main :ref:`compartment_report_main` section.
 
