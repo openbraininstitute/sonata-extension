@@ -36,6 +36,8 @@ Only ``ms`` is supported.
 Frame oriented, element recordings
 ----------------------------------
 
+.. _compartment_report_main:
+
 Compartment report
 ^^^^^^^^^^^^^^^^^^
 
@@ -86,6 +88,75 @@ For a full compartment reports, you need to specify both ``"sections": "all"`` a
         }
     }
 
+Fine-grained Compartment report
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To enable fine-grained control over which specific compartments are recorded, SONATA supports an extension using a ``compartment_sets.json`` file. This allows users to define sets of explicit compartment targets (e.g., ``dend[10](0.1)``) for selected node_id.
+
+File: compartment_sets.json
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This JSON file defines named sets of compartment targets. Each set specifies the population and a list of ``[node_id, section_id, offset]`` lists:
+
+.. code-block:: json
+
+  {
+    "example_compartment_set": {
+      "population": "S1nonbarrel_neurons",
+      "compartment_set": [
+        [0, 1, 0.1],
+        [0, 2, 0.3]
+        [3, 5, 0.7],
+      ]
+    }
+  }
+
+* ``population``: The name of the node population of the ``node_id``\s in ``compartment_set``.
+* ``compartment_set``: A list of lists, where each list is ``[node_id, section_id, offset]``. Each of the ``[node_id, section_id, offset]`` lists is referred to as a ``CompartmentLocation``.
+* ``node_id``: The ID of the node within the specified ``population``.
+* ``section_id``: The global index of a given section within its cell.
+* ``offset``: The fractional distance along the section (0<= offset <=1). NOTE: offset for a section encodes for the NEURON segment location e.g. 0.5 in ``dend[10](0.5)``.
+
+.. note::
+   The ``section_id`` is NOT the NEURON section index (e.g. 10 for ``dend[10]``).
+   The ``section_index`` is calculated similar to ``get_section_index`` function of the neurodamus repository in `neurodamus.reports.py <https://github.com/openbraininstitute/neurodamus/blob/1e8b00e55bcc08e9047d6c9a48d068c463c53aef/neurodamus/report.py#L6>`_.
+
+.. warning::
+   The ``compartment_set`` list must be fully sorted, first by ``node_id``, then ``section_id``, and finally ``offset``.
+   In addition, exact duplicates are not allowed.
+   Breaking either of these rules results in a malformed ``compartment_set``.
+
+
+Simulation Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+To use compartment sets, first declare the ``compartment_sets.json`` at the top level of your ``simulation_config.json``.
+Then, in your compartment report definition, set ``"sections": "compartment_set"`` and use the ``"compartments"`` field to specify the name of the desired set from your ``compartment_sets.json`` file.
+
+.. code-block:: json
+
+  {
+    "compartment_sets_file": "circuit/compartment_sets.json",  // Path to your compartment sets file
+
+    "reports": {
+      "dend_report_v": {                              // Name of the report
+        "type": "compartment_set",
+        "compartment_set": "example_compartment_set", // Name of compartment_set, as above
+        "variable_name": "v",
+        "unit": "mV",
+        "dt": 0.1,
+        "start_time": 0.0,
+        "end_time": 100.0
+      }
+      // ... other reports ...
+    }
+    // ... other global configurations ...
+  }
+
+.. note::
+   When ``type`` and ``compartment_set`` are used, having a ``sections`` or ``compartments`` will result in an error.
+
+The output HDF5 report format for these targeted compartment reports remains the same as described in the main :ref:`compartment_report_main` section.
 
 Soma report
 ^^^^^^^^^^^
