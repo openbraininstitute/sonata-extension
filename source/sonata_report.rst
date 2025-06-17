@@ -139,10 +139,9 @@ Then, in your compartment report definition, set ``"sections": "compartment_set"
     "compartment_sets_file": "circuit/compartment_sets.json",  // Path to your compartment sets file
 
     "reports": {
-      "dend_report_v": {                            // Name of the report
-        "type": "compartment",
-        "sections": "compartment_set",              // Use "compartment_set"
-        "compartments": "example_compartment_set",  // Name of the set from compartment_sets.json, see above.
+      "dend_report_v": {                              // Name of the report
+        "type": "compartment_set",
+        "compartment_set": "example_compartment_set", // Name of compartment_set, as above
         "variable_name": "v",
         "unit": "mV",
         "dt": 0.1,
@@ -154,21 +153,8 @@ Then, in your compartment report definition, set ``"sections": "compartment_set"
     // ... other global configurations ...
   }
 
-Key changes:
-
-**sections**:
-
-* When set to ``"compartment_set"``, it indicates that the report targets are defined by a named set in the ``compartment_sets.json`` file.
-* Previously supported values for ``sections`` include ``"soma"``, ``"axon"``, ``"dend"``, ``"apic"``, or ``"all"``. These continue to function as before, typically used with the ``cells`` key to specify target populations.
-
-**compartments**:
-
-* If ``sections`` is ``"compartment_set"``, this field **must** contain the name of a key (a specific compartment set) defined in your ``compartment_sets.json`` file (e.g., ``"example_compartment_set"``).
-* For other ``sections`` types (``"soma"``, ``"axon"``, ``"dend"``, ``"apic"``, or ``"all"``), ``compartments`` typically takes values like ``"center"`` or ``"all"``.
-
-**cells**:
-
-* The ``cells`` key (e.g., ``"cells": "Mosaic"`` or ``"cells": ["popA", 123]``) is **not allowed** and should cause an error if ``sections`` is ``"compartment_set"``. The selection of cells and their specific compartments is entirely managed by the chosen compartment set from ``compartment_sets.json``.
+.. note::
+   When ``type`` and ``compartment_set`` are used, having a ``sections`` or ``compartments`` will result in an error.
 
 The output HDF5 report format for these targeted compartment reports remains the same as described in the main :ref:`compartment_report_main` section.
 
