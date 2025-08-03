@@ -491,8 +491,9 @@ Examples::
            "cells": "Column",
            "sections": "soma",
            "type": "summation",
-           "variable_name": "i_membrane, IClamp",
+           "variable_name": "i_membrane",
            "unit": "nA",
+           "dt":0.1,
            "start_time": 0,
            "end_time": 500,
            "enabled": true
