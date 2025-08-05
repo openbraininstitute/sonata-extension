@@ -34,6 +34,7 @@ The reference implementation to load data for this extension is provided by `lib
    circuit_files
    recipe
    sonata
+   hoc-emodel
    NGV
    faq
    legacy
