@@ -93,6 +93,8 @@ Fine-grained Compartment report
 
 To enable fine-grained control over which specific compartments are recorded, SONATA supports an extension using a ``compartment_sets.json`` file. This allows users to define sets of explicit compartment targets (e.g., ``dend[10](0.1)``) for selected node_id.
 
+.. _compartment_sets_definition:
+
 File: compartment_sets.json
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

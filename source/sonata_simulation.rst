@@ -70,7 +70,7 @@ compartment_sets_file
 
 *Optional*
 
-Path to a ``compartment_sets.json`` file defining named sets of precise compartment targets (e.g. [node_id, section_id, offset]) used for compartment-level reports or inputs.
+Path to a ``compartment_sets.json`` file defining precise compartment targets. See :ref:`compartment_sets_definition` for the full specification.
 
 .. code-block:: json
 
