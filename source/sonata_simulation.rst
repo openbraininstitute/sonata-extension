@@ -452,6 +452,28 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON SEClamp mechanism, if a conductance source, or a NEURON IClamp mechanism, if a current source. The SEClamp and IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a ConductanceSource mechanism or a MembraneCurrentSource mechanism, which are identical to SEClamp and IClamp, respectively, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
+uniform_e_field (extracellular_stimulation)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Generates an temporally-oscillating extracellular potential field whose gradient (i.e., E field) is constant.
+The oscillation is defined as the sum of two sinusoids.
+
+.. table::
+
+   ============================== ========== ============ ==========================================
+   Property                       Type       Requirement  Description
+   ============================== ========== ============ ==========================================
+   Ex_0                           float      Mandatory    Peak amplitude of the first sinusoid in the x-direction, in V/m
+   Ey_0                           float      Mandatory    Peak amplitude of the first sinusoid in the y-direction, in V/m
+   Ez_0                           float      Mandatory    Peak amplitude of the first sinusoid in the z-direction, in V/m
+   frequency_0                    float      Mandatory    Frequency of the first sinusoid, in Hz
+   Ex_1                           float      Optional     Peak amplitude of the second sinusoid in the x-direction, in V/m. If not provided, assumed to be 0
+   Ey_1                           float      Optional     Peak amplitude of the second sinusoid in the y-direction, in V/m. If not provided, assumed to be 0
+   Ez_1                           float      Optional     Peak amplitude of the second sinusoid in the z-direction, in V/m. If not provided, assumed to be 0
+   frequency_1                    float      Optional     Frequency of the second sinusoid, in Hz. If not provided, assumed to be 0
+   ramp_up_time                   float      Optional     Duration during which the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time
+   ramp_down_time                 float      Optional     Duration during which the signal ramps down linearly from 0, in ms. If not provided, assume no ramp-down time
+   ============================== ========== ============ ==========================================
+
 reports
 -------
 
