@@ -224,7 +224,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   module                         text       Mandatory    The type of stimulus dictating additional parameters (see addtional tables below). Supported values: "linear", "relative_linear", "pulse", "sinusoidal", "subthreshold", "hyperpolarizing", "synapse_replay", "seclamp", "noise", "shot_noise", "relative_shot_noise", "absolute_shot_noise", "ornstein_uhlenbeck", "relative_ornstein_uhlenbeck".
+   module                         text       Mandatory    The type of stimulus dictating additional parameters (see addtional tables below). Supported values: "linear", "relative_linear", "pulse", "sinusoidal", "subthreshold", "hyperpolarizing", "synapse_replay", "seclamp", "noise", "shot_noise", "relative_shot_noise", "absolute_shot_noise", "ornstein_uhlenbeck", "relative_ornstein_uhlenbeck", "uniform_e_field".
    input_type                     text       Mandatory    The type of the input with the reserved values : "spikes", "extracellular_stimulation", "current_clamp", "voltage_clamp", "conductance". Should correspond according to the module (see additional tables below). Currently, not validated by BBP simulation which will use the appropriate input_type regardless of the string passed.
    delay                          float      Mandatory    Time in ms when input is activated.
    duration                       float      Mandatory    Time duration in ms for how long input is activated.
