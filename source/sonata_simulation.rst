@@ -472,8 +472,8 @@ The oscillation is defined as the sum of two sinusoids.
    Ez_1                           float      Optional*    Peak amplitude of the second sinusoid in the z-direction, in V/m. If not provided, assumed to be 0. If one of Ex_1, Ey_1, or Ez_1 is
  provided, then all must be provided.
    frequency_1                    float      Optional     Frequency of the second sinusoid, in Hz. If not provided, assumed to be 0
-   ramp_up_time                   float      Optional     Duration during which the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time
-   ramp_down_time                 float      Optional     Duration during which the signal ramps down linearly from 0, in ms. If not provided, assume no ramp-down time
+   ramp_up_time                   float      Optional     Duration during which the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time (note that the specified "duration" parameter is not inclusive of this ramp-up time)
+   ramp_down_time                 float      Optional     Duration during which the signal ramps down linearly from 0, in ms. If not provided, assume no ramp-down time (note that the specified "duration" parameter is not inclusive of the ramp-down time)
    ============================== ========== ============ ==========================================
 
 reports
