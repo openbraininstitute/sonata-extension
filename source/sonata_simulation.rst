@@ -72,9 +72,9 @@ compartment_sets_file
 
 Path to a ``compartment_sets.json`` file defining precise compartment targets. See :ref:`compartment_sets_definition` for the full specification.
 
-.. code-block:: json
+example::
 
-  "compartment_sets_file": "./circuit/compartment_sets.json"
+  "compartment_sets_file": "${BASE_DIR}/compartment_sets.json"
 
 run
 ---
