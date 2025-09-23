@@ -228,7 +228,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    input_type                     text       Mandatory    The type of the input with the reserved values : "spikes", "extracellular_stimulation", "current_clamp", "voltage_clamp", "conductance". Should correspond according to the module (see additional tables below). Currently, not validated by BBP simulation which will use the appropriate input_type regardless of the string passed.
    delay                          float      Mandatory    Time in ms when input is activated.
    duration                       float      Mandatory    Time duration in ms for how long input is activated.
-   node_set                       text       Mandatory    Node set which is affected by input.
+   node_set                       text       Optional     Node set which is affected by input.
    compartment_set                string     Optional     Name of a compartment set from ``compartment_sets.json``. Cannot be used with ``node_set``. Stimulus will be applied only to the specified compartments.
    ============================== ========== ============ ==========================================
 
