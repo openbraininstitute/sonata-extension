@@ -72,9 +72,9 @@ compartment_sets_file
 
 Path to a ``compartment_sets.json`` file defining precise compartment targets. See :ref:`compartment_sets_definition` for the full specification.
 
-.. code-block:: json
+example::
 
-  "compartment_sets_file": "circuit/compartment_sets.json"
+  "compartment_sets_file": "${BASE_DIR}/compartment_sets.json"
 
 run
 ---
@@ -228,7 +228,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    input_type                     text       Mandatory    The type of the input with the reserved values : "spikes", "extracellular_stimulation", "current_clamp", "voltage_clamp", "conductance". Should correspond according to the module (see additional tables below). Currently, not validated by BBP simulation which will use the appropriate input_type regardless of the string passed.
    delay                          float      Mandatory    Time in ms when input is activated.
    duration                       float      Mandatory    Time duration in ms for how long input is activated.
-   node_set                       text       Mandatory    Node set which is affected by input.
+   node_set                       text       Optional     Node set which is affected by input. Mutually exclusive with ``compartment_set``.
    compartment_set                string     Optional     Name of a compartment set from ``compartment_sets.json``. Cannot be used with ``node_set``. Stimulus will be applied only to the specified compartments.
    ============================== ========== ============ ==========================================
 
@@ -476,6 +476,7 @@ Dictionary of dictionaries with each member describing one data collection durin
    end_time                       float      Mandatory    Time to stop reporting in milliseconds.
    file_name                      text       Optional     Specify report file name to be written in the :ref:`output_dir <output_config>`. The '.h5' extension will be added if not provided. The default file name is <report_name>.h5 where 'report_name' is the key name of the current dictionary.
    enabled                        boolean    Optional     Allows for supressing a report so that it is not created. Useful for reducing output temporarily. Possible values are true/false. Default is true.
+   compartment_set                text       Optional     Name of a compartment set from ``compartment_sets.json``. Required if ``type`` is "compartment_set".
    ============================== ========== ============ ==========================================
 
 Examples::
@@ -505,6 +506,15 @@ Examples::
             "file_name": "voltage"
             "enabled" : true
        },
+       "compartment_set": {
+            "compartment_set": "Mosaic_A",
+            "type": "compartment_set",
+            "variable_name": "v",
+            "dt": 0.1,
+            "start_time": 1000.0,
+            "end_time": 1275.0,
+            "unit": "mV"
+         },
        "axonal_comp_centers": {
             "cells": "Mosaic",
             "sections": "axon",
