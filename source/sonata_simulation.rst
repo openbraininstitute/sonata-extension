@@ -454,27 +454,29 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
 
 uniform_e_field (extracellular_stimulation)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Generates an temporally-oscillating extracellular potential field whose gradient (i.e., E field) is constant.
-The oscillation is defined as the sum of two sinusoids.
+Generates an temporally-oscillating extracellular potential field.
+The potential field is defined as the sum of an arbitrary number of potential fields which vary sinusoidally in time, and whose gradient (i.e., E field) is constant.
 
 .. table::
 
-   ============================== ========== ============ ==========================================
-   Property                       Type       Requirement  Description
-   ============================== ========== ============ ==========================================
-   Ex_0                           float      Mandatory    Peak amplitude of the first sinusoid in the x-direction, in V/m
-   Ey_0                           float      Mandatory    Peak amplitude of the first sinusoid in the y-direction, in V/m
-   Ez_0                           float      Mandatory    Peak amplitude of the first sinusoid in the z-direction, in V/m
-   frequency_0                    float      Optional     Frequency of the first sinusoid, in Hz. If not provided, assumed to be 0
-   Ex_1                           float      Optional*    Peak amplitude of the second sinusoid in the x-direction, in V/m. If not provided, assumed to be 0. If one of Ex_1, Ey_1, or Ez_1 is provided, then all must be provided.
-   Ey_1                           float      Optional*    Peak amplitude of the second sinusoid in the y-direction, in V/m. If not provided, assumed to be 0. If one of Ex_1, Ey_1, or Ez_1 is
- provided, then all must be provided.
-   Ez_1                           float      Optional*    Peak amplitude of the second sinusoid in the z-direction, in V/m. If not provided, assumed to be 0. If one of Ex_1, Ey_1, or Ez_1 is
- provided, then all must be provided.
-   frequency_1                    float      Optional     Frequency of the second sinusoid, in Hz. If not provided, assumed to be 0
-   ramp_up_time                   float      Optional     Duration during which the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time (note that the specified "duration" parameter is not inclusive of this ramp-up time)
-   ramp_down_time                 float      Optional     Duration during which the signal ramps down linearly from 0, in ms. If not provided, assume no ramp-down time (note that the specified "duration" parameter is not inclusive of the ramp-down time)
-   ============================== ========== ============ ==========================================
+   ============================ ========== =========== ==========================================
+   Property                     Type       Requirement Description
+   ============================ ========== =========== ==========================================
+   fields                       list       Mandatory   A list of dicts, where each dict defines one of the fields which are summed to produce the total stimulus. The format for each such dict is given in the table below.
+   ramp_up_time                 float      Optional    Duration during which the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time (note that the specified "duration" parameter is not inclusive of this ramp-up time)
+   ramp_down_time               float      Optional    Duration during which the signal ramps down linearly from 0, in ms. If not provided, assume no ramp-down time (note that the specified "duration" parameter is not inclusive of the ramp-down time)
+   ============================ ========== =========== ==========================================
+
+.. table::
+
+   ============================ ========== =========== ==========================================
+   Property                     Type       Requirement Description
+   ============================ ========== =========== ==========================================
+   Ex                           float      Mandatory   Peak amplitude of the sinusoid in the x-direction, in V/m
+   Ey                           float      Mandatory   Peak amplitude of the sinusoid in the y-direction, in V/m
+   Ez                           float      Mandatory   Peak amplitude of the sinusoid in the z-direction, in V/m
+   frequency                    float      Optional    Frequency of the sinusoid, in Hz. If not provided, assumed to be 0
+   ============================ ========== =========== ==========================================
 
 reports
 -------
