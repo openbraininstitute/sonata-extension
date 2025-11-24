@@ -475,8 +475,9 @@ The potential field is defined as the sum of an arbitrary number of potential fi
    Ex                           float      Mandatory   Peak amplitude of the sinusoid in the x-direction, in V/m. May be negative
    Ey                           float      Mandatory   Peak amplitude of the sinusoid in the y-direction, in V/m. May be negative
    Ez                           float      Mandatory   Peak amplitude of the sinusoid in the z-direction, in V/m. May be negative
-   frequency                    float      Optional    Frequency of the sinusoid, in Hz. Must be non-negative. If not provided, assumed to be 0
+   frequency                    float      Optional    Frequency of the sinusoid, in Hz. Must be non-negative. If not provided, assumed to be 0. In this case, a time-invariant field with amplitude [Ex, Ey, Ez] is applied, unless ramp_up_time or ramp_down_time is specified, in which case the field will increase/decrease linearly with time during the ramp periods, and will be constant during the remaider of the stimulation period.
    phase                        float      Optional    Phase of the sinusoid, in radians. Must be between $-\pi$ and $\pi$. If not provided, assumed to be 0
+   dt                           float      Optional    Timestep of the generated signal in ms. Default is 0.025 ms.
    ============================ ========== =========== ==========================================
 
 reports
