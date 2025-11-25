@@ -452,7 +452,7 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON SEClamp mechanism, if a conductance source, or a NEURON IClamp mechanism, if a current source. The SEClamp and IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a ConductanceSource mechanism or a MembraneCurrentSource mechanism, which are identical to SEClamp and IClamp, respectively, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
-uniform_e_field (extracellular_stimulation)
+spatially_uniform_e_field (extracellular_stimulation)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Generates an temporally-oscillating extracellular potential field.
 The potential field is defined as the sum of an arbitrary number of potential fields which vary sinusoidally in time, and whose gradient (i.e., E field) is constant.
@@ -475,9 +475,8 @@ The potential field is defined as the sum of an arbitrary number of potential fi
    Ex                           float      Mandatory   Peak amplitude of the sinusoid in the x-direction, in V/m. May be negative
    Ey                           float      Mandatory   Peak amplitude of the sinusoid in the y-direction, in V/m. May be negative
    Ez                           float      Mandatory   Peak amplitude of the sinusoid in the z-direction, in V/m. May be negative
-   frequency                    float      Optional    Frequency of the sinusoid, in Hz. Must be non-negative. If not provided, assumed to be 0. In this case, a time-invariant field with amplitude [Ex, Ey, Ez] is applied, unless ramp_up_time or ramp_down_time is specified, in which case the field will increase/decrease linearly with time during the ramp periods, and will be constant during the remaider of the stimulation period.
-   phase                        float      Optional    Phase of the sinusoid, in radians. Must be between $-\pi$ and $\pi$. If not provided, assumed to be 0
-   dt                           float      Optional    Timestep of the generated signal in ms. Default is 0.025 ms.
+   frequency                    float      Optional    Frequency of the sinusoid, in Hz. Must be non-negative. If not provided, assumed to be 0. In this case, a time-invariant field with amplitude [Ex, Ey, Ez] is applied, unless ramp_up_time or ramp_down_time is specified, in which case the field will increase/decrease linearly with time during the ramp periods, and will be constant during the remaider of the stimulation period. Note that the signal will be generated with the same time step as the simulation itself. Note that frequency should therefore be less than the Nyquist frequency of the simulation (i.e., 1/(2*dt))
+   phase                        float      Optional    Phase of the sinusoid, in radians. Must be between $-\pi$ and $\pi$. If not provided, assumed to be 0, unless frequency is also 0, in which case phase will be set to $\pi/2$
    ============================ ========== =========== ==========================================
 
 reports
