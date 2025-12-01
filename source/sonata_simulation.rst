@@ -455,8 +455,7 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
 spatially_uniform_e_field (extracellular_stimulation)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Generates an temporally-oscillating extracellular potential field.
-The potential field is defined as the sum of an arbitrary number of potential fields which vary sinusoidally in time, and whose gradient (i.e., E field) is constant.
-More specifically, the field is defined as \(\vec{E}cos(2 \pi f + \phi)$, where $\vec{E}\) is the peak E field magnitude, $f$ is frequency in Hz, and \(\phi\) is phase in radians.
+The potential field is defined as the sum of an arbitrary number of potential fields which vary cosinusoidally in time, and whose gradient (i.e., E field) is constant.
 
 .. table::
 
@@ -473,11 +472,11 @@ More specifically, the field is defined as \(\vec{E}cos(2 \pi f + \phi)$, where 
    ============================ ========== =========== ==========================================
    Property                     Type       Requirement Description
    ============================ ========== =========== ==========================================
-   Ex                           float      Mandatory   Peak amplitude of the sinusoid in the x-direction, in V/m. May be negative
-   Ey                           float      Mandatory   Peak amplitude of the sinusoid in the y-direction, in V/m. May be negative
-   Ez                           float      Mandatory   Peak amplitude of the sinusoid in the z-direction, in V/m. May be negative
-   frequency                    float      Optional    Frequency of the sinusoid, in Hz. Must be non-negative. If not provided, assumed to be 0. In this case, a time-invariant field with amplitude [Ex, Ey, Ez] is applied, unless ramp_up_time or ramp_down_time is specified, in which case the field will increase/decrease linearly with time during the ramp periods, and will be constant during the remaider of the stimulation period. Note that the signal will be generated with the same time step as the simulation itself. Note that frequency should therefore be less than the Nyquist frequency of the simulation (i.e., 1/(2*dt))
-   phase                        float      Optional    Phase of the sinusoid, in radians. It is required that \(-\pi/2 < \phi \le \pi/2\). If not provided, assumed to be 0.
+   Ex                           float      Mandatory   Peak amplitude of the cosinusoid in the x-direction, in V/m. May be negative
+   Ey                           float      Mandatory   Peak amplitude of the cosinusoid in the y-direction, in V/m. May be negative
+   Ez                           float      Mandatory   Peak amplitude of the cosinusoid in the z-direction, in V/m. May be negative
+   frequency                    float      Optional    Frequency of the cosinusoid, in Hz. Must be non-negative. If not provided, assumed to be 0. In this case, a time-invariant field with amplitude [Ex, Ey, Ez] is applied, unless ramp_up_time or ramp_down_time is specified, in which case the field will increase/decrease linearly with time during the ramp periods, and will be constant during the remaider of the stimulation period. Note that the signal will be generated with the same time step as the simulation itself. Note that frequency should therefore be less than the Nyquist frequency of the simulation (i.e., 1/(2*dt))
+   phase                        float      Optional    Phase of the cosinusoid, in radians. Must be within the interval (-pi/2, pi/2]. If not provided, assumed to be 0.
    ============================ ========== =========== ==========================================
 
 reports
