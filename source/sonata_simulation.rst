@@ -463,8 +463,8 @@ The potential field is defined as the sum of an arbitrary number of potential fi
    Property                     Type       Requirement Description
    ============================ ========== =========== ==========================================
    fields                       list       Mandatory   A list of dicts, where each dict defines one of the fields which are summed to produce the total stimulus. The format for each such dict is given in the table below.
-   ramp_up_time                 float      Optional    Duration during which the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time (note that the specified "duration" parameter is not inclusive of this ramp-up time)
-   ramp_down_time               float      Optional    Duration during which the signal ramps down linearly to 0, in ms. If not provided, assume no ramp-down time (note that the specified "duration" parameter is not inclusive of the ramp-down time)
+   ramp_up_time                 float      Optional    Duration during which the amplitude of the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time (note that the specified "duration" parameter is not inclusive of this ramp-up time)
+   ramp_down_time               float      Optional    Duration during which the amplitude of the signal ramps down linearly to 0, in ms. If not provided, assume no ramp-down time (note that the specified "duration" parameter is not inclusive of the ramp-down time)
    ============================ ========== =========== ==========================================
 
 .. table::
