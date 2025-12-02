@@ -454,7 +454,7 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
 
 spatially_uniform_e_field (extracellular_stimulation)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Generates an temporally-oscillating extracellular potential field.
+Generates a temporally-oscillating extracellular potential field.
 The potential field is defined as the sum of an arbitrary number of potential fields which vary cosinusoidally in time, and whose gradient (i.e., E field) is constant.
 
 .. table::
