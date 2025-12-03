@@ -224,7 +224,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   module                         text       Mandatory    The type of stimulus dictating additional parameters (see addtional tables below). Supported values: "linear", "relative_linear", "pulse", "sinusoidal", "subthreshold", "hyperpolarizing", "synapse_replay", "seclamp", "noise", "shot_noise", "relative_shot_noise", "absolute_shot_noise", "ornstein_uhlenbeck", "relative_ornstein_uhlenbeck".
+   module                         text       Mandatory    The type of stimulus dictating additional parameters (see addtional tables below). Supported values: "linear", "relative_linear", "pulse", "sinusoidal", "subthreshold", "hyperpolarizing", "synapse_replay", "seclamp", "noise", "shot_noise", "relative_shot_noise", "absolute_shot_noise", "ornstein_uhlenbeck", "relative_ornstein_uhlenbeck", "spatially_uniform_e_field".
    input_type                     text       Mandatory    The type of the input with the reserved values : "spikes", "extracellular_stimulation", "current_clamp", "voltage_clamp", "conductance". Should correspond according to the module (see additional tables below). Currently, not validated by BBP simulation which will use the appropriate input_type regardless of the string passed.
    delay                          float      Mandatory    Time in ms when input is activated.
    duration                       float      Mandatory    Time duration in ms for how long input is activated.
@@ -451,6 +451,33 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
    random_seed                    integer    Optional     Override the random seed (to introduce correlations between cells).
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON SEClamp mechanism, if a conductance source, or a NEURON IClamp mechanism, if a current source. The SEClamp and IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a ConductanceSource mechanism or a MembraneCurrentSource mechanism, which are identical to SEClamp and IClamp, respectively, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
+
+spatially_uniform_e_field (extracellular_stimulation)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Generates a temporally-oscillating extracellular potential field.
+The potential field is defined as the sum of an arbitrary number of potential fields which vary cosinusoidally in time, and whose gradient (i.e., E field) is constant.
+
+.. table::
+
+   ============================ ========== =========== ==========================================
+   Property                     Type       Requirement Description
+   ============================ ========== =========== ==========================================
+   fields                       list       Mandatory   A list of dicts, where each dict defines one of the fields which are summed to produce the total stimulus. The format for each such dict is given in the table below.
+   ramp_up_time                 float      Optional    Duration during which the amplitude of the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time (note that the specified "duration" parameter is not inclusive of this ramp-up time)
+   ramp_down_time               float      Optional    Duration during which the amplitude of the signal ramps down linearly to 0, in ms. If not provided, assume no ramp-down time (note that the specified "duration" parameter is not inclusive of the ramp-down time)
+   ============================ ========== =========== ==========================================
+
+.. table::
+
+   ============================ ========== =========== ==========================================
+   Property                     Type       Requirement Description
+   ============================ ========== =========== ==========================================
+   Ex                           float      Mandatory   Peak amplitude of the cosinusoid in the x-direction, in V/m. May be negative
+   Ey                           float      Mandatory   Peak amplitude of the cosinusoid in the y-direction, in V/m. May be negative
+   Ez                           float      Mandatory   Peak amplitude of the cosinusoid in the z-direction, in V/m. May be negative
+   frequency                    float      Optional    Frequency of the cosinusoid, in Hz. Must be non-negative. If not provided, assumed to be 0. In this case, a time-invariant field with amplitude [Ex, Ey, Ez] is applied, unless ramp_up_time or ramp_down_time is specified, in which case the field will increase/decrease linearly with time during the ramp periods, and will be constant during the remaider of the stimulation period. Note that the signal will be generated with the same time step as the simulation itself. Note that frequency should therefore be less than the Nyquist frequency of the simulation (i.e., 1/(2*dt))
+   phase                        float      Optional    Phase of the cosinusoid, in radians. If not provided, assumed to be 0.
+   ============================ ========== =========== ==========================================
 
 reports
 -------
