@@ -547,6 +547,33 @@ The difference to the normal :ref:`chemical <chemical_connection>` type is that 
     /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
     ============= ============================= ========== =========== =========================================================================================
 
+``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
+
+
+Fields for Allen's chemical and point neuron connection type edges
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _chemical_connection:
+
+Connection type is ``allen_chemical`` or ``allen_point_neuron``.
+Group column represents the HDF group where the dataset is located under /<population>. "/" means it is directly under /<population>.
+
+.. table::
+
+    ============= ============================= ========== =========== =========================================================================================
+    Group         Field                         Type       Requirement Description
+    ============= ============================= ========== =========== =========================================================================================
+    /0            ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0            ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
+    /0            ``conductance``               float32    Mandatory   The conductance of the synapse (nanosiemens)
+    /0            ``delay``                     float32    Mandatory   The axonal delay (in ms, ``NaN`` for dendro-dendritic synapses).
+    /0            ``tau1``                      float32    Mandatory   The rise time constant of the Exp2Syn model, in ms, which controls how fast the synaptic conductance turns on after a presynaptic spike.
+    /0            ``tau2``                      float32    Mandatory   The decay time constant of the Exp2Syn model, in ms, which controls how fast the synaptic conductance turns off. 
+    /0            ``erev``                      float32    Mandatory   The reversal potental of the Exp2Syn model, in mV, which is the membrane voltage at which the synaptic current is zero.
+    /             ``edge_type_id``              int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /             ``source_node_id``            uint64     Mandatory   The id of the presynaptic neuron.
+    /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
+    ============= ============================= ========== =========== =========================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
 
