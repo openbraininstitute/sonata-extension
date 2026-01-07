@@ -172,11 +172,16 @@ Parameters required for modifications
    =============================== ========== =========== ====================================
    name                            text       Mandatory   Descriptive name for the modification.
    node_set                        text       Mandatory   Node set which receives the manipulation.
-   type                            text       Mandatory   Name of the manipulation. Supported values are "TTX" and "ConfigureAllSections".
-                                                          "TTX" mimics the application of tetrodotoxin, which blocks sodium channels and precludes spiking.
+   type                            text       Mandatory   Name of the manipulation. Supported values are "SectionList", "Section", "Compartment", "TTX", and "ConfigureAllSections".  
+                                                          "TTX" mimics the application of tetrodotoxin, which blocks sodium channels and precludes spiking. 
                                                           "ConfigureAllSections" is a generic way to modify variables (properties, mechanisms, etc.) per morphology section.
+                                                          "SectionList", "Section" and "Compartment" are specific manipulation types. See below for more details.
    section_configure               text       Mandatory*  For "ConfigureAllSections" manipulation, a snippet of python code to perform one or more assignments involving section attributes, for all sections that have all the referenced attributes.
                                                           The wildcard %s represents each section. Multiple statements are separated by semicolons. E.g., "%s.attr = value; %s.attr2 \*= value2".
+                                                          For "SectionList", "Section" and "Compartment" manipulations, a snippet of python code to perform one or more assignments involving section attributes, for all sections that have all the referenced attributes.
+                                                          e.g. For "SectionList": "apical.gbar_NaTg = 0.0; apical.cm = 1", this will set the gbar_NaTg to 0 and cm to 1 for all sections in the apical dendrites.
+                                                          For "Section": "apic[10].gbar_KTst = 0; apic[10].gbar_NaTg = 1", this will set the gbar_KTst to 0 and gbar_NaTg to 1 for all segments of apic[10] section.
+                                                          For "Compartment": "apic[10].gbar_KTst(0.66) = 0; dend[5].gbar_NaTg(0.33) = 1", this will set the gbar_KTst to 0 for segment with centre at 0.66, and gbar_NaTg to 1 for segment with centre at 0.33 of the dend[5] section.
    =============================== ========== =========== ====================================
 
 example::
@@ -208,6 +213,24 @@ example::
                "node_set": "single",
                "type": "ConfigureAllSections",
                "section_configure": "%s.gSK_E2bar_SK_E2 = 0"
+           },
+           {
+               "name": "apical_block_NaTg",
+               "node_set": "single",
+               "type": "SectionList",
+               "section_configure": "apical.gbar_NaTg = 0"
+           },
+           {
+               "name": "apical[10]_KTst_block",
+               "node_set": "single",
+               "type": "Section",
+               "section_configure": "apic[10].gbar_KTst = 0"
+           },
+           {
+               "name": "dend[5](0.33)_gbar_NaTg_increase",
+               "node_set": "single",
+               "type": "Compartment",
+               "section_configure": "dend[5].gbar_NaTg(0.33) = 2"
            }
        ]
   }
