@@ -224,6 +224,32 @@ This is for `virtual` nodes (i.e., source nodes of `projections`).
     /                  ``node_type_id``                int64      Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
     ================== =============================== ========== ============= ==================================================================================================
 
+Fields for Allen's point neurons (model_type: `point_process`)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _allen_point_node:
+
+This is for `integrate-and-fire <https://nrn.readthedocs.io/en/9.0.1/courses/hopfield_brody_network_in_python.html#standard-intfire-implementation-eg-intfire1-from-intfire1-mod>`_ neurons.
+
+.. table::
+
+    ================== =============================== ========== ============= =========================================================================================
+    Group              Field                           Type       Requirement   Description
+    ================== =============================== ========== ============= =========================================================================================
+    /0                 ``x``, ``y``, ``z``             float32    Mandatory     The position of the center of the soma in the local world in µm.
+    /0                 ``orientation_[w|x|y|z]``       float32    Mandatory     Preferred way to define the rotation as quaternions.
+                                                                                Note: **the quaternions are not guaranteed to be normalized**
+    /0                 ``morphology``                  utf8       Mandatory     Morphology file relative path, without file extension.
+                                                                                Example "mymorphology" or "mypath/mymorphology".
+                                                                                The file format may be different depending on the consumer.
+    /0                 ``layer``                       utf8       Optional?     Layer for the neuron.
+    /0                 ``model_template``              utf8       Mandatory     See details below.
+    /0                 ``model_type``                  utf8       Mandatory     `point_process`
+    /0                 ``etype``                       utf8       Mandatory     Defines the electrical type of the node.
+    /0                 ``mtype``                       utf8       Mandatory     Defines the morphological type of the node.
+    /0                 ``synapse_class``               utf8       Mandatory     Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH".
+    /                  ``node_type_id``                int64      Mandatory     Foreign key to Allen's node type file
+    ================== =============================== ========== ============= =========================================================================================
 
 model_template
 ~~~~~~~~~~~~~~
@@ -547,6 +573,56 @@ The difference to the normal :ref:`chemical <chemical_connection>` type is that 
     /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
     ============= ============================= ========== =========== =========================================================================================
 
+``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
+
+
+Fields for Allen's chemical connection type edges
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _allen_chemical_connection:
+
+Connection type is ``Exp2Syn_synapse`` and the chemical synapses uses the NEURON `Exp2Syn model <https://nrn.readthedocs.io/en/9.0.1/progref/modelspec/programmatic/mechanisms/mech.html#Exp2Syn>`_.
+
+.. table::
+
+    ============= ============================= ========== =========== =========================================================================================
+    Group         Field                         Type       Requirement Description
+    ============= ============================= ========== =========== =========================================================================================
+    /0            ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0            ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
+    /0            ``conductance``               float32    Mandatory   The conductance of the synapse (nanosiemens)
+    /0            ``delay``                     float32    Mandatory   The axonal delay (in ms, ``NaN`` for dendro-dendritic synapses).
+    /0            ``tau1``                      float32    Mandatory   The rise time constant of the Exp2Syn model, in ms, which controls how fast the synaptic conductance turns on after a presynaptic spike.
+    /0            ``tau2``                      float32    Mandatory   The decay time constant of the Exp2Syn model, in ms, which controls how fast the synaptic conductance turns off.
+    /0            ``erev``                      float32    Mandatory   The reversal potental of the Exp2Syn model, in mV, which is the membrane voltage at which the synaptic current is zero.
+    /             ``edge_type_id``              int64      Mandatory   Links an edge to Allen's edge type file.
+    /             ``source_node_id``            uint64     Mandatory   The id of the presynaptic neuron.
+    /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
+    ============= ============================= ========== =========== =========================================================================================
+
+``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
+
+
+Fields for Allen's point neuron connection type edges
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _allen_point_connection:
+
+Connection type is ``point_process``.
+
+.. table::
+
+    ============= ============================= ========== =========== =========================================================================================
+    Group         Field                         Type       Requirement Description
+    ============= ============================= ========== =========== =========================================================================================
+    /0            ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0            ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
+    /0            ``conductance``               float32    Mandatory   The conductance of the synapse (nanosiemens)
+    /0            ``delay``                     float32    Mandatory   The axonal delay (in ms, ``NaN`` for dendro-dendritic synapses).
+    /             ``edge_type_id``              int64      Mandatory   Links an edge to Allen's edge type file.
+    /             ``source_node_id``            uint64     Mandatory   The id of the presynaptic neuron.
+    /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
+    ============= ============================= ========== =========== =========================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
 
