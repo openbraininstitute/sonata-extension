@@ -173,7 +173,7 @@ Parameters required for modifications
    property                        Type       Requirement Description
    =============================== ========== =========== ====================================
    name                            text       Mandatory   Descriptive name for the modification.
-   node_set                        text       Optional    Node set which receives the manipulation.
+   node_set                        text       Optional    Node set which receives the manipulation. Either ``compartment_set`` or ``node_set`` must be present in each of dictionaries in ``modifications`` list. Both can't be missing.
    type                            text       Mandatory   Name of the manipulation. Supported values are ``SectionList``, ``Section``, ``Compartment``, ``TTX``, and ``ConfigureAllSections``.  
                                                           ``TTX`` mimics the application of tetrodotoxin, which blocks sodium channels and precludes spiking. 
                                                           ``ConfigureAllSections`` is a generic way to modify variables (properties, mechanisms, etc.) per morphology section.
