@@ -65,6 +65,8 @@ node_set
 
 A parameter specifying the cells from which node set should be instantiated for the simulation. The absence of that property means that all (non virtual) nodes of all populations are loaded.
 
+.. _compartment_sets_file:
+
 compartment_sets_file
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -188,7 +190,7 @@ Parameters required for modifications
 .. note::
    If ``compartment_set`` is defined, ``node_set`` must not be specified.
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
-   The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`sonata_reports`..
+   The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report`..
 
 example::
 
@@ -242,7 +244,7 @@ example::
   }
   "compartment_sets_file": "compartment_sets.json"
 
-The compartment_sets.json should be of the form::
+The compartment_sets.json should be of the form:
 
 .. code-block:: json
 
@@ -257,7 +259,7 @@ The compartment_sets.json should be of the form::
     }
   }
 
-Here, each list in the compartment_set is of the form ``[node_id, section_id, compartment_id]``. See :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`sonata_reports` for more details.
+Here, each list in the compartment_set is of the form ``[node_id, section_id, compartment_id]``. See :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report` for more details.
 For ``"name": "Ca_hotspot_dend[10]_manipulation"`` with ``[1, 35, 0.1]``, if ``section_id`` 35 represents ``dend[10]`` of the neuron ``node_id`` 1 in population ``"S1nonbarrel_neurons"``, the compartment manipulation will set the ``gbar_Ca_HVA2`` to 1.5 and ``gbar_Ca_LVA`` to 2 for the segments ``dend[10](0.1)``, ``dend[10](0.3)``, and ``dend[10](0.7)``.
 
 inputs
@@ -501,7 +503,8 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
    ============================== ========== ============ ==========================================
 
 spatially_uniform_e_field (extracellular_stimulation)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Generates a temporally-oscillating extracellular potential field.
 The potential field is defined as the sum of an arbitrary number of potential fields which vary cosinusoidally in time, and whose gradient (i.e., E field) is constant.
 
