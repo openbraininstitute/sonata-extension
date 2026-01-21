@@ -32,7 +32,6 @@ The i-th value of timestamps is a spike of the i-th node id cell in node_ids.
 The ``timestamps`` dataset has a ``units`` attribute defining the unit of the timestamp.
 Only ``ms`` is supported.
 
-
 Frame oriented, element recordings
 ----------------------------------
 
