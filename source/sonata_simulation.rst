@@ -550,7 +550,7 @@ Dictionary of dictionaries with each member describing one data collection durin
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   cells                          text       Optional     Specify which node_set to report, default is the simulation "node_set".
+   cells                          text       Optional     Specify which node_set to report, default is the simulation "node_set". 
    sections                       text       Optional     Specify which section(s) to report, available labels are dependent on the model setup. To report on all sections, use the keyword "all". Default is "soma". At BBP, we currently support "soma", "axon", "dend", "apic", or "all".
    type                           text       Mandatory    Indicates type of data collected. "compartment", "summation", "synapse", or "lfp". Compartment means that each compartment outputs separately in the report file. Summation will sum up the values from compartments to write a single value to the report (section soma) or sum up the values and leave them in each compartment (other section types). More on summation after the table. Synapse indicates that each synapse afferent to the reported cells will have a separate entry in the report. LFP will report the contribution to the lfp (or eeg) signal from each cell, using the 'electrodes_file' parameter. See more after the table
    scaling                        text       Optional     For summation type reporting, specify the handling of density values: "none" disables all scaling, "area" (default) converts density to area values. This makes them compatible with values from point processes such as synapses.
@@ -564,6 +564,15 @@ Dictionary of dictionaries with each member describing one data collection durin
    enabled                        boolean    Optional     Allows for supressing a report so that it is not created. Useful for reducing output temporarily. Possible values are true/false. Default is true.
    compartment_set                text       Optional     Name of a compartment set from ``compartment_sets.json``. Required if ``type`` is "compartment_set".
    ============================== ========== ============ ==========================================
+
+.. note::
+   For compartment reports, use either ``cells`` or ``compartment_set``, since ``compartment_set`` already specifies the node IDs to record. 
+   
+   ``cells`` in ``reports`` is like the ``node_set`` in ``inputs``.
+   
+   If ``cells`` is present, it specifies the node_set to record and ``compartment_set`` is not needed. 
+   
+   If ``compartment_set`` is present, ``cells`` entry is not needed.
 
 Examples::
 
@@ -623,8 +632,20 @@ Examples::
            "start_time": 0,
            "end_time": 500,
            "enabled": true
+       },
+       "dend_report_v": {
+        "type": "compartment_set",
+        "compartment_set": "example_compartment_set",
+        "variable_name": "v",
+        "unit": "mV",
+        "dt": 0.1,
+        "start_time": 0.0,
+        "end_time": 100.0
        }
-  }
+  },
+  "compartment_sets_file": "circuit/compartment_sets.json"
+
+See :ref:`Fine-grained Compartment report <compartment_sets_definition>` for more details on compartment sets.
 
 
 connection_overrides
