@@ -6,3 +6,4 @@ venv/
 results/
 sg-venv/
 .tox/
+.DS_Store
