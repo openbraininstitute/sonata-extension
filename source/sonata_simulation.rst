@@ -175,14 +175,22 @@ Parameters required for modifications
    name                            text       Mandatory   Descriptive name for the modification.
    node_set                        text       Optional    Node set which receives the manipulation. Either ``compartment_set`` or ``node_set`` must be present in each of dictionaries in ``modifications`` list. Both can't be missing.
    type                            text       Mandatory   Name of the manipulation. Supported values are ``section_list``, ``section``, ``compartment_set``, ``ttx``, and ``configure_all_sections``.  
+                                                          
                                                           ``ttx`` mimics the application of tetrodotoxin, which blocks sodium channels and precludes spiking. 
+                                                          
                                                           ``configure_all_sections`` is a generic way to modify variables (properties, mechanisms, etc.) per morphology section.
+                                                          
                                                           ``section_list``, ``section`` and ``compartment_set`` are specific manipulation types at different levels of the morphology. See below for more details.
    section_configure               text       Mandatory*  For ``configure_all_sections`` manipulation, a snippet of python code to perform one or more assignments involving section attributes, for all sections that have all the referenced attributes.
+                                                          
                                                           The wildcard ``%s`` represents each section. Multiple statements are separated by semicolons. E.g., ``%s.attr = value; %s.attr2 \*= value2``.
+                                                          
                                                           For ``section_list``, ``section`` and ``compartment_set`` manipulations, a snippet of python code to perform one or more assignments involving attributes as follows:
+                                                          
                                                           ``section_list``: entries should be of the form, e.g. ``"apical.gbar_NaTg = 0.0; apical.cm = 1"``. This will set the gbar_NaTg to 0 and cm to 1 for all sections in the apical dendrites.
+                                                          
                                                           ``section``: entries should be of the form, e.g. ``"apic[10].gbar_KTst = 0; apic[10].gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments of apic[10] section.
+                                                          
                                                           ``compartment_set``: entries should be of the form, e.g. ``"gbar_KTst = 0; gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments contained in the property ``compartment_set``. Note, when the property ``type`` is set ``compartment_set``, you should also specify the property ``compartment_set``. In addition, the simulation must declare the ``compartment_sets_file`` at the top level. See :ref:`compartment_sets_file`.
    compartment_set                 text       Optional    The ``compartment_set`` to use for manipulation from ``compartment_sets_file`` json file. The ``type`` must be ``compartment_set``. In the example below, "dend_ca_hotspot_name" is the compartment_set name.
    =============================== ========== =========== ====================================
