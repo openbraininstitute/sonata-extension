@@ -426,7 +426,7 @@ Cells are held at indicated membrane voltage by injecting adapting current.
 .. table::
 
    ============================== =========== ============ ==========================================
-   Property                       Type       Requirement  Description
+   Property                       Type        Requirement  Description
    ============================== =========== ============ ==========================================
    durations                      list[float] Mandatory    Specifies the durations of each step stimulus.
    voltages                       list[float] Mandatory    Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus.
