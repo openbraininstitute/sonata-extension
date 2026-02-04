@@ -566,13 +566,9 @@ Dictionary of dictionaries with each member describing one data collection durin
    ============================== ========== ============ ==========================================
 
 .. note::
-   For compartment reports, use either ``cells`` or ``compartment_set``, since ``compartment_set`` already specifies the node IDs to record. 
+   ``cells`` in ``reports`` is similar to the ``node_set`` in ``inputs``.
    
-   ``cells`` in ``reports`` is like the ``node_set`` in ``inputs``.
-   
-   If ``cells`` is present, it specifies the node_set to record and ``compartment_set`` is not needed. 
-   
-   If ``compartment_set`` is present, ``cells`` entry is not needed.
+   In compartment reports, ``cells`` and ``compartment_set`` are mutually exclusive parameters, and exactly one of them is required. Providing both or neither is invalid.
 
 Examples::
 
