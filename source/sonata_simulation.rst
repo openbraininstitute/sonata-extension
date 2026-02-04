@@ -291,7 +291,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    ============================== ========== ============ ==========================================
 
 .. note::
-   If ``compartment_set`` is defined, ``node_set`` must not be specified. Use either ``node_set`` or ``compartment_set``, since ``compartment_set`` already specifies the node IDs to record. 
+``node_set`` and ``compartment_set`` are mutually exclusive parameters and exactly one of them is required. Providing both or neither is invalid.
    The simulation must declare the ``compartment_sets_file`` at the top level.
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
 
