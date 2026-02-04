@@ -175,14 +175,22 @@ Parameters required for modifications
    name                            text       Mandatory   Descriptive name for the modification.
    node_set                        text       Optional    Node set which receives the manipulation. Either ``compartment_set`` or ``node_set`` must be present in each of dictionaries in ``modifications`` list. Both can't be missing.
    type                            text       Mandatory   Name of the manipulation. Supported values are ``section_list``, ``section``, ``compartment_set``, ``ttx``, and ``configure_all_sections``.  
+                                                          
                                                           ``ttx`` mimics the application of tetrodotoxin, which blocks sodium channels and precludes spiking. 
+                                                          
                                                           ``configure_all_sections`` is a generic way to modify variables (properties, mechanisms, etc.) per morphology section.
+                                                          
                                                           ``section_list``, ``section`` and ``compartment_set`` are specific manipulation types at different levels of the morphology. See below for more details.
    section_configure               text       Mandatory*  For ``configure_all_sections`` manipulation, a snippet of python code to perform one or more assignments involving section attributes, for all sections that have all the referenced attributes.
+                                                          
                                                           The wildcard ``%s`` represents each section. Multiple statements are separated by semicolons. E.g., ``%s.attr = value; %s.attr2 \*= value2``.
+                                                          
                                                           For ``section_list``, ``section`` and ``compartment_set`` manipulations, a snippet of python code to perform one or more assignments involving attributes as follows:
+                                                          
                                                           ``section_list``: entries should be of the form, e.g. ``"apical.gbar_NaTg = 0.0; apical.cm = 1"``. This will set the gbar_NaTg to 0 and cm to 1 for all sections in the apical dendrites.
+                                                          
                                                           ``section``: entries should be of the form, e.g. ``"apic[10].gbar_KTst = 0; apic[10].gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments of apic[10] section.
+                                                          
                                                           ``compartment_set``: entries should be of the form, e.g. ``"gbar_KTst = 0; gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments contained in the property ``compartment_set``. Note, when the property ``type`` is set ``compartment_set``, you should also specify the property ``compartment_set``. In addition, the simulation must declare the ``compartment_sets_file`` at the top level. See :ref:`compartment_sets_file`.
    compartment_set                 text       Optional    The ``compartment_set`` to use for manipulation from ``compartment_sets_file`` json file. The ``type`` must be ``compartment_set``. In the example below, "dend_ca_hotspot_name" is the compartment_set name.
    =============================== ========== =========== ====================================
@@ -283,7 +291,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    ============================== ========== ============ ==========================================
 
 .. note::
-   If ``compartment_set`` is defined, ``node_set`` must not be specified.
+   ``node_set`` and ``compartment_set`` are mutually exclusive parameters and exactly one of them is required. Providing both or neither is invalid.
    The simulation must declare the ``compartment_sets_file`` at the top level.
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
 
@@ -542,7 +550,7 @@ Dictionary of dictionaries with each member describing one data collection durin
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   cells                          text       Optional     Specify which node_set to report, default is the simulation "node_set".
+   cells                          text       Optional     Specify which node_set to report, default is the simulation "node_set". 
    sections                       text       Optional     Specify which section(s) to report, available labels are dependent on the model setup. To report on all sections, use the keyword "all". Default is "soma". At BBP, we currently support "soma", "axon", "dend", "apic", or "all".
    type                           text       Mandatory    Indicates type of data collected. "compartment", "summation", "synapse", or "lfp". Compartment means that each compartment outputs separately in the report file. Summation will sum up the values from compartments to write a single value to the report (section soma) or sum up the values and leave them in each compartment (other section types). More on summation after the table. Synapse indicates that each synapse afferent to the reported cells will have a separate entry in the report. LFP will report the contribution to the lfp (or eeg) signal from each cell, using the 'electrodes_file' parameter. See more after the table
    scaling                        text       Optional     For summation type reporting, specify the handling of density values: "none" disables all scaling, "area" (default) converts density to area values. This makes them compatible with values from point processes such as synapses.
@@ -556,6 +564,11 @@ Dictionary of dictionaries with each member describing one data collection durin
    enabled                        boolean    Optional     Allows for supressing a report so that it is not created. Useful for reducing output temporarily. Possible values are true/false. Default is true.
    compartment_set                text       Optional     Name of a compartment set from ``compartment_sets.json``. Required if ``type`` is "compartment_set".
    ============================== ========== ============ ==========================================
+
+.. note::
+   ``cells`` in ``reports`` is similar to the ``node_set`` in ``inputs``.
+   
+   In compartment reports, ``cells`` and ``compartment_set`` are mutually exclusive parameters, and exactly one of them is required. Providing both or neither is invalid.
 
 Examples::
 
@@ -615,8 +628,20 @@ Examples::
            "start_time": 0,
            "end_time": 500,
            "enabled": true
+       },
+       "dend_report_v": {
+        "type": "compartment_set",
+        "compartment_set": "example_compartment_set",
+        "variable_name": "v",
+        "unit": "mV",
+        "dt": 0.1,
+        "start_time": 0.0,
+        "end_time": 100.0
        }
-  }
+  },
+  "compartment_sets_file": "circuit/compartment_sets.json"
+
+See :ref:`Fine-grained Compartment report <compartment_sets_definition>` for more details on compartment sets.
 
 
 connection_overrides
