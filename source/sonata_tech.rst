@@ -435,8 +435,7 @@ Neuroglial connectivity. Astrocytes establish tripartite connections with synaps
                                                                     of that section normalized to the range [0.1] where 0 is at the start of the section and 1 is at the end of the section.
     /0        ``astrocyte_center_[x|y|z]``   float32    Mandatory   Position on the `axis` of the cell's section/segment in µm on the target cell.
                                                                     This is equivalent to calculating the branch connection point from the morphology's section_id and section_pos.
-    /0        ``synapse_id``                 uint64     Mandatory   Edge id of the :ref:`chemical connection<chemical_connection>` to which the astrocyte connects. JDC: issue which edge population... ? source and target are not enough here.
-    /0        ``synapse_population``         utf8       Mandatory   Edge population of the neuron-neuron synapse to which the astrocyte connects.
+    /0        ``synapse_id``                 uint64     Mandatory   Edge id of the :ref:`chemical connection<chemical_connection>` to which the astrocyte connects. The associated edge file unambiguously defines the edge population and therefore serves as the authoritative reference. The ``target_node_id`` is technically redundant in this context. It is retained for consistency with other edge files and to preserve compatibility with legacy code.
     /         ``edge_type_id``               int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
     /         ``source_node_id``             uint64     Mandatory   The node id of the astrocyte.
     /         ``target_node_id``             uint64     Mandatory   The node id of the post-synaptic neuron of the tripartite connection.
@@ -444,8 +443,7 @@ Neuroglial connectivity. Astrocytes establish tripartite connections with synaps
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
 
-``synapse_id`` has an HDF5 attribute of type string named ``edge_population`` defining the target edge population name for this synapse.
-
+``synapse_id`` has an HDF5 string attribute named ``edge_population``, which specifies the target edge population for this synapse. If multiple edge populations are needed, they must be stored in separate edge files, consistent with what is done for ``source_node_id`` and ``target_node_id``.
 
 
 Fields for endfoot connection type edges
