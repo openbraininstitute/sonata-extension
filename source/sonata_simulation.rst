@@ -276,6 +276,8 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    ============================== ========== ============ ==========================================
    module                         text       Mandatory    The type of stimulus dictating additional parameters (see addtional tables below). Supported values: "linear", "relative_linear", "pulse", "sinusoidal", "subthreshold", "hyperpolarizing", "synapse_replay", "seclamp", "noise", "shot_noise", "relative_shot_noise", "absolute_shot_noise", "ornstein_uhlenbeck", "relative_ornstein_uhlenbeck", "spatially_uniform_e_field".
    input_type                     text       Mandatory    The type of the input with the reserved values : "spikes", "extracellular_stimulation", "current_clamp", "voltage_clamp", "conductance". Should correspond according to the module (see additional tables below). Currently, not validated by BBP simulation which will use the appropriate input_type regardless of the string passed.
+   delay                          float      Mandatory    Time in ms when input is activated. Not applicable for the "seclamp" module.
+   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    node_set                       text       Optional     Node set which is affected by input. Mutually exclusive with ``compartment_set``.
    compartment_set                string     Optional     Name of a compartment set from ``compartment_sets.json``. Cannot be used with ``node_set``. Stimulus will be applied only to the specified compartments.
    ============================== ========== ============ ==========================================
@@ -297,8 +299,6 @@ A continuous injection of current.
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    amp_start                      float      Mandatory    The amount of current initially injected when the stimulus activates. Given in nA.
    amp_end                        float      Optional     If given, current is interpolated such that current reaches this value when the stimulus concludes. Otherwise, current stays at amp_start. Given in nA.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
@@ -314,8 +314,6 @@ A continues injection of current, regulated according to the current a cell requ
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    percent_start                  float      Mandatory    The percentage of a cell's threshold current to inject when the stimulus activates.
    percent_end                    float      Optional     If given, The percentage of a cell's threshold current is interpolated such that the percentage reaches this value when the stimulus concludes. Otherwise, stays at percent_start.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
@@ -331,8 +329,6 @@ Series of current pulse injections.
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    amp_start                      float      Mandatory    The amount of current initially injected when each pulse activates. Given in nA.
    width                          float      Mandatory    The length of time each pulse lasts. Given in ms.
    frequency                      float      Mandatory    The frequency of pulse trains. Given in Hz.
@@ -349,8 +345,6 @@ Series of current pulse injections.
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    amp_start                      float      Mandatory    The peak amplitude of the sinusoid. Given in nA.
    frequency                      float      Mandatory    The frequency of the waveform. Given in Hz.
    dt                             float      Optional     Timestep of generated signal in ms. Default is 0.025 ms.
@@ -367,8 +361,6 @@ A continuous injections of current, adjusted from the current a cell requires to
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    percent_less                   integer    Mandatory    A percentage adjusted from 100 of a cell's threshold current. E.g. 20 will apply 80% of the threshold current. Using a negative value will give more than 100. E.g. -20 will inject 120% of the threshold current.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
@@ -384,8 +376,6 @@ Note: No additional parameter are needed when using module "hyperpolarizing". Th
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
@@ -413,8 +403,6 @@ Spike events are created from the cells indicated in a file and delivered to the
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    spike_file                     text       Mandatory    Indicates the location of the file with the spike info for injection. Spikes files are the :ref:`.h5 spikes files <sonata_spike_files>`.
    ============================== ========== ============ ==========================================
 
@@ -428,8 +416,9 @@ Cells are held at indicated membrane voltage by injecting adapting current.
    ============================== =========== ============ ==========================================
    Property                       Type        Requirement  Description
    ============================== =========== ============ ==========================================
-   durations                      list[float] Mandatory    Specifies the durations of each step stimulus.
-   voltages                       list[float] Mandatory    Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus.
+   voltage                        float       Mandatory    Specifies the membrane voltage the targeted cells should be held at in mV for the first step stimulus.
+   duration_levels                list[float] Optional     Specifies the durations of each step stimulus.
+   voltage_levels                 list[float] Optional     Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus starting from the 2nd one.
    series_resistance              float       Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
    ============================== =========== ============ ==========================================
 
@@ -444,8 +433,6 @@ Note: one must chose either "mean" or "mean_percent".
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    mean                           float      Mandatory*   The mean value of current to inject. Given in nA.
    mean_percent                   float      Mandatory*   The mean value of current to inject as a percentage of a cell's threshold current.
    variance                       float      Optional     The variance around the mean of current to inject using a normal distribution.
@@ -478,8 +465,6 @@ Note: fields marked Mandatory* depend on which shot_noise version is selected.
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    rise_time                      float      Mandatory    The rise time of the bi-exponential shots in ms.
    decay_time                     float      Mandatory    The decay time of the bi-exponential shots in ms.
    rate                           float      Mandatory*   For shot_noise, rate of Poisson events in Hz.
@@ -508,8 +493,6 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   delay                          float      Mandatory    Time in ms when input is activated.
-   duration                       float      Mandatory    Time duration in ms for how long input is activated.
    tau                            float      Mandatory    Relaxation time constant in ms.
    mean_percent                   float      Mandatory*   For relative_ornstein_uhlenbeck, signal mean as percentage of a cell's threshold current (current_clamp) or inverse input resistance (conductance).
    sd_percent                     float      Mandatory*   For relative_ornstein_uhlenbeck, signal std dev as percentage of a cell's threshold current (current_clamp) or inverse input resistance (conductance).
@@ -532,8 +515,6 @@ The potential field is defined as the sum of an arbitrary number of potential fi
    ============================ ========== =========== ==========================================
    Property                     Type       Requirement Description
    ============================ ========== =========== ==========================================
-   delay                        float      Mandatory   Time in ms when input is activated.
-   duration                     float      Mandatory   Time duration in ms for how long input is activated.
    fields                       list       Mandatory   A list of dicts, where each dict defines one of the fields which are summed to produce the total stimulus. The format for each such dict is given in the table below.
    ramp_up_time                 float      Optional    Duration during which the amplitude of the signal ramps up linearly from 0, in ms. If not provided, assume no ramp-up time (note that the specified "duration" parameter is not inclusive of this ramp-up time)
    ramp_down_time               float      Optional    Duration during which the amplitude of the signal ramps down linearly to 0, in ms. If not provided, assume no ramp-down time (note that the specified "duration" parameter is not inclusive of the ramp-down time)
