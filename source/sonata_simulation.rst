@@ -284,7 +284,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    ============================== ========== ============ ==========================================
    module                         text       Mandatory    The type of stimulus dictating additional parameters (see addtional tables below). Supported values: "linear", "relative_linear", "pulse", "sinusoidal", "subthreshold", "hyperpolarizing", "synapse_replay", "seclamp", "noise", "shot_noise", "relative_shot_noise", "absolute_shot_noise", "ornstein_uhlenbeck", "relative_ornstein_uhlenbeck", "spatially_uniform_e_field".
    input_type                     text       Mandatory    The type of the input with the reserved values : "spikes", "extracellular_stimulation", "current_clamp", "voltage_clamp", "conductance". Should correspond according to the module (see additional tables below). Currently, not validated by BBP simulation which will use the appropriate input_type regardless of the string passed.
-   delay                          float      Mandatory    Time in ms when input is activated.
+   delay                          float      Mandatory    Time in ms when input is activated. Not applicable for the "seclamp" module.
    duration                       float      Mandatory    Time duration in ms for how long input is activated.
    node_set                       text       Optional     Node set which is affected by input. Mutually exclusive with ``compartment_set``.
    compartment_set                string     Optional     Name of a compartment set from ``compartment_sets.json``. Cannot be used with ``node_set``. Stimulus will be applied only to the specified compartments.
@@ -421,12 +421,14 @@ Cells are held at indicated membrane voltage by injecting adapting current.
 
 .. table::
 
-   ============================== ========== ============ ==========================================
-   Property                       Type       Requirement  Description
-   ============================== ========== ============ ==========================================
-   voltage                        float      Mandatory    Specifies the membrane voltage the targeted cells should be held at in mV.
-   series_resistance              float      Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
-   ============================== ========== ============ ==========================================
+   ============================== =========== ============ ==========================================
+   Property                       Type        Requirement  Description
+   ============================== =========== ============ ==========================================
+   voltage                        float       Mandatory    Specifies the initial membrane voltage the targeted cells should be held at in mV. Is ignored if voltage_levels is specified.
+   duration_levels                list[float] Optional     Specifies the durations of each step stimulus. Any step stimulus that starts after the total duration of the input will be ignored.
+   voltage_levels                 list[float] Optional     Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus. Overrides voltage property.
+   series_resistance              float       Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
+   ============================== =========== ============ ==========================================
 
 noise (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~
