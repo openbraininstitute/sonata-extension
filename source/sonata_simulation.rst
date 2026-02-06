@@ -416,7 +416,7 @@ Cells are held at indicated membrane voltage by injecting adapting current.
    ============================== =========== ============ ==========================================
    Property                       Type        Requirement  Description
    ============================== =========== ============ ==========================================
-   voltage                        float       Mandatory    Specifies the membrane voltage the targeted cells should be held at in mV for the first step stimulus.
+   voltage                        float       Mandatory    Specifies the initial membrane voltage the targeted cells should be held at in mV.
    duration_levels                list[float] Optional     Specifies the durations of each step stimulus.
    voltage_levels                 list[float] Optional     Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus starting from the 2nd one.
    series_resistance              float       Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
