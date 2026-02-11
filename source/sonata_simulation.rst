@@ -284,7 +284,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    ============================== ========== ============ ==========================================
    module                         text       Mandatory    The type of stimulus dictating additional parameters (see addtional tables below). Supported values: "linear", "relative_linear", "pulse", "sinusoidal", "subthreshold", "hyperpolarizing", "synapse_replay", "seclamp", "noise", "shot_noise", "relative_shot_noise", "absolute_shot_noise", "ornstein_uhlenbeck", "relative_ornstein_uhlenbeck", "spatially_uniform_e_field".
    input_type                     text       Mandatory    The type of the input with the reserved values : "spikes", "extracellular_stimulation", "current_clamp", "voltage_clamp", "conductance". Should correspond according to the module (see additional tables below). Currently, not validated by BBP simulation which will use the appropriate input_type regardless of the string passed.
-   delay                          float      Mandatory    Time in ms when input is activated.
+   delay                          float      Mandatory    Time in ms when input is activated. Not applicable for the "seclamp" module because the SEClamp is always on at time=0, see `NEURON SEClamp <https://nrn.readthedocs.io/en/9.0.1/progref/modelspec/programmatic/mechanisms/mech.html#SEClamp>`_.
    duration                       float      Mandatory    Time duration in ms for how long input is activated.
    node_set                       text       Optional     Node set which is affected by input. Mutually exclusive with ``compartment_set``.
    compartment_set                string     Optional     Name of a compartment set from ``compartment_sets.json``. Cannot be used with ``node_set``. Stimulus will be applied only to the specified compartments.
@@ -421,12 +421,15 @@ Cells are held at indicated membrane voltage by injecting adapting current.
 
 .. table::
 
-   ============================== ========== ============ ==========================================
-   Property                       Type       Requirement  Description
-   ============================== ========== ============ ==========================================
-   voltage                        float      Mandatory    Specifies the membrane voltage the targeted cells should be held at in mV.
-   series_resistance              float      Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
-   ============================== ========== ============ ==========================================
+   ============================== =========== ============ ==========================================
+   Property                       Type        Requirement  Description
+   ============================== =========== ============ ==========================================
+   voltage                        float       Mandatory    Specifies the initial membrane voltage in mV at which the targeted cells should be held at time = 0.
+                                                           In the case of duration_levels and voltage_levels, if duration_levels[0] is greater than 0, this voltage value will be used from t = 0 to t = duration_levels[0]; if duration_levels[0] is equal to 0, voltage_levels[0] overrides this initial voltage.
+   duration_levels                list[float] Optional     Specifies the durations of each step stimulus. Any step stimulus that starts after the total duration of the input will be ignored.
+   voltage_levels                 list[float] Optional     Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus. Overrides voltage property if duration_level[0] is equal to 0.
+   series_resistance              float       Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
+   ============================== =========== ============ ==========================================
 
 noise (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~
@@ -659,7 +662,7 @@ List of dictionaries to adjust the synaptic strength or other properties of edge
    name                           text       Mandatory    Descriptive name for the override.
    source                         text       Mandatory    node_set specifying presynaptic nodes.
    target                         text       Mandatory    node_set specifying postsynaptic nodes.
-   weight                         float      Optional     Multiplier of ``conductance`` used to adjust synaptic strength. The final [NetCon weight](https://nrn.readthedocs.io/en/8.2.6/python/modelspec/programmatic/network/netcon.html#NetCon.weight) in NEURON is computed as ``weight * conductance``, where ``conductance`` is obtained from the ``edges.h5`` file.
+   weight                         float      Optional     Multiplier of ``conductance`` used to adjust synaptic strength. The final `NetCon weight <https://nrn.readthedocs.io/en/8.2.6/python/modelspec/programmatic/network/netcon.html#NetCon.weight>`_ in NEURON is computed as ``weight * conductance``, where ``conductance`` is obtained from the ``edges.h5`` file.
    spont_minis                    float      Optional     Synapses affected by this connection_override section will spontaneously trigger with the given rate.
    synapse_configure              text       Optional     Provide a HOC snippet for synapse objects in ``connection_override``, using ``%s`` for the synapse reference (e.g. ``%s.NMDA_ratio = 1 %s.Fac = 2``). Global variables can also be overridden without ``%s`` (e.g., ``tau_d_NMDA_ProbAMPANMDA_EMS = 3``). but these changes **do not account for delays, synapse type, or file order** (which may depend on the edge file order). Use with caution, as unintended interactions may occur. In fact, it is strongly suggested to use the method described in :ref:`conditions` to modify global synapse variables. However, this method takes priority. A safe approach is to modify global variables, if needed, only once in the entire file. Their values remain constant throughout the simulation, as all changes are applied at the start.
    modoverride                    text       Optional     Changes the synapse helper files used to instantiate the synapses in this connection. A synapse helper initializes the synapse object and the parameters of the synapse model. By default, AMPANMDAHelper.hoc / GABAABHelper.hoc are used for excitatory / inhibitory synapses. The value of this field determines the prefix of the helper file to use e.g. "GluSynapse" would lead to GluSynapseHelper.hoc being used. That helper will use the additional parameters of the plastic synapse model read from the SONATA edges file using Neurodamus. This is required when using the GluSynapse.mod model and will fail for other models, or if the parameters are not present in the edges file.
