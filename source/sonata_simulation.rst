@@ -158,7 +158,7 @@ Parameters defining global experimental conditions.
    spike_location                  text       Optional    The spike detection location. Can be either ‘soma’ or 'AIS' for detecting spikes in either the soma or axon initial segment, respectively. Default is 'soma'.
    extracellular_calcium           float      Optional    Extracellular calcium concentration. When this parameter is provided, apply it to the synapse uHill parameter to scale the U parameter of synapses (py-neurodamus only feature). If not specified, U is set directly as read from edges file.
    randomize_gaba_rise_time        boolean    Optional    When true, enable legacy behavior to randomize the GABA_A rise time in the helper functions. Default is false which will use a prescribed value for GABA_A rise time.
-   mechanisms                                 Optional    Properties to assign values to variables in synapse MOD files.
+   mechanisms                                 Optional    Properties to assign values to GLOBAL variables in synapse or mechanism MOD files.
                                                           The format is a dictionary with keys being the SUFFIX names of MOD files (unique names of mechanisms) and values being dictionaries of variable names in the MOD files and their values. Read about `NMODL2 SUFFIX description here <https://nrn.readthedocs.io/en/8.2.0/hoc/modelspec/programmatic/mechanisms/nmodl2.html#suffix>`_.
    modifications                              Optional    List of dictionaries with each member describing a modification that mimics experimental manipulations to the circuit. They are executed in the order as being read from the file.
    =============================== ========== =========== ====================================
@@ -198,7 +198,10 @@ Parameters required for modifications
 .. note::
    If ``compartment_set`` is defined, ``node_set`` must not be specified.
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
-   The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report`..
+   The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report`.
+
+   For ``configure_all_sections`` if the mechanism or variable specified in ``section_configure``does not exist for a section will results in simulation failure.
+   e.g. for the modification ``no_SK_E2`` below, if SK_E2 is not available in the myelin section, the simulation will fail.
 
 example::
 
