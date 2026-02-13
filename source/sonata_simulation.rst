@@ -200,8 +200,8 @@ Parameters required for modifications
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
    The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report`.
 
-   For ``configure_all_sections`` if the mechanism or variable specified in ``section_configure``does not exist for a section will results in simulation failure.
-   e.g. for the modification ``no_SK_E2`` below, if SK_E2 is not available in the myelin section, the simulation will fail.
+   For ``configure_all_sections``, the ``section_configure`` is applied only to sections that have all the referenced attributes. 
+   Sections missing any referenced attribute are skipped. A warning is logged if the configuration applies to zero sections.
 
 example::
 
