@@ -219,7 +219,10 @@ example::
            },
            "GluSynapse": {
                "property_z": "string"
-           }
+           },
+           "StochKv3": {
+                "vmin": 0.0
+            }
        },
        "modifications": [
            {
