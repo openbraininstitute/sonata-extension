@@ -174,9 +174,9 @@ Parameters required for modifications
    =============================== ========== =========== ====================================
    name                            text       Mandatory   Descriptive name for the modification.
    node_set                        text       Optional    Node set which receives the manipulation. Either ``compartment_set`` or ``node_set`` must be present in each of dictionaries in ``modifications`` list. Both can't be missing.
-   type                            text       Mandatory   Name of the manipulation. Supported values are ``section_list``, ``section``, ``compartment_set``, ``ttx``, and ``configure_all_sections``.  
+   type                            text       Mandatory   Name of the manipulation. Supported values are ``section_list``, ``section``, ``compartment_set``, ``TTX``, and ``configure_all_sections``.  
                                                           
-                                                          ``ttx`` mimics the application of tetrodotoxin, which blocks sodium channels and precludes spiking. 
+                                                          ``TTX`` mimics the application of tetrodotoxin, which blocks sodium channels and precludes spiking. 
                                                           
                                                           ``configure_all_sections`` is a generic way to modify variables (properties, mechanisms, etc.) per morphology section.
                                                           
@@ -222,7 +222,7 @@ example::
            {
                "name": "applyTTX",
                "node_set": "single",
-               "type": "ttx"
+               "type": "TTX"
            },
            {
                "name": "no_SK_E2",
