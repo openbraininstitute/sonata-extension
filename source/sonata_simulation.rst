@@ -196,7 +196,7 @@ Parameters required for modifications
    =============================== ========== =========== ====================================
 
 .. note::
-   For all modification types (``section_list``, ``section``, ``compartment_set``), the ``section_configure`` is applied only to sections/segments that possess all the referenced attributes. Sections or segments missing any referenced attribute are skipped with a log message. A warning is logged if the configuration applies to zero sections or segments.
+   For all modification types (``section_list``, ``section``, ``compartment_set``), the ``section_configure`` is applied only to sections/segments that possess all the referenced attributes. A warning is logged if the configuration applies to zero sections or segments.
    If ``compartment_set`` is defined, ``node_set`` must not be specified.
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
    The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report`.
