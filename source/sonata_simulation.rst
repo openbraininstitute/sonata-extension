@@ -425,9 +425,15 @@ Cells are held at indicated membrane voltage by injecting adapting current.
    Property                       Type        Requirement  Description
    ============================== =========== ============ ==========================================
    voltage                        float       Mandatory    Specifies the initial membrane voltage in mV at which the targeted cells should be held at time = 0.
-                                                           In the case of duration_levels and voltage_levels, if duration_levels[0] is greater than 0, this voltage value will be used from t = 0 to t = duration_levels[0]; if duration_levels[0] is equal to 0, voltage_levels[0] overrides this initial voltage.
-   duration_levels                list[float] Optional     Specifies the durations of each step stimulus. Any step stimulus that starts after the total duration of the input will be ignored.
-   voltage_levels                 list[float] Optional     Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus. Overrides voltage property if duration_level[0] is equal to 0.
+                                                           In the case of ``duration_levels`` and ``voltage_levels``, this inital membrane voltage will be overridden by ``voltage_level[0]``.
+   duration_levels                list[float] Optional     Specifies the durations of each step stimulus. The first step begins at time = 0, and each subsequent step begins at the cumulative sum of all previous durations. 
+                                                           
+                                                           The sum of ``duration_levels`` must not exceed the ``duration`` property.
+                                                           
+                                                           If the sum of ``duration_levels`` is less than ``duration`` , the last value in ``voltage_levels`` will be maintained until the end.
+                                                           
+                                                           It is recommended that durations be multiples of the simulation time step (dt) (i.e., duration = n·dt for some integer n) to ensure proper alignment with NEURON’s fixed-step method where `Vector.play <https://www.neuronsimulator.org/en/9.0.1/progref/programming/math/vector.html#Vector.play>`_ updates occur only at discrete time steps (fadvance()).
+   voltage_levels                 list[float] Optional     Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus. ``voltage_levels[0]`` overrides the ``voltage`` property.
    series_resistance              float       Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
    ============================== =========== ============ ==========================================
 
