@@ -48,7 +48,9 @@ target_simulator
 
 *Optional*.
 
-A parameter specifying which simulator to run. Supported values : "NEURON" and "CORENEURON". Default is "NEURON".
+A parameter specifying which simulator to run.
+See :ref:`Circuit Config target_simulator <target_simulator>` for valid values.
+If not specified, the value from the `network`'s `circuit_config.json` is used.
 
 node_sets_file
 --------------
