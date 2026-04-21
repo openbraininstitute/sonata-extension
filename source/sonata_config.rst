@@ -84,6 +84,19 @@ They can be found also under :ref:`populations <population_config_dict>` where i
 .. [#f1] Mandatory (at least one) for :ref:`biophysical node populations<biophysical_node_type>`
 .. [#f2] Mandatory for :ref:`biophysical node populations<biophysical_node_type>`
 
+
+.. _target_simulator:
+
+target_simulator
+----------------
+
+*Optional*.
+
+A parameter specifying which simulator is expected to be able to simulate the circuit.
+Supported values : `NEURON` and `CORENEURON`, `LearningEngine`, and `Brian2`.
+Default is `NEURON`.
+
+
 alternate_morphologies
 ^^^^^^^^^^^^^^^^^^^^^^
 An *optional* dictionary for different representations of the morphologies than the default .swc.
