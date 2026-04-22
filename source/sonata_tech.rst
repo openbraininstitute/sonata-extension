@@ -27,6 +27,10 @@ The name convention for the files outputted from ``circuit-build`` is :
   - ``nodes.h5`` for the node file
   - ``edges.h5`` for the edge file
 
+.. Note::
+   For integer types: `int` and `uint` are used to specify the signed-ness of the integer, but to leave the width unspecified.
+   This allows the data to be written to the file using the smallest possible signed or unsigned integer.
+
 .. _node_file:
 
 Node File
@@ -84,7 +88,7 @@ Group column represents the HDF group where the dataset is located under /<popul
                                                                                 Default to the one provided by the circuit config if not present (Unit is Hz).
     /0                 ``hemisphere``                  utf8       Optional      "left" or "right" hemisphere.
     /0                 ``morphology_producer``         utf8       Optional      The producing process of the morphology. One of (placeholder, synthesis, biologic).
-    /                  ``node_type_id``                int64      Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
+    /                  ``node_type_id``                int        Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
     ================== =============================== ========== ============= =========================================================================================
 
 .. |minis| replace:: ``exc-mini_frequency``, ``inh-mini_frequency``
@@ -110,7 +114,7 @@ Fields for astrocyte population (model_type: `astrocyte`)
     /0                 ``layer``                       utf8       Optional?     Layer for the neuron.
     /0                 ``region``                      utf8       Optional      Attribute assigning a brain region to the associated cell.
     /0                 ``hemisphere``                  utf8       Optional      "left" or "right" hemisphere.
-    /                  ``node_type_id``                int64      Mandatory     Set to -1.
+    /                  ``node_type_id``                int        Mandatory     Set to -1.
     ================== =============================== ========== ============= =========================================================================================
 
 This type of population requires extra datasets. These datasets are represented in the sonata config file as:
@@ -146,13 +150,13 @@ An edge_id is unique to a vasculature morphology, a segment_id is local to a sec
     /0                 ``end_[x|y|z]``                 float32    Mandatory     The coordinate of the ending point of vasculature's segment in the local world in µm.
     /0                 ``start_diameter``              float32    Mandatory     The diameter of the starting point of vasculature's segment in µm.
     /0                 ``end_diameter``                float32    Mandatory     The diameter of the ending point of vasculature's segment in µm.
-    /0                 ``start_node``                  uint64     Mandatory     Morphology node id of the starting point of the vasculature segment.
-    /0                 ``end_node``                    uint64     Mandatory     Morphology node id of the ending point of the vasculature segment.
-    /0                 ``type``                        int32      Mandatory     The edge type is an integer in the list [1, 2, 3, 4, 5, 6, 7] corresponding to vein, artery, venule, arteriole, venous-capillary, arterial-capillary, transitional.
-    /0                 ``section_id``                  uint32     Mandatory     The corresponding section id in the vasculature morphology.
-    /0                 ``segment_id``                  uint32     Mandatory     The corresponding segment id in the vasculature morphology.
+    /0                 ``start_node``                  uint       Mandatory     Morphology node id of the starting point of the vasculature segment.
+    /0                 ``end_node``                    uint       Mandatory     Morphology node id of the ending point of the vasculature segment.
+    /0                 ``type``                        int        Mandatory     The edge type is an integer in the list [1, 2, 3, 4, 5, 6, 7] corresponding to vein, artery, venule, arteriole, venous-capillary, arterial-capillary, transitional.
+    /0                 ``section_id``                  uint       Mandatory     The corresponding section id in the vasculature morphology.
+    /0                 ``segment_id``                  uint       Mandatory     The corresponding segment id in the vasculature morphology.
     /0                 ``model_type``                  utf8       Mandatory     `vasculature`
-    /                  ``node_type_id``                int64      Mandatory     Set to -1.
+    /                  ``node_type_id``                int        Mandatory     Set to -1.
     ================== =============================== ========== ============= ==================================================================================================
 
 This type of population requires extra datasets. These datasets are represented in the sonata config file as:
@@ -187,7 +191,7 @@ The equivalent NEST model is: `<https://nest-simulator.readthedocs.io/en/v3.0/mo
     /0/dynamics_params ``g_L``                         float32    Mandatory     Leak conductance. (nS).
     /0/dynamics_params ``t_ref``                       float32    Mandatory     Duration of refractory period. (ms).
     /0/dynamics_params ``tau_w``                       float32    Mandatory     tau_w (ms). Time constant for adaptation current.
-    /0/dynamics_params ``nb_receptors``                uint32     Mandatory     Number of receptors in the postsynaptic membrane
+    /0/dynamics_params ``nb_receptors``                uint       Mandatory     Number of receptors in the postsynaptic membrane
     /0/dynamics_params ``e_rev``                       float32    Mandatory     Synaptic reverse potential. (mV). ``nb_receptors`` elements. Reverse potential.
     /0/dynamics_params ``tau_decay``                   float32    Mandatory     Synaptic decay time constant (for afferent synapses). (ms) cardinality is ``nb_receptors`` elements.
     /0/dynamics_params ``tau_rise``                    float32    Mandatory     Rise time of the synaptic conductance (for afferent synapses). (ms) cardinality is ``nb_receptors`` elements.
@@ -198,7 +202,7 @@ The equivalent NEST model is: `<https://nest-simulator.readthedocs.io/en/v3.0/mo
     /0                 ``region``                      utf8       Optional      Brain region of the cell.
     /0                 ``hemisphere``                  utf8       Optional      "left" or "right" hemisphere.
     /0                 ``model_type``                  utf8       Mandatory     `point_neuron`
-    /                  ``node_type_id``                int64      Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
+    /                  ``node_type_id``                int        Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
     ================== =============================== ========== ============= ==================================================================================================
 
 .. rubric:: References
@@ -221,7 +225,7 @@ This is for `virtual` nodes (i.e., source nodes of `projections`).
     ================== =============================== ========== ============= ==================================================================================================
     /0                 ``model_type``                  utf8       Mandatory     `virtual`
     /0                 ``model_template``              utf8       Mandatory     See details below.
-    /                  ``node_type_id``                int64      Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
+    /                  ``node_type_id``                int        Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
     ================== =============================== ========== ============= ==================================================================================================
 
 Fields for Allen's point neurons (model_type: `point_process`)
@@ -248,7 +252,7 @@ This is for `integrate-and-fire <https://nrn.readthedocs.io/en/9.0.1/courses/hop
     /0                 ``etype``                       utf8       Mandatory     Defines the electrical type of the node.
     /0                 ``mtype``                       utf8       Mandatory     Defines the morphological type of the node.
     /0                 ``synapse_class``               utf8       Mandatory     Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH".
-    /                  ``node_type_id``                int64      Mandatory     Foreign key to Allen's node type file
+    /                  ``node_type_id``                int        Mandatory     Foreign key to Allen's node type file
     ================== =============================== ========== ============= =========================================================================================
 
 model_template
@@ -280,30 +284,30 @@ Group column represents the HDF group where the dataset is located under /<popul
     ============= ============================= ========== =========== =========================================================================================
     /0            ``afferent_center_[x|y|z]``   float32    Mandatory   Position on the `axis` of the cell's section/segment in µm.
     /0            ``afferent_surface_[x|y|z]``  float32    Mandatory   Position on the surface of a cylindrical cell segment, radially outward from the center position in the direction of the other cell in µm.
-    /0            ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0            ``afferent_section_id``       uint       Mandatory   The specific section on the target node where a synapse is placed.
     /0            ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
-    /0            ``afferent_section_type``     uint32     Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
-    /0            ``afferent_segment_id``       uint32     Mandatory   Numerical index of the section of the cell (soma is index 0).
+    /0            ``afferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
+    /0            ``afferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0            ``afferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in um.  See :ref:`faq`.
     /0            ``efferent_center_[x|y|z]``   float32    Mandatory   Same as ``afferent_center_[x|y|z]``, but for the synapse position at the axon of the presynaptic cell.
     /0            ``efferent_surface_[x|y|z]``  float32    Mandatory   Same as ``efferent_center_[x|y|z]``, but the for the synapse location on the axon surface.
-    /0            ``efferent_section_id``       uint32     Mandatory   Same as ``afferent_section_id``, but for source node.
+    /0            ``efferent_section_id``       uint       Mandatory   Same as ``afferent_section_id``, but for source node.
     /0            ``efferent_section_pos``      float32    Mandatory   Same as ``afferent_section_pos``, but for source node.
-    /0            ``efferent_section_type``     uint32     Mandatory   Type of the efferent section.
-    /0            ``efferent_segment_id``       uint32     Mandatory   Numerical index of the section of the cell (soma is index 0).
+    /0            ``efferent_section_type``     uint       Mandatory   Type of the efferent section.
+    /0            ``efferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0            ``efferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in µm.  See :ref:`faq`.
     /0            ``conductance``               float32    Mandatory   The conductance of the synapse (nanosiemens); also referred to as ``g_syn``
     /0            ``decay_time``                float32    Mandatory   The decay time of the synapse (milliseconds).
     /0            ``depression_time``           float32    Mandatory   The depression time constant of the synapse (milliseconds), also referred to as ``d_syn``.
     /0            ``facilitation_time``         float32    Mandatory   The facilitation time constant of the synapse (milliseconds), also referred to as ``f_syn``.
     /0            ``u_syn``                     float32    Mandatory   The ``u`` parameter in the `Tsodyks Markram Model`_.
-    /0            ``n_rrp_vesicles``            uint32     Mandatory   Number of ``readily releasable pool`` of vesicles.
+    /0            ``n_rrp_vesicles``            uint       Mandatory   Number of ``readily releasable pool`` of vesicles.
     /0            ``spine_length``              float32    Mandatory   Distance between the two surface positions in µm.
-    /0            ``spine_morphology``          uint32     Optional    Integer that maps to a corresponding attribute in /0/@library/spine_morphology
-    /0            ``spine_psd_id``              int64      Optional    The id of the spine postsynaptic density. Set to -1 if synapse forms on the shaft.
+    /0            ``spine_morphology``          uint       Optional    Integer that maps to a corresponding attribute in /0/@library/spine_morphology
+    /0            ``spine_psd_id``              int        Optional    The id of the spine postsynaptic density. Set to -1 if synapse forms on the shaft.
                                                                        A list containing the postsynaptic densities is defined in the spine morphology file, which is set in the spine_morphology field.
                                                                        This id refers to the list index where that psd is stored.
-    /0            ``spine_sharing_id``          int64      Optional    The sharing id of the spine. This field value is the same for all the synapses that share the same spine.
+    /0            ``spine_sharing_id``          int        Optional    The sharing id of the spine. This field value is the same for all the synapses that share the same spine.
                                                                        These synapses must be on different postsynaptic densities. Set to -1 if synapse forms on the shaft.
     /0            ``conductance_scale_factor``  float32    Optional    The scale factor for the conductance (no unit).If no value or negative, no change is applied.
     /0            ``u_hill_coefficient``        float32    Optional    A coefficient describing the scaling of `u` to be done by the simulator. If no value, no change is applied.
@@ -315,14 +319,14 @@ Group column represents the HDF group where the dataset is located under /<popul
                                                                        where :math:`ca` denotes the simulated calcium concentration in
                                                                        millimolar and :math:`y` a scalar such that at :math:`ca = 2.0:\ u_\text{final} = u`. (Markram et al., 2015)
 
-    /0            ``syn_type_id``               uint32     Mandatory   Takes the value 0 for inhibitory synapses, 100 for excitatory synapses (numerical values due to historic reasons)
-    /0            ``syn_property_rule``         uint32     Mandatory   The position of the rule that leads to the synapse in the recipe
+    /0            ``syn_type_id``               uint       Mandatory   Takes the value 0 for inhibitory synapses, 100 for excitatory synapses (numerical values due to historic reasons)
+    /0            ``syn_property_rule``         uint       Mandatory   The position of the rule that leads to the synapse in the recipe
     /0            ``delay``                     float32    Mandatory   The axonal delay (in ms, ``NaN`` for dendro-dendritic synapses).
     /0/@library   ``spine_morphology``          utf8       Optional    Spine morphology file relative path, without the file extension.
                                                                        Example "mymorphology" or "mypath/mymorphology". Set to an empty string if synapse forms on the shaft.
-    /             ``edge_type_id``              int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
-    /             ``source_node_id``            uint64     Mandatory   The id of the presynaptic neuron.
-    /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
+    /             ``edge_type_id``              int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /             ``source_node_id``            uint       Mandatory   The id of the presynaptic neuron.
+    /             ``target_node_id``            uint       Mandatory   The id of the postsynaptic neuron.
     ============= ============================= ========== =========== =========================================================================================
 
 
@@ -343,7 +347,7 @@ These fields are needed by the simulator when there is a "Glusynapse" provided i
     Group      Field                        Type       Requirement Description
     ========= ============================= ========== =========== =========================================================================================
     /0        ``volume_CR``                 float32    Mandatory   The volume of the spine (not simulated per se, just used for converting currents to concentrations in ``GluSynapse.mod``).In µm³.
-    /0        ``rho0_GB``                   int64      Mandatory   Initial value of the efficacy, ``rho`` parameter of the `Graptner and Brunel 2012` model (0: depressed, 1:potentiated).
+    /0        ``rho0_GB``                   int        Mandatory   Initial value of the efficacy, ``rho`` parameter of the `Graptner and Brunel 2012` model (0: depressed, 1:potentiated).
     /0        ``Use_d_TM``                  float32    Mandatory   Most depressed value (lower bound) of the release probability, ``u`` parameter of the `Tsodyks-Markram` model.
     /0        ``Use_p_TM``                  float32    Mandatory   Most potentiated value (upper bound) of the release probability, ``u`` parameter of the `Tsodyks-Markram` model.
     /0        ``gmax_d_AMPA``               float32    Mandatory   Most depressed value (lower bound) of the ``conductance``. In nanosiemens.
@@ -364,22 +368,22 @@ This type of connectivity happens between astrocytes. The properties are similar
     ========= ============================= ========== =========== ============================================================================================
     /0        ``afferent_center_[x|y|z]``   float32    Mandatory   Position on the `axis` of the cell's section/segment in µm on the target cell..
     /0        ``afferent_surface_[x|y|z]``  float32    Mandatory   Position on the surface of a cylindrical cell segment, radially outward from the center position in the direction of the other cell in µm on the target cell.
-    /0        ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0        ``afferent_section_id``       uint       Mandatory   The specific section on the target node where a synapse is placed.
     /0        ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
-    /0        ``afferent_section_type``     uint32     Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1 glia_perivascular_process=2 glia_process=3.
-    /0        ``afferent_segment_id``       uint32     Mandatory   Numerical index of the section of the cell (soma is index 0).
+    /0        ``afferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1 glia_perivascular_process=2 glia_process=3.
+    /0        ``afferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0        ``afferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in um.  See :ref:`faq`.
     /0        ``efferent_center_[x|y|z]``   float32    Mandatory   Same as ``afferent_center_[x|y|z]``, but for the source cell.
     /0        ``efferent_surface_[x|y|z]``  float32    Mandatory   Same as ``efferent_center_[x|y|z]``, but for the connection on the surface of the source cell.
-    /0        ``efferent_section_id``       uint32     Mandatory   Same as ``afferent_section_id``, but for source node.
+    /0        ``efferent_section_id``       uint       Mandatory   Same as ``afferent_section_id``, but for source node.
     /0        ``efferent_section_pos``      float32    Mandatory   Same as ``afferent_section_pos``, but for source node.
-    /0        ``efferent_section_type``     uint32     Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1 glia_perivascular_process=2 glia_process=3.
-    /0        ``efferent_segment_id``       uint32     Mandatory   Numerical index of the section of the cell (soma is index 0).
+    /0        ``efferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1 glia_perivascular_process=2 glia_process=3.
+    /0        ``efferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0        ``efferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in µm.  See :ref:`faq`.
     /0        ``spine_length``              float32    Mandatory   Distance between the two surface positions in µm.
-    /         ``edge_type_id``              int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
-    /         ``source_node_id``            uint64     Mandatory   The id of the presynaptic cell.
-    /         ``target_node_id``            uint64     Mandatory   The id of the postsynaptic cell.
+    /         ``edge_type_id``              int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /         ``source_node_id``            uint       Mandatory   The id of the presynaptic cell.
+    /         ``target_node_id``            uint       Mandatory   The id of the postsynaptic cell.
     ========= ============================= ========== =========== ============================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
@@ -396,25 +400,25 @@ Connection type is ``electrical``. Used for gap junctions between neurons
     ========= ============================= ========== =========== ============================================================================================
     /0        ``afferent_center_[x|y|z]``   float32    Mandatory   Position on the `axis` of the cell's section/segment in µm on the target cell..
     /0        ``afferent_surface_[x|y|z]``  float32    Mandatory   Position on the surface of a cylindrical cell segment, radially outward from the center position in the direction of the other cell in µm on the target cell.
-    /0        ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0        ``afferent_section_id``       uint       Mandatory   The specific section on the target node where a synapse is placed.
     /0        ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
-    /0        ``afferent_section_type``     uint32     Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
-    /0        ``afferent_segment_id``       uint32     Mandatory   Numerical index of the section of the cell (soma is index 0).
+    /0        ``afferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
+    /0        ``afferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0        ``afferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in um.  See :ref:`faq`.
-    /0        ``afferent_junction_id``      uint32     Mandatory   An internal identifier for the simulator to perform the electrical coupling.
+    /0        ``afferent_junction_id``      uint       Mandatory   An internal identifier for the simulator to perform the electrical coupling.
     /0        ``efferent_center_[x|y|z]``   float32    Mandatory   Same as ``afferent_center_[x|y|z]``, but for the source cell.
     /0        ``efferent_surface_[x|y|z]``  float32    Mandatory   Same as ``efferent_center_[x|y|z]``, but for the connection on the surface of the source cell.
-    /0        ``efferent_section_id``       uint32     Mandatory   Same as ``afferent_section_id``, but for source node.
+    /0        ``efferent_section_id``       uint       Mandatory   Same as ``afferent_section_id``, but for source node.
     /0        ``efferent_section_pos``      float32    Mandatory   Same as ``afferent_section_pos``, but for source node.
-    /0        ``efferent_section_type``     uint32     Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
-    /0        ``efferent_segment_id``       uint32     Mandatory   Numerical index of the section of the cell (soma is index 0).
+    /0        ``efferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
+    /0        ``efferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0        ``efferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in µm.  See :ref:`faq`.
-    /0        ``efferent_junction_id``      uint32     Mandatory   Same as ``afferent_junction_id``, but for source node.
+    /0        ``efferent_junction_id``      uint       Mandatory   Same as ``afferent_junction_id``, but for source node.
     /0        ``spine_length``              float32    Mandatory   Distance between the two surface positions in µm.
     /0        ``conductance``               float32    Mandatory   The conductance of the gap junction (nanosiemens); also referred to as ``g_syn``
-    /         ``edge_type_id``              int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
-    /         ``source_node_id``            uint64     Mandatory   The id of the presynaptic cell.
-    /         ``target_node_id``            uint64     Mandatory   The id of the postsynaptic cell.
+    /         ``edge_type_id``              int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /         ``source_node_id``            uint       Mandatory   The id of the presynaptic cell.
+    /         ``target_node_id``            uint       Mandatory   The id of the postsynaptic cell.
     ========= ============================= ========== =========== ============================================================================================
 
 
@@ -428,17 +432,19 @@ Neuroglial connectivity. Astrocytes establish tripartite connections with synaps
     ========= =============================  ========== =========== ============================================================================================
     Group     Field                          Type       Requirement Description
     ========= =============================  ========== =========== ============================================================================================
-    /0        ``astrocyte_section_id``       uint32     Mandatory   The id of the closest astrocyte morphology's section to the connected neuron-neuron synapse.
-    /0        ``astrocyte_segment_id``       uint32     Mandatory   The id of the closest astrocyte morphology's segment to the connected neuron-neuron synapse.
+    /0        ``astrocyte_section_id``       uint       Mandatory   The id of the closest astrocyte morphology's section to the connected neuron-neuron synapse.
+    /0        ``astrocyte_segment_id``       uint       Mandatory   The id of the closest astrocyte morphology's segment to the connected neuron-neuron synapse.
     /0        ``astrocyte_segment_offset``   float32    Mandatory   The offset on the respective segment corresponding to the closest point to the respective synapse. In µm.
     /0        ``astrocyte_section_pos``      float32    Mandatory   Given the section of where a synapse is closest on the astrocyte the position along the length
                                                                     of that section normalized to the range [0.1] where 0 is at the start of the section and 1 is at the end of the section.
     /0        ``astrocyte_center_[x|y|z]``   float32    Mandatory   Position on the `axis` of the cell's section/segment in µm on the target cell.
                                                                     This is equivalent to calculating the branch connection point from the morphology's section_id and section_pos.
-    /0        ``synapse_id``                 uint64     Mandatory   Edge id of the :ref:`chemical connection<chemical_connection>` to which the astrocyte connects. The associated edge file unambiguously defines the edge population and therefore serves as the authoritative reference, since the existence of a chemical edge guarantees the existence of its target node. In fact, the ``target_node_id`` dataset is totally redundant in this context. It is retained for consistency with other edge files and to preserve compatibility with legacy code.
-    /         ``edge_type_id``               int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
-    /         ``source_node_id``             uint64     Mandatory   The node id of the astrocyte.
-    /         ``target_node_id``             uint64     Mandatory   The node id of the post-synaptic neuron of the tripartite connection.
+    /0        ``synapse_id``                 uint       Mandatory   Edge id of the :ref:`chemical connection<chemical_connection>` to which the astrocyte connects.
+                                                                    The associated edge file unambiguously defines the edge population and therefore serves as the authoritative reference, since the existence of a chemical edge guarantees the existence of its target node.
+                                                                    In fact, the ``target_node_id`` dataset is totally redundant in this context. It is retained for consistency with other edge files and to preserve compatibility with legacy code.
+    /         ``edge_type_id``               int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /         ``source_node_id``             uint       Mandatory   The node id of the astrocyte.
+    /         ``target_node_id``             uint       Mandatory   The node id of the post-synaptic neuron of the tripartite connection.
     ========= =============================  ========== =========== ============================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
@@ -459,17 +465,17 @@ Gliovascular connectivity. Connection between the vasculature and astrocytes. Ea
     ========= ================================= ========== =========== ============================================================================================
     Group     Field                             Type       Requirement Description
     ========= ================================= ========== =========== ============================================================================================
-    /0        ``endfoot_id``                    uint64     Mandatory   The identifier of the end foot geometry to lookup in the end_feet_area file.
+    /0        ``endfoot_id``                    uint       Mandatory   The identifier of the end foot geometry to lookup in the end_feet_area file.
     /0        ``endfoot_surface_[x|y|z]``       float32    Mandatory   The coordinate of the endfoot connection on the vasculature's surface. In µm.
-    /0        ``vasculature_section_id``        uint32     Mandatory   The section id in the vasculature morphology.
-    /0        ``vasculature_segment_id``        uint32     Mandatory   The segment id in the vasculature morphology.
-    /0        ``astrocyte_section_id``          uint32     Mandatory   The section id of the astrocytic section that connects to the endfoot.
+    /0        ``vasculature_section_id``        uint       Mandatory   The section id in the vasculature morphology.
+    /0        ``vasculature_segment_id``        uint       Mandatory   The segment id in the vasculature morphology.
+    /0        ``astrocyte_section_id``          uint       Mandatory   The section id of the astrocytic section that connects to the endfoot.
     /0        ``endfoot_compartment_length``    float32    Mandatory   The length of the virtual endfoot compartment to construct in the simulator. In µm.
     /0        ``endfoot_compartment_diameter``  float32    Mandatory   The diameter of the virtual endfoot compartment to construct in the simulator. In µm.
     /0        ``endfoot_compartment_perimeter`` float32    Mandatory   The perimeter of the virtual endfoot compartment to construct in the simulator. In µm.
-    /         ``edge_type_id``                  int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
-    /         ``source_node_id``                uint64     Mandatory   The node id of the vasculature.
-    /         ``target_node_id``                uint64     Mandatory   The node id of the astrocyte.
+    /         ``edge_type_id``                  int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /         ``source_node_id``                uint       Mandatory   The node id of the vasculature.
+    /         ``target_node_id``                uint       Mandatory   The node id of the astrocyte.
     ========= ================================= ========== =========== ============================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
@@ -490,15 +496,15 @@ Connection type is ``neuromodulatory``. Used for neuromodulatory projections bet
     ========= ============================= ========== =========== ============================================================================================
     Group     Field                         Type       Requirement Description
     ========= ============================= ========== =========== ============================================================================================
-    /0        ``afferent_section_id``       int16      Mandatory   The specific section on the target node (same of target synapse).
+    /0        ``afferent_section_id``       int        Mandatory   The specific section on the target node (same of target synapse).
     /0        ``afferent_section_pos``      float32    Mandatory   The specific section position (same of target synapse).
-    /0        ``afferent_segment_id``       int16      Mandatory   The specific segment on the target node (same of target synapse).
+    /0        ``afferent_segment_id``       int        Mandatory   The specific segment on the target node (same of target synapse).
     /0        ``delay``                     float32    Mandatory   The axonal delay. In ms.
     /0        ``neuromod_dtc``              float32    Mandatory   Decay time constant (in ms) for the running value of neuromodulator concentration at the synapse.
     /0        ``neuromod_strength``         float32    Mandatory   Amount of the increase in neuromodulator concentration at the synapse when a neuromodulatory event is transmitted. In µm.
-    /         ``edge_type_id``              int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
-    /         ``source_node_id``            uint64     Mandatory   The id of the presynaptic virtual neuron.
-    /         ``target_node_id``            uint64     Mandatory   The id of the postsynaptic cell (same of target synapse).
+    /         ``edge_type_id``              int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /         ``source_node_id``            uint       Mandatory   The id of the presynaptic virtual neuron.
+    /         ``target_node_id``            uint       Mandatory   The id of the postsynaptic cell (same of target synapse).
     ========= ============================= ========== =========== ============================================================================================
 
 
@@ -522,9 +528,9 @@ The NEST equivalent implementation can be found here: `<https://nest-simulator.r
     /0        ``tau_fac``                       float32    Mandatory   Facilitation time constant. (ms).
     /0        ``tau_rec``                       float32    Mandatory   Time constant for depression. (ms).
     /0        ``weight``                        float32    Mandatory   Synaptic weight.
-    /         ``edge_type_id``                  int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
-    /         ``source_node_id``                uint64     Mandatory   The id of the presynaptic neuron.
-    /         ``target_node_id``                uint64     Mandatory   The id of the postsynaptic neuron.
+    /         ``edge_type_id``                  int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /         ``source_node_id``                uint       Mandatory   The id of the presynaptic neuron.
+    /         ``target_node_id``                uint       Mandatory   The id of the postsynaptic neuron.
     ========= ================================= ========== =========== ============================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
@@ -542,18 +548,18 @@ The difference to the normal :ref:`chemical <chemical_connection>` type is that 
     Group         Field                         Type       Requirement Description
     ============= ============================= ========== =========== =========================================================================================
     /0            ``afferent_center_[x|y|z]``   float32    Mandatory   Position on the `axis` of the cell's section/segment in µm.
-    /0            ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0            ``afferent_section_id``       uint       Mandatory   The specific section on the target node where a synapse is placed.
     /0            ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
-    /0            ``afferent_section_type``     uint32     Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
-    /0            ``afferent_segment_id``       uint32     Mandatory   Numerical index of the section of the cell (soma is index 0).
+    /0            ``afferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
+    /0            ``afferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0            ``afferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in um.  See :ref:`faq`.
-    /0            ``efferent_section_type``     uint32     Mandatory   Neurite or soma type of the afferent.
+    /0            ``efferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent.
     /0            ``conductance``               float32    Mandatory   The conductance of the synapse (nanosiemens); also referred to as ``g_syn``
     /0            ``decay_time``                float32    Mandatory   The decay time of the synapse (milliseconds).
     /0            ``depression_time``           float32    Mandatory   The depression time constant of the synapse (milliseconds), also referred to as ``f_syn``.
     /0            ``facilitation_time``         float32    Mandatory   The facilitation time constant (milliseconds) of the synapse.
     /0            ``u_syn``                     float32    Mandatory   The ``u`` parameter in the `Tsodyks Markram Model`_.
-    /0            ``n_rrp_vesicles``            uint32     Mandatory   Number of ``readily releasable pool`` of vesicles.
+    /0            ``n_rrp_vesicles``            uint       Mandatory   Number of ``readily releasable pool`` of vesicles.
     /0            ``conductance_scale_factor``  float32    Optional    The scale factor for the conductance (no unit).If no value or negative, no change is applied.
     /0            ``u_hill_coefficient``        float32    Optional    A coefficient describing the scaling of `u` to be done by the simulator. If no value, no change is applied.
 
@@ -564,11 +570,11 @@ The difference to the normal :ref:`chemical <chemical_connection>` type is that 
                                                                        where :math:`ca` denotes the simulated calcium concentration in
                                                                        millimolar and :math:`y` a scalar such that at :math:`ca = 2.0:\ u_\text{final} = u`. (Markram et al., 2015)
 
-    /0            ``syn_type_id``               uint32     Mandatory   The position of the rule that leads to the synapse in the recipe + 100 if it is an excitatory synapse
+    /0            ``syn_type_id``               uint       Mandatory   The position of the rule that leads to the synapse in the recipe + 100 if it is an excitatory synapse
     /0            ``delay``                     float32    Mandatory   The axonal delay (in ms, ``NaN`` for dendro-dendritic synapses).
-    /             ``edge_type_id``              int64      Mandatory   Links an edge to the underlying CSV file; not used at BBP.
-    /             ``source_node_id``            uint64     Mandatory   The id of the presynaptic neuron.
-    /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
+    /             ``edge_type_id``              int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
+    /             ``source_node_id``            uint       Mandatory   The id of the presynaptic neuron.
+    /             ``target_node_id``            uint       Mandatory   The id of the postsynaptic neuron.
     ============= ============================= ========== =========== =========================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
@@ -586,16 +592,16 @@ Connection type is ``Exp2Syn_synapse`` and the chemical synapses uses the NEURON
     ============= ============================= ========== =========== =========================================================================================
     Group         Field                         Type       Requirement Description
     ============= ============================= ========== =========== =========================================================================================
-    /0            ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0            ``afferent_section_id``       uint       Mandatory   The specific section on the target node where a synapse is placed.
     /0            ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
     /0            ``conductance``               float32    Mandatory   The conductance of the synapse (nanosiemens)
     /0            ``delay``                     float32    Mandatory   The axonal delay (in ms, ``NaN`` for dendro-dendritic synapses).
     /0            ``tau1``                      float32    Mandatory   The rise time constant of the Exp2Syn model, in ms, which controls how fast the synaptic conductance turns on after a presynaptic spike.
     /0            ``tau2``                      float32    Mandatory   The decay time constant of the Exp2Syn model, in ms, which controls how fast the synaptic conductance turns off.
     /0            ``erev``                      float32    Mandatory   The reversal potental of the Exp2Syn model, in mV, which is the membrane voltage at which the synaptic current is zero.
-    /             ``edge_type_id``              int64      Mandatory   Links an edge to Allen's edge type file.
-    /             ``source_node_id``            uint64     Mandatory   The id of the presynaptic neuron.
-    /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
+    /             ``edge_type_id``              int        Mandatory   Links an edge to Allen's edge type file.
+    /             ``source_node_id``            uint       Mandatory   The id of the presynaptic neuron.
+    /             ``target_node_id``            uint       Mandatory   The id of the postsynaptic neuron.
     ============= ============================= ========== =========== =========================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
@@ -613,13 +619,13 @@ Connection type is ``point_process``.
     ============= ============================= ========== =========== =========================================================================================
     Group         Field                         Type       Requirement Description
     ============= ============================= ========== =========== =========================================================================================
-    /0            ``afferent_section_id``       uint32     Mandatory   The specific section on the target node where a synapse is placed.
+    /0            ``afferent_section_id``       uint       Mandatory   The specific section on the target node where a synapse is placed.
     /0            ``afferent_section_pos``      float32    Mandatory   Fractional position along the length of the section (normalized to the range [0, 1], where 0 is at the start of the section and 1 is at the end of the section).
     /0            ``conductance``               float32    Mandatory   The conductance of the synapse (nanosiemens)
     /0            ``delay``                     float32    Mandatory   The axonal delay (in ms, ``NaN`` for dendro-dendritic synapses).
-    /             ``edge_type_id``              int64      Mandatory   Links an edge to Allen's edge type file.
-    /             ``source_node_id``            uint64     Mandatory   The id of the presynaptic neuron.
-    /             ``target_node_id``            uint64     Mandatory   The id of the postsynaptic neuron.
+    /             ``edge_type_id``              int        Mandatory   Links an edge to Allen's edge type file.
+    /             ``source_node_id``            uint       Mandatory   The id of the presynaptic neuron.
+    /             ``target_node_id``            uint       Mandatory   The id of the postsynaptic neuron.
     ============= ============================= ========== =========== =========================================================================================
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
@@ -665,9 +671,14 @@ The format of the weights file is described below:
   /electrodes/{electrodename}                   layer                   utf8       1                   Optional      Layer of the circuit in which {electrodename} is located. If the electrode is in a region without cortical layers, then "NA". If the electrode is outside the brain, then "Outside"
   /electrodes/{electrodename}                   position                float32    3                   Mandatory     Position of {electrodename} in microns, in cartesian coordinates
   /electrodes/{electrodename}                   region                  utf8       1                   Optional      Region in which {electrodename} is located
-  /electrodes/{electrodename}                   type                    utf8       1                   Mandatory     Specifies the equation with which the coefficients are calculated. Takes the folllowing values: Reciprocity, DipoleReciprocity, LineSource, or PointSource. Reciprocity refers to the equation from Plonsey (1963) for point sources of current. DipoleReciprocity is the simplified form of this equation for current dipole sources. LineSource means the analytic solution for line sources of current, in infinite homogeneous extracellular media. PointSource refers to the analytic solution for point source approximation, for the same assumptions. 
-  /electrodes/{electrodename}/{population_name} electrode_id            uint64     1                   Mandatory     Index of the column corresponding to this electrode in /electrodes/{population_name}/scaling_factors
+  /electrodes/{electrodename}                   type                    utf8       1                   Mandatory     Specifies the equation with which the coefficients are calculated.
+                                                                                                                     Takes the folllowing values: Reciprocity, DipoleReciprocity, LineSource, or PointSource.
+                                                                                                                     Reciprocity refers to the equation from Plonsey (1963) for point sources of current.
+                                                                                                                     DipoleReciprocity is the simplified form of this equation for current dipole sources.
+                                                                                                                     LineSource means the analytic solution for line sources of current, in infinite homogeneous extracellular media.
+                                                                                                                     PointSource refers to the analytic solution for point source approximation, for the same assumptions.
+  /electrodes/{electrodename}/{population_name} electrode_id            uint       1                   Mandatory     Index of the column corresponding to this electrode in /electrodes/{population_name}/scaling_factors
   /electrodes/{population_name}                 scaling_factors         float64    Total_comp x N_elec Mandatory     Scaling factor for each compartment in the corresponding neuron, in mV/nA
-  /{population_name}                            node_ids                uint64     N_nodes             Mandatory     List of node ids. Node ids not listed here are to be ignored
-  /{population_name}                            offsets                 uint64     N_nodes + 1         Mandatory     The offset for each node in the scaling_factors field
+  /{population_name}                            node_ids                uint       N_nodes             Mandatory     List of node ids. Node ids not listed here are to be ignored
+  /{population_name}                            offsets                 uint       N_nodes + 1         Mandatory     The offset for each node in the scaling_factors field
   ============================================= ======================= ========== =================== ============= ==========================================
