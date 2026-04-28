@@ -160,7 +160,7 @@ Parameters defining global experimental conditions.
    spike_location                  text       Optional    The spike detection location. Can be either ‘soma’ or 'AIS' for detecting spikes in either the soma or axon initial segment, respectively. Default is 'soma'.
    extracellular_calcium           float      Optional    Extracellular calcium concentration. When this parameter is provided, apply it to the synapse uHill parameter to scale the U parameter of synapses (py-neurodamus only feature). If not specified, U is set directly as read from edges file.
    randomize_gaba_rise_time        boolean    Optional    When true, enable legacy behavior to randomize the GABA_A rise time in the helper functions. Default is false which will use a prescribed value for GABA_A rise time.
-   mechanisms                                 Optional    Properties to assign values to variables in synapse MOD files.
+   mechanisms                                 Optional    Properties to assign values to GLOBAL variables in synapse or mechanism MOD files.
                                                           The format is a dictionary with keys being the SUFFIX names of MOD files (unique names of mechanisms) and values being dictionaries of variable names in the MOD files and their values. Read about `NMODL2 SUFFIX description here <https://nrn.readthedocs.io/en/8.2.0/hoc/modelspec/programmatic/mechanisms/nmodl2.html#suffix>`_.
    modifications                              Optional    List of dictionaries with each member describing a modification that mimics experimental manipulations to the circuit. They are executed in the order as being read from the file.
    =============================== ========== =========== ====================================
@@ -189,18 +189,20 @@ Parameters required for modifications
                                                           
                                                           For ``section_list``, ``section`` and ``compartment_set`` manipulations, a snippet of python code to perform one or more assignments involving attributes as follows:
                                                           
-                                                          ``section_list``: entries should be of the form, e.g. ``"apical.gbar_NaTg = 0.0; apical.cm = 1"``. This will set the gbar_NaTg to 0 and cm to 1 for all sections in the apical dendrites.
+                                                          ``section_list``: entries should be of the form, e.g. ``"apical.gbar_NaTg = 0.0; apical.cm = 1"``. This will set the gbar_NaTg to 0 and cm to 1 for all sections in the apical dendrites. All statements must use the same section list name, such as ``apical`` in the above example.
                                                           
-                                                          ``section``: entries should be of the form, e.g. ``"apic[10].gbar_KTst = 0; apic[10].gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments of apic[10] section.
+                                                          ``section``: entries should be of the form, e.g. ``"apic[10].gbar_KTst = 0; apic[10].gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments of apic[10] section. All statements must reference the same specific section, such as ``apic[10]`` in the above example.
                                                           
                                                           ``compartment_set``: entries should be of the form, e.g. ``"gbar_KTst = 0; gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments contained in the property ``compartment_set``. Note, when the property ``type`` is set ``compartment_set``, you should also specify the property ``compartment_set``. In addition, the simulation must declare the ``compartment_sets_file`` at the top level. See :ref:`compartment_sets_file`.
+                                                          Sections and segments referenced in the ``compartment_sets_file`` need not be the same section or section list.
    compartment_set                 text       Optional    The ``compartment_set`` to use for manipulation from ``compartment_sets_file`` json file. The ``type`` must be ``compartment_set``. In the example below, "dend_ca_hotspot_name" is the compartment_set name.
    =============================== ========== =========== ====================================
 
 .. note::
+   For all modification types (``section_list``, ``section``, ``compartment_set``), the ``section_configure`` is applied only to sections/segments that possess all the referenced attributes. A warning is logged if the configuration applies to zero sections or segments.
    If ``compartment_set`` is defined, ``node_set`` must not be specified.
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
-   The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report`..
+   The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report`.
 
 example::
 
@@ -218,7 +220,10 @@ example::
            },
            "GluSynapse": {
                "property_z": "string"
-           }
+           },
+           "StochKv3": {
+                "vmin": 0.0
+            }
        },
        "modifications": [
            {
