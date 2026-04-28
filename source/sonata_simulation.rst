@@ -187,11 +187,12 @@ Parameters required for modifications
                                                           
                                                           For ``section_list``, ``section`` and ``compartment_set`` manipulations, a snippet of python code to perform one or more assignments involving attributes as follows:
                                                           
-                                                          ``section_list``: entries should be of the form, e.g. ``"apical.gbar_NaTg = 0.0; apical.cm = 1"``. This will set the gbar_NaTg to 0 and cm to 1 for all sections in the apical dendrites.
+                                                          ``section_list``: entries should be of the form, e.g. ``"apical.gbar_NaTg = 0.0; apical.cm = 1"``. This will set the gbar_NaTg to 0 and cm to 1 for all sections in the apical dendrites. All statements must use the same section list name, such as ``apical`` in the above example.
                                                           
-                                                          ``section``: entries should be of the form, e.g. ``"apic[10].gbar_KTst = 0; apic[10].gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments of apic[10] section.
+                                                          ``section``: entries should be of the form, e.g. ``"apic[10].gbar_KTst = 0; apic[10].gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments of apic[10] section. All statements must reference the same specific section, such as ``apic[10]`` in the above example.
                                                           
                                                           ``compartment_set``: entries should be of the form, e.g. ``"gbar_KTst = 0; gbar_NaTg = 0"``. This will set the gbar_KTst to 0 and gbar_NaTg to 0 for all segments contained in the property ``compartment_set``. Note, when the property ``type`` is set ``compartment_set``, you should also specify the property ``compartment_set``. In addition, the simulation must declare the ``compartment_sets_file`` at the top level. See :ref:`compartment_sets_file`.
+                                                          Sections and segments referenced in the ``compartment_sets_file`` need not be the same section or section list.
    compartment_set                 text       Optional    The ``compartment_set`` to use for manipulation from ``compartment_sets_file`` json file. The ``type`` must be ``compartment_set``. In the example below, "dend_ca_hotspot_name" is the compartment_set name.
    =============================== ========== =========== ====================================
 
