@@ -122,12 +122,8 @@ A new `input_type`::`module` is defined for Poisson Spike:
             "node_set": "sugar_neurons",
             "rate": "POISSON_RATE_in_Hz",
             "weight": "POISSON_W",
-            "target_var": "v",
-            "zero_refractory": true,
         }
     }
-
-Note: the `target_var` must have been defined in the model.
 
 Future Work
 -----------
