@@ -2,7 +2,7 @@ Describing Brian 2 Models with SONATA
 =====================================
 
 Overview
---------
+========
 
 `Brian2 <https://brian2.readthedocs.io/en/stable/>`_ is a spiking neural network simulator.
 This document describes how a network is defined using SONATA, to be loaded by the `Brian2` simulator.
@@ -40,7 +40,7 @@ The `Brian2` simulator is also particular about units, so they must be encoded w
 For this encoding to work, the following pattern is used: `'tau': [5, 'ms'],`; the loader will then apply the correct units at instantiation time.
 Each different set of parameters and equations is stored in a .json file under the `components::biophysical_neuron_models_dir` as specified in `the SONATA extensions <https://sonata-extension.readthedocs.io/en/latest/sonata_config.html#components>`_.
 The associated name is stored in the `model_template` nodes field.
-Per neuron parameters are noted in the `dynamics_params` `JSON` object, as `name`, `unit` tuples.
+Per neuron parameters are noted in the `dynamics_params` `JSON` object, as `name`, `unit` keys.
 These values are then loaded from the `nodes` file.
 
 Thus, an example model template would be:
@@ -71,6 +71,7 @@ Thus, an example model template would be:
 
 
 The edges (ie: synapses) are parameterized in the same way; there is a template per `synapse_type`.
+In this example, there is a `dynamics_params/v_th` attribute in the nodes.h5 file, and when the simulator reads the module template, it will use that data to parameterize the neurons.
 
 Nodes
 -----
@@ -124,6 +125,155 @@ A new `input_type`::`module` is defined for Poisson Spike:
             "weight": "POISSON_W",
         }
     }
+
+Examples
+========
+
+FlyWire
+-------
+
+Physiology
+**********
+
+For the model template, this is used:
+
+.. code-block:: json
+
+    {
+      "params": {
+        "model": [
+          "dv/dt = (v_0 - v + g) / t_mbr : volt (unless refractory)",
+          "dg/dt = -g / tau               : volt (unless refractory)",
+          "rfc                            : second",
+        ],
+        "method": "linear",
+        "threshold": "v > v_th",
+        "reset": "v = v_rst; w = 0; g = 0 * mV",
+        "refractory": "rfc"
+      },
+      "namespace": {
+        "t_mbr": [20.0, "ms"],
+        "tau": [5.0, "ms"],
+        "v_0": [-52.0, "mV"],
+        "v_th": [-45.0, "mV"],
+        "v_rst": [-52.0, "mV"]
+      },
+      "initial": {
+        "v": [-52.0, "mV"],
+        "g": [0, "mV"],
+        "rfc": [2.2, "ms"]
+      }
+    }
+
+
+For the synapse template, this is used:
+
+.. code-block:: json
+
+    {
+      "params": {
+        "model": "w : volt",
+        "on_pre": "g += w",
+        "delay": [1.8, "ms"]
+      },
+      "dynamics": {
+        "w": "mV"
+      }
+    }
+
+Nodes
+*****
+
+The nodes files doesn't contain much information per node, since most of the values are constant and set by the model template.
+
+.. code-block::
+
+    /nodes/drosophila/0/@library/model_template Dataset {1}
+    /nodes/drosophila/0/@library/model_type Dataset {1}
+    /nodes/drosophila/0/flywire_id Dataset {127400}
+    /nodes/drosophila/0/model_template Dataset {127400}
+    /nodes/drosophila/0/model_type Dataset {127400}
+    /nodes/drosophila/node_type_id Dataset {127400}
+
+
+Edges
+*****
+
+Only the `w` (or weight) is different per synapses, so it is stored along with the information about which `model_template` to use.
+
+.. code-block::
+
+    /edges/drosophila__drosophila__brian2_synapse/0/@library/model_template Dataset {1}
+    /edges/drosophila__drosophila__brian2_synapse/0/model_template Dataset {14687178}
+    /edges/drosophila__drosophila__brian2_synapse/0/w Dataset {14687178}
+    /edges/drosophila__drosophila__brian2_synapse/edge_type_id Dataset {14687178}
+    /edges/drosophila__drosophila__brian2_synapse/source_node_id Dataset {14687178}
+    /edges/drosophila__drosophila__brian2_synapse/target_node_id Dataset {14687178}
+
+
+Circuit Config
+**************
+
+.. code-block:: json
+
+    {
+      "components": {
+        "biophysical_neuron_models_dir": "biophysics"
+      },
+      "node_sets_file": "node_sets.json",
+      "target_simulator": "Brian2",
+      "networks": {
+        "nodes": [
+          {
+            "nodes_file": "nodes.h5",
+            "populations": {
+              "drosophila": {
+                "type": "brian2_point"
+              }
+            }
+          }
+        ],
+        "edges": [
+          {
+            "edges_file": "edges.h5",
+            "populations": {
+              "drosophila__drosophila__brian2_synapse": {
+                "type": "brian2_synapse"
+              }
+            }
+          }
+        ]
+      }
+    }
+
+
+Simulation Config
+*****************
+
+.. code-block:: json
+
+    {
+      "run": {
+        "tstop": 1000,
+        "dt": 0.1,
+        "random_seed": 42
+      },
+      "target_simulator": "Brian2",
+      "network": "../output/circuit_config.json",
+      "inputs": {
+          "poisson": {
+              "input_type": "spikes",
+              "module": "poisson",
+              "node_set": "sugar",
+              "delay": 0,
+              "duration": 1000,
+              "rate": 150,
+              "weight": 68.75
+          }
+      }
+    }
+
+
 
 Future Work
 -----------
