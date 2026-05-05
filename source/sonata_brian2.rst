@@ -38,7 +38,7 @@ Thus, for the `model_template` arguments, one can save have keys within the `par
 Within `params`, multiline values can be wrapped in a list to make it more readable.
 The `Brian2` simulator is also particular about units, so they must be encoded when using the `namespace` keyword.
 For this encoding to work, the following pattern is used: `'tau': [5, 'ms'],`; the loader will then apply the correct units at instantiation time.
-Each different set of parameters and equations is stored in a .json file under the `components::point_neuron_models_dir` as specified in `the SONATA extensions <https://sonata-extension.readthedocs.io/en/latest/sonata_config.html#components>`_.
+Each different set of parameters and equations is stored in a .json file under the `components::point_neuron_models_dir` as specified in `the SONATA extensions `_.
 The associated name is stored in the `model_template` nodes field.
 Per neuron parameters are noted in the `dynamics_params` `JSON` object, as `name`, `unit` keys.
 These values are then loaded from the `nodes` file.

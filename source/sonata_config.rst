@@ -70,6 +70,8 @@ They can be found also under :ref:`populations <population_config_dict>` where i
    `alternate_morphologies`_       Optional [#f1]_  Dictionary for alternate directory paths.
    biophysical_neuron_models_dir   Optional [#f2]_  Path to the template HOC files defining the E-Model.
                                                     This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path the the actual HOC file.
+   point_neuron_models_dir         Optional         Path to the templates.
+                                                    This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path.
    vasculature_file                Optional         Path to the .h5 file containing the vasculature morphology.
                                                     Only for `vasculature` node populations where it is mandatory.
    vasculature_mesh                Optional         Path to the .obj file containing the mesh of a vasculature morphology.
