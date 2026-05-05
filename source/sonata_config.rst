@@ -50,6 +50,7 @@ A variable can be defined as:
 
 "." is always resolved as the directory containing the circuit_config.json even in the absence in manifest.
 
+.. _components:
 
 components
 ----------
@@ -70,6 +71,8 @@ They can be found also under :ref:`populations <population_config_dict>` where i
    `alternate_morphologies`_       Optional [#f1]_  Dictionary for alternate directory paths.
    biophysical_neuron_models_dir   Optional [#f2]_  Path to the template HOC files defining the E-Model.
                                                     This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path the the actual HOC file.
+   point_neuron_models_dir         Optional         Path to the templates.
+                                                    This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path.
    vasculature_file                Optional         Path to the .h5 file containing the vasculature morphology.
                                                     Only for `vasculature` node populations where it is mandatory.
    vasculature_mesh                Optional         Path to the .obj file containing the mesh of a vasculature morphology.
@@ -83,6 +86,19 @@ They can be found also under :ref:`populations <population_config_dict>` where i
 
 .. [#f1] Mandatory (at least one) for :ref:`biophysical node populations<biophysical_node_type>`
 .. [#f2] Mandatory for :ref:`biophysical node populations<biophysical_node_type>`
+
+
+.. _target_simulator:
+
+target_simulator
+----------------
+
+*Optional*.
+
+A parameter specifying which simulator is expected to be able to simulate the circuit.
+Supported values : `NEURON` and `CORENEURON`, `LearningEngine`, and `Brian2`.
+Default is `NEURON`.
+
 
 alternate_morphologies
 ^^^^^^^^^^^^^^^^^^^^^^
