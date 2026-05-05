@@ -198,6 +198,9 @@ Parameters required for modifications
 
 .. note::
    For all modification types (``section_list``, ``section``, ``compartment_set``), the ``section_configure`` is applied only to sections/segments that possess all the referenced attributes. A warning is logged if the configuration applies to zero sections or segments.
+   To reference variables in multiple section types or section indices, multiple ``modifications`` dictionaries must be added to the file. User should not combine in a single ``modifications`` dictionary.
+   e.g. ``"type": "section_list"``, one dictionary for ``apical`` sections with ``"section_configure": "apical.gbar_NaTg = 0.0"`` and another dictionary for ``basal`` sections with ``"section_configure": "basal.gbar_NaTg = 0.0"``.
+   Multiple modifications of the same type can be defined in ``section_configure`` e.g. ``"section_configure": "apical.gbar_NaTg = 0.0; apical.cm = 1"``.
    If ``compartment_set`` is defined, ``node_set`` must not be specified.
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
    The json file specified by ``compartment_sets_file`` is described here in :ref:`File: compartment_sets.json <compartment_sets_definition>` under :ref:`report`.
