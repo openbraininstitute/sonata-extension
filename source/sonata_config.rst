@@ -50,6 +50,7 @@ A variable can be defined as:
 
 "." is always resolved as the directory containing the circuit_config.json even in the absence in manifest.
 
+.. _components:
 
 components
 ----------
