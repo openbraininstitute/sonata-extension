@@ -24,7 +24,6 @@ Property        Type          Description
 =============== ============= ========================================================================
 gid             float         A location where the simulator can save the GID assigned to the cell
 all             SectionList   All the sections
-APC             SectionList   APC
 apical          SectionList   Apical sections
 axonal          SectionList   Axonal sections
 basal           SectionList   Basal sections
@@ -44,8 +43,6 @@ Semantic order
 
 `init` is called when loading a :ref:`Sonata Node file <node_file>` and instantiating a cell HOC object during the simulation. The emodel file name is defined by the node attribute `model_template`, and the morphology file name is defined by the node attribute `morphology`.
 The paths to the folders containing the emodel HOC files and morphology files are specified in the :ref:`SONATA circuit config file <sonata_config>`. The parameter `biophysical_neuron_models_dir` defines the path for the emodel files, while `morphology_dir` and `alternate_morphologies` defines the path for the morphology files.
-
- * when should axon be shortened?
 
 `re_init_rng` is called after instantiating a cell object to reinitialize the random number generator using the `ionchannel_seed` defined in the :ref:`SONATA simulation config file <sonata_simulation>`.
 
