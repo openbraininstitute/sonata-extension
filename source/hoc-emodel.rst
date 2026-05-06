@@ -86,7 +86,9 @@ The main `replace axon <https://github.com/openbraininstitute/BluePyEModel/blob/
 Template Versions
 -----------------
 The Blue Brain Project has used various versions of the HOC template over time due to changing scientific requirements and updates in the simulators: `Neurodamus`_ and `BlueCelluLab`_. The current version used in the OBI template is called `v6` for most single neuron models.
+The current version (May 2026) of the hoc template is available at `here <https://github.com/openbraininstitute/BluePyEModel/blob/main/bluepyemodel/export_emodel/templates/cell_template_neurodamus_sbo.jinja2>`_ in the `BluePyEModel`_ repository.
 
 .. _HOC: https://nrn.readthedocs.io/en/latest/hoc/index.html
 .. _BlueCelluLab: https://bluecellulab.readthedocs.io/en/latest/
 .. _Neurodamus: https://neurodamus.readthedocs.io/en/stable/
+.. _BluePyEModel: https://github.com/openbraininstitute/BluePyEModel
