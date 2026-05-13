@@ -73,6 +73,7 @@ They can be found also under :ref:`populations <population_config_dict>` where i
                                                     This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path the the actual HOC file.
    point_neuron_models_dir         Optional         Path to the templates.
                                                     This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path.
+   mechanisms_dir                  Optional         Path to the MOD files for mechanisms which may need to be compiled in advance, depending on implementation.
    vasculature_file                Optional         Path to the .h5 file containing the vasculature morphology.
                                                     Only for `vasculature` node populations where it is mandatory.
    vasculature_mesh                Optional         Path to the .obj file containing the mesh of a vasculature morphology.
