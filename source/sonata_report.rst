@@ -297,9 +297,10 @@ A specialized report for recording Local Field Potentials (LFPs) that captures t
 * ``element_ids``: Electrode identifiers defined in the electrodes_file (:ref:`sonata_tech`)
 * ``node_ids``: Identifiers of the contributing cells
 
-LFP reports require a pre-calculated weight file (electrodes file) that defines the contribution of each compartment to the LFP signal at each electrode position. The electrodes file is specified per-report via the ``electrodes_file`` field in each LFP report block.
+LFP reports require a pre-calculated weight file (electrodes file) that defines the contribution of each compartment to the LFP signal at each electrode position.
+The electrodes file is specified per-report via the ``electrodes_file`` field in each LFP report block.
 
-For lfp reports, you need to specify ``"type": "lfp"``, ``"electrodes_file"``, and ``"target_simulator": "CORENEURON"`` in the configuration::
+For LFP reports, you need to specify ``"type": "lfp"``, ``"electrodes_file"``, and ``"target_simulator": "CORENEURON"`` in the configuration::
 
     "target_simulator": "CORENEURON",
     "run": {
