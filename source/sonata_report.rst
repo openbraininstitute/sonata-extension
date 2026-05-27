@@ -297,33 +297,45 @@ A specialized report for recording Local Field Potentials (LFPs) that captures t
 * ``element_ids``: Electrode identifiers defined in the electrodes_file (:ref:`sonata_tech`)
 * ``node_ids``: Identifiers of the contributing cells
 
-LFP reports require pre-calculated weight file (or electrodes file) that define the contribution of each compartment to the LFP signal at each electrode position.
+LFP reports require a pre-calculated weight file (electrodes file) that defines the contribution of each compartment to the LFP signal at each electrode position. The electrodes file is specified per-report via the ``electrodes_file`` field in each LFP report block.
 
-For lfp reports, you need to specify ``"type": "lfp"`` and ``"target_simulator": "CORENEURON"`` in the configuration::
+For lfp reports, you need to specify ``"type": "lfp"``, ``"electrodes_file"``, and ``"target_simulator": "CORENEURON"`` in the configuration::
 
     "target_simulator": "CORENEURON",
     "run": {
-        "tstart": 0,
-        ...
-        "electrodes_file": "/path/to/electrodes_file.h5"  # Contains electrode positions
-    }
-
+        "tstop": 40,
+        "dt": 0.025,
+        "random_seed": 12345
+    },
     "reports": {
-        "lfp_report": {
+        "lfp_report_A": {
             "type": "lfp",
             "cells": "Mosaic",
             "variable_name": "v",
             "dt": 0.1,
             "start_time": 0.0,
-            "end_time": 40.0
+            "end_time": 40.0,
+            "electrodes_file": "/path/to/electrodes_A.h5"
+        },
+        "lfp_report_B": {
+            "type": "lfp",
+            "cells": "Mosaic",
+            "variable_name": "v",
+            "dt": 0.1,
+            "start_time": 0.0,
+            "end_time": 40.0,
+            "electrodes_file": "/path/to/electrodes_B.h5"
         }
     }
 
 Important Notes:
 
+* Each LFP report must specify its own ``electrodes_file``
+* LFP computation is agnostic to the electrode configuration; each report applies its own weights independently
 * Electrode positions must be defined before simulation
 * Uses same HDF5 structure as compartment reports
 * element_ids correspond to electrode positions
+* Requires ``target_simulator`` set to ``"CORENEURON"``
 * Commonly used for analyzing population-level activity
 
 For more detailed information about LFP reports, please refer to the `Online LFP Calculation Documentation <https://github.com/BlueBrain/neurodamus/blob/main/docs/online-lfp.rst#online-lfp-calculation-documentation>`_.
