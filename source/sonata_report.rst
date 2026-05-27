@@ -331,7 +331,7 @@ For lfp reports, you need to specify ``"type": "lfp"``, ``"electrodes_file"``, a
 Important Notes:
 
 * Each LFP report must specify its own ``electrodes_file``
-* LFP computation is agnostic to the electrode configuration; each report applies its own weights independently
+* LFP reports are independent of each other; each report applies its own weights independently
 * Electrode positions must be defined before simulation
 * Uses same HDF5 structure as compartment reports
 * element_ids correspond to electrode positions
