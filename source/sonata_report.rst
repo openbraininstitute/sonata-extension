@@ -289,6 +289,8 @@ For synapse reports, you need to specify ``"type": "synapse"`` in the configurat
         }
     }
 
+.. _lfp_report:
+
 LFP report
 ^^^^^^^^^^
 
@@ -302,8 +304,7 @@ LFP reports require a pre-calculated weight file (electrodes file) that defines 
 The electrodes file is specified per-report via the ``electrodes_file`` field in each LFP report block.
 
 .. note::
-   The ``variable_name`` field is **optional** for LFP reports and is ignored if provided.
-   The field is accepted for backward compatibility but has no effect on the computation.
+   The ``variable_name`` field is **not allowed** for LFP reports.
    LFP computation always uses the membrane current (``i_membrane``) combined with any injected currents from membrane current sources (e.g. ``MembraneCurrentSource``, ``ConductanceSource``).
    The per-compartment total current is then multiplied by the electrode scaling factors from the weights file.
 
