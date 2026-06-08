@@ -35,6 +35,7 @@ The reference implementation to load data for this extension is provided by `lib
    recipe
    sonata
    hoc-emodel
+   mod_files
    NGV
    faq
    legacy
