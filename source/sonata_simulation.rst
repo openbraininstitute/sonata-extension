@@ -140,7 +140,6 @@ Parameters defining global simulation settings. As NEURON is the engine used for
            "lfp_report": {
                "type": "lfp",
                "cells": "Mosaic",
-               "variable_name": "v",
                "dt": 0.1,
                "start_time": 0,
                "end_time": 100,
@@ -618,7 +617,7 @@ Dictionary of dictionaries with each member describing one data collection durin
    type                           text       Mandatory    Indicates type of data collected. "compartment", "summation", "synapse", or "lfp". Compartment means that each compartment outputs separately in the report file. Summation will sum up the values from compartments to write a single value to the report (section soma) or sum up the values and leave them in each compartment (other section types). More on summation after the table. Synapse indicates that each synapse afferent to the reported cells will have a separate entry in the report. LFP will report the contribution to the lfp (or eeg) signal from each cell, using the ``electrodes_file`` specified in this report block. See more after the table.
    scaling                        text       Optional     For summation type reporting, specify the handling of density values: "none" disables all scaling, "area" (default) converts density to area values. This makes them compatible with values from point processes such as synapses.
    compartments                   text       Optional     For compartment type reporting, override which compartments of a section are selected to report. Options are "center" or "all". When using "sections":"soma", default is "center", for other section options, default is "all".
-   variable_name                  text       Mandatory*   The Simulation variable to access. The variables available are model dependent. For summation type, can sum multiple variables by indicating as a comma separated strings. e.g. "ina, ik". Mandatory for all report types except ``"lfp"``, where it is optional and ignored (see below).
+   variable_name                  text       Mandatory*   The Simulation variable to access. The variables available are model dependent. For summation type, can sum multiple variables by indicating as a comma separated strings. e.g. "ina, ik". Mandatory for all report types except ``"lfp"``, where it is **not allowed** (see :ref:`lfp_report` for details on LFP computation).
    unit                           text       Optional     String to output as descriptive test for unit recorded. Not validated for correctness.
    dt                             float      Mandatory    Interval between reporting steps in milliseconds. If assigned value smaller than simulation dt, will be set equal to simulation dt.
    start_time                     float      Mandatory    Time to start reporting in milliseconds.
