@@ -224,7 +224,7 @@ This is for `virtual` nodes (i.e., source nodes of `projections`).
     Group              Field                           Type       Requirement   Description
     ================== =============================== ========== ============= ==================================================================================================
     /0                 ``model_type``                  utf8       Mandatory     `virtual`
-    /0                 ``model_template``              utf8       Mandatory     See details below.
+    /0                 ``model_template``              utf8       Optional      See details below. Deprecated for virtual populations; should be omitted.
     /                  ``node_type_id``                int        Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
     ================== =============================== ========== ============= ==================================================================================================
 
@@ -260,7 +260,8 @@ model_template
 
 The ``model_template`` is used to reference a template or class describing the electrophysical properties and mechanisms of the node(s).
 Its value and interpretation is context-dependent on the corresponding ‘model_type’.
-When there is no applicable model template for a given model type (i.e. model_type=virtual) it is assigned a value of NULL.
+When there is no applicable model template for a given model type (i.e. model_type=virtual) the field should be omitted.
+For backward compatibility, existing files that contain ``model_template`` with empty strings for virtual populations are still valid but the field will be ignored.
 Otherwise, within BBP, it uses a colon-separated string-pair with the following syntax: ``hoc:resource`` where ``resource`` is a reference to the template file-name or class.
 
 Edge File
