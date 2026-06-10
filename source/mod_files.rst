@@ -25,6 +25,11 @@ The following categories of mechanisms are typically implemented as MOD files:
 - **Reports / utility mechanisms** — auxiliary mechanisms for recording
   variables or performing arithmetic (e.g. ``ALU``, ``SonataReport``).
 
+.. note::
+  
+   The SONATA circuit folder only contains the MOD files for ion channels, synapses, and gap junctions. The Current / clamp sources and Reports / utility mechanisms are not included in the circuit folder and added by simulator during simulation setup.
+   The standard NEURON built-in mechanisms mentioned below such as ``ExpSyn``, ``Exp2Syn``, ``IntFire1``, ``IntFire2``, ``IntFire4``, ``IClamp`` and ``SEClamp`` are available by default via NEURON simulator (used by both BlueCelluLab and Neurodamus), and do not require MOD files in the circuits MOD directory.
+
 Standard NEURON Mechanisms
 --------------------------
 
@@ -70,10 +75,12 @@ switching to a different synapse model via the ``modoverride`` field:
 
 .. code-block:: json
 
-   {
-       "connection_override": "my_override",
-       "modoverride": "GluSynapse"
-   }
+   "connection_override" : [
+      {
+          "name": "my_override",
+          "modoverride": "GluSynapse"
+      }
+   ]
 
 When ``modoverride`` is set to ``"GluSynapse"``, the simulator loads
 ``GluSynapseHelper.hoc`` instead of the default helper. The helper file is
@@ -120,4 +127,5 @@ References
 
 - `NMODL documentation <https://nrn.readthedocs.io/en/latest/nmodl/index.html>`_
 - `NEURON HOC reference <https://nrn.readthedocs.io/en/latest/hoc/index.html>`_
+- `SONATA extension documentation <https://sonata-extension.readthedocs.io/en/latest/sonata_overview.html>`_
 - `SONATA specification (Allen Institute) <https://github.com/AllenInstitute/sonata/blob/main/docs/SONATA_DEVELOPER_GUIDE.md>`_

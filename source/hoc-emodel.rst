@@ -3,19 +3,27 @@ HOC E-Model Templates
 
 When instantiating a morphology in NEURON, the `HOC`_ language is used.
 For a model to be compatible with `BlueCelluLab`_ or `Neurodamus`_, it must implement a minimum set of public members.
-This document outlines the required attributes and functions.
+This document outlines the required properties and HOC `procedures <https://www.neuronsimulator.org/en/8.0.1/python/programming/hocsyntax.html#proc>`_ (`proc`).
+The current version (June 2026) of the HOC template used by the above simulators is available at `here <https://github.com/openbraininstitute/BluePyEModel/blob/main/bluepyemodel/export_emodel/templates/cell_template_neurodamus_sbo.jinja2>`_ in the `BluePyEModel`_ repository.
 
-Functions
----------
+HOC Procedures
+--------------
 
 ================ ================= ====================================================================
 Name             Arguments         Description
 ================ ================= ====================================================================
-init             gid               Numeric (``$1``) argument for the global identifier
-                 morphology_dir    String (``$o1``) the path to morphology file directory
-                 morphology_name   String (``$o2``) the name of the morphology file
+init             gid               Numeric (``$1``) argument for the global identifier (legacy parameter, not used). You can pass 0 or any integer value.
+                 morphology_dir    String (``$s2``) the path to morphology file directory
+                 morphology_name   String (``$s3``) the name of the morphology file
+load_morphology  morphology_dir    String (``$s2``) from init(), the path to morphology file directory
+                 morphology_name   String (``$s3``) from init(), the name of the morphology file
 clear            void              Clears all model references, including circular ones, for cleanup
 re_init_rng      channel_seed      Re-initializes the random number generator with the specified seed
+geom_nseg        void              Sets the number of segments for each section
+indexSections    void              Assigns section indices to the section voltage value
+replace_axon     void              Replaces the axon with a modified version. See :ref:`axon_replacement` for details
+insertChannel    void              Inserts channels into the sections
+biophys          void              Applies biophysical properties to the sections
 ================ ================= ====================================================================
 
 Properties
@@ -39,7 +47,9 @@ nSecAll         float         Number of all the sections, before axon being redu
 nSecAxonalOrig  float         Number of sections in the axon, before being reduced
 =============== ============= ========================================================================
 
-Note: The axon from original morphology is replaced with a shorter artificial axon stub during the axon replacement process to reduce the computational cost of simulating the axon. A myelinated section is then added after the artificial axon stub to act as a passive cable after the replaced axon. The myelinated section prevents any signal reflections from the end of the axon back to the soma as the potential can propagate from the replaced axon to the myelinated section. See :ref:`axon_replacement` for more details about the axon replacement process. 
+.. note::
+
+   The axon from original morphology is replaced with a shorter artificial axon stub during the axon replacement process to reduce the computational cost of simulating the whole axon. A myelinated section is then added (optional) after the artificial axon stub to act as a passive cable after the replaced axon. The myelinated section prevents any signal reflections from the end of the axon back to the soma as the potential can propagate from the replaced axon to the myelinated section. See :ref:`axon_replacement` for more details about the axon replacement process. 
 
 Semantic order
 --------------
@@ -54,28 +64,45 @@ The parameter `biophysical_neuron_models_dir` defines the path for the emodel fi
 `clear` can be called when it is necessary to destroy the cell HOC object, for example, when the simulation is finished or when the cell object is removed from the simulation.
 It clears all references to the cell, including circular references that could prevent garbage collection.
 
+The `init` procedure is called first which performs the following actions (See `init` proc `here <https://github.com/openbraininstitute/BluePyEModel/blob/main/bluepyemodel/export_emodel/templates/cell_template_neurodamus_sbo.jinja2>`_):
+
+#. create ``all``, ``apical``, ``axonal``, ``basal``, ``somatic``, ``myelinated`` SectionList objects
+#. delete any existing sections using ``forall delete_section()``
+#. load the morphology file using ``load_morphology()``
+#. set the number of segments for each section using ``geom_nseg()``
+#. index the sections using ``indexSections()``
+#. replace the axon using ``replace_axon()`` if needed
+#. insert the ion channels using ``insertChannel()``
+#. apply biophysical properties using ``biophys()``
+#. initialize the random number generators using ``re_init_rng()``
+
 .. _axon_replacement:
 
 Axon Replacement
 ----------------
 
 The original axon from the loaded morphology is replaced with a shorter artificial axon stub (40-60 micrometers) mainly containing 1-2 axon sections representing axon initial segment (AIS)/ or axonal hillock.
-These initial sections form the origin site of action potentials during somatic current injections due high density of fast-activating sodium channels.
+These initial sections form the origin site of action potentials during somatic current injections due to high density of fast-activating sodium channels.
 These two sections are generally followed by myelinated axon ~1000 micrometers.
 Other sections of the original axon are removed for simulations to reduce the complexity of the model and save on computation time.
-Axons were considered neurites that mainly carry electrical signals away from the soma towards the post-synaptic neurons.
+Axons are considered neurites that mainly carry electrical signals away from the soma towards the post-synaptic neurons.
 However, simulating the whole axon is essential for studying extracellular potentials and several axonal studies suggest the increasing importance of whole axon simulations.
 
-The `replace_axon()` function used for most BBP and OBI (Open Brain Institute) hoc templates can be found here in `BluePyEModel <https://github.com/openbraininstitute/BluePyEModel/blob/0aeec3d5f9ce9087e31d8220478337d527edc586/bluepyemodel/evaluation/modifiers.py#L278>`_ (`Python function: <https://github.com/openbraininstitute/BluePyEModel/blob/aea5174fcc8eecfba4333c402aebe7c00e26903e/bluepyemodel/evaluation/modifiers.py#L145>`_). Some templates generated by BluePyOpt have used a different replace axon function: 
-`BluePyOpt <https://github.com/openbraininstitute/BluePyOpt/blob/5cf752a5f630005b8b0f5353c882e73e154e94be/bluepyopt/ephys/morphologies.py#L226>`_ (`Python function: <https://github.com/openbraininstitute/BluePyOpt/blob/21f0d68462cb918d4a2330b343ddd63c5569ec22/bluepyopt/ephys/morphologies.py#L183>`_).
+The `replace_axon()` HOC `procedure <https://www.neuronsimulator.org/en/8.0.1/python/programming/hocsyntax.html#proc> (`proc`) used for most `Blue Brain Project <https://bluebrain.epfl.ch/bbp/research/domains/bluebrain>`_ (BBP) and `Open Brain Institute <https://www.openbraininstitute.org>`_ (OBI) HOC templates can be found `here <https://github.com/openbraininstitute/BluePyEModel/blob/0aeec3d5f9ce9087e31d8220478337d527edc586/bluepyemodel/evaluation/modifiers.py#L278>`_ in BluePyEModel (`Python function <https://github.com/openbraininstitute/BluePyEModel/blob/aea5174fcc8eecfba4333c402aebe7c00e26903e/bluepyemodel/evaluation/modifiers.py#L145>`_). Some templates generated by BluePyOpt have used a different replace axon HOC `proc`: 
+`See here <https://github.com/openbraininstitute/BluePyOpt/blob/5cf752a5f630005b8b0f5353c882e73e154e94be/bluepyopt/ephys/morphologies.py#L226>`_ (`Python function <https://github.com/openbraininstitute/BluePyOpt/blob/21f0d68462cb918d4a2330b343ddd63c5569ec22/bluepyopt/ephys/morphologies.py#L183>`_).
 
-BBP/OBI Default (BluePyEModel) `replace_axon` function
-This is the  `replace axon`_ function used in the BBP/OBI models. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and have diameters of axon from original morphology when present. The myelinated axon length is 1000 micrometers and has a uniform diameter from one of the original axon sections. 
-Note: This replace axon function requires that the original morphology has at least 3 axon sections.
+BBP/OBI Default (BluePyEModel) `replace_axon` HOC Procedure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is the  `replace axon` `proc` used in the BBP/OBI models. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and have diameters of axon from original morphology when present. The myelinated axon length is 1000 micrometers and has a uniform diameter from one of the original axon sections. 
+
+.. note::
+
+   This replace axon function requires that the original morphology has at least 3 axon sections.
 
 See the code below for details:
 
-.. code-block::
+.. code-block:: c
 
     proc replace_axon(){ local nSec, L_chunk, dist, i1, i2, count, L_target, chunkSize, L_real localobj diams, lens
 
@@ -132,7 +159,7 @@ See the code below for details:
             L_real = 0
             count = 0
 
-            // new axon dependant on old diameters
+            // new axon dependent on old diameters
             for i=0,1{
                 access axon[i]
                 L =  L_target/2
@@ -173,13 +200,17 @@ See the code below for details:
         }
     }    
 
-BluePyOpt `replace_axon` function
+BluePyOpt `replace_axon` HOC Procedure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the `replace axon`_ function used in some BluePyOpt templates. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and have diameters of axon from original morphology when present. The myelinated axon length is 1000 micrometers and has a uniform diameter from one of the original axon sections. See the code below for details:
-Note: This replace axon function can work for original neuron morphologies with no or some axon sections.
+This is the `replace axon <https://github.com/openbraininstitute/BluePyOpt/blob/5cf752a5f630005b8b0f5353c882e73e154e94be/bluepyopt/ephys/morphologies.py#L226>`_ `proc` used in some BluePyOpt templates. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and has diameters of axon from original morphology when present. See the code below for details:
+
+.. note::
+
+   This replace axon function can work for original neuron morphologies with no or any number of axon sections.
 
 
-.. code-block::
+.. code-block:: c
 
     proc replace_axon(){ local nSec, D1, D2
     // preserve the number of original axonal sections
@@ -227,9 +258,10 @@ Note: This replace axon function can work for original neuron morphologies with 
     soma[0] connect axon[0](0), 1
     axon[0] connect axon[1](0), 1
     }
+    }
 
 The diameters of the original axon morphology sections (if present) are used to create the new axon sections.
-The section IDs of the newly created initial axon sections and myelinated axon sections in BluePyEModel's `replace axon <https://github.com/openbraininstitute/BluePyEModel/blob/aea5174fcc8eecfba4333c402aebe7c00e26903e/bluepyemodel/evaluation/modifiers.py#L145>`_ function are updated to the section IDs of the original axon morphology.
+The section IDs of the newly created initial axon sections and myelinated axon sections in BluePyEModel's `replace axon <https://github.com/openbraininstitute/BluePyEModel/blob/aea5174fcc8eecfba4333c402aebe7c00e26903e/bluepyemodel/evaluation/modifiers.py#L303>`_ `proc` are updated to the section IDs of the original axon morphology. See :ref:`section_id` for more details.
 
 For example, by executing these statements in the `replace_axon()` function, before deleting the original axon:
 
@@ -244,10 +276,12 @@ After deleting the original axon and creating new axon & myelinated sections, th
 .. code-block::
 
     axon[0] v(0.0001) = i1
-    axon[0] v(0.0001) = i2
+    axon[1] v(0.0001) = i2
     myelin v(0.0001) = i3
 
 Hence, the new sections do not use new section ids. The section ids of the remaining axon sections from original morphology are not used during simulations.
+
+.. _section_id:
 
 Section ID
 ----------
@@ -255,7 +289,7 @@ Section ID
 Section ID is a unique integer identifier (starting from 0) for a section in the morphology.
 These are used to identify the sections in the SONATA node and edge files, used during SONATA report creation, and to specify section IDs in compartment_sets.
 The IDs start from 0 and are assigned based on the initialization in the NEURON simulator.
-If the original sections are modified e.g. by `replace_axon` function or by adding/deleting sections, the section IDs of the neuron should be updated by the HOC template through reinitialization.
+If the original sections are modified e.g. by `replace_axon` `proc` or by adding/deleting sections, the section IDs of the neuron should be updated by the HOC template through reinitialization.
 Similarly, when new sections are added, they should be initialized.
 If the model is not re-initialized, the section IDs of the new sections are assigned starting after the last ID of the original model.
 
@@ -263,7 +297,7 @@ If the model is not re-initialized, the section IDs of the new sections are assi
 Template Versions
 -----------------
 The Blue Brain Project has used various versions of the HOC template over time due to changing scientific requirements and updates in the simulators: `Neurodamus`_ and `BlueCelluLab`_. The current version used in the OBI template is called `v6` for most single neuron models.
-The current version (May 2026) of the hoc template is available at `here <https://github.com/openbraininstitute/BluePyEModel/blob/main/bluepyemodel/export_emodel/templates/cell_template_neurodamus_sbo.jinja2>`_ in the `BluePyEModel`_ repository.
+The current version (June 2026) of the HOC template is available at `here <https://github.com/openbraininstitute/BluePyEModel/blob/main/bluepyemodel/export_emodel/templates/cell_template_neurodamus_sbo.jinja2>`_ in the `BluePyEModel`_ repository.
 
 .. _HOC: https://nrn.readthedocs.io/en/latest/hoc/index.html
 .. _BlueCelluLab: https://bluecellulab.readthedocs.io/en/latest/
