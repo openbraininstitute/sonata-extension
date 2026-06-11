@@ -75,12 +75,15 @@ switching to a different synapse model via the ``modoverride`` field:
 
 .. code-block:: json
 
-   "connection_override" : [
+   "connection_overrides": [
       {
-          "name": "my_override",
-          "modoverride": "GluSynapse"
+          "name": "plasticity",
+          "source": "hex_O1Excitatory",
+          "target": "hex_O1Excitatory",
+          "modoverride": "GluSynapse",
+          "weight": 1.0
       }
-   ]
+  ]
 
 When ``modoverride`` is set to ``"GluSynapse"``, the simulator loads
 ``GluSynapseHelper.hoc`` instead of the default helper. The helper file is

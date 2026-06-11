@@ -203,7 +203,7 @@ See the code below for details:
 BluePyOpt `replace_axon` HOC Procedure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the `replace axon <https://github.com/openbraininstitute/BluePyOpt/blob/5cf752a5f630005b8b0f5353c882e73e154e94be/bluepyopt/ephys/morphologies.py#L226>`_ `proc` used in some BluePyOpt templates. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and has diameters of axon from original morphology when present. See the code below for details:
+This is the `replace axon <https://github.com/openbraininstitute/BluePyOpt/blob/5cf752a5f630005b8b0f5353c882e73e154e94be/bluepyopt/ephys/morphologies.py#L226>`_ `proc` used in some BluePyOpt templates. It deletes the original axon and adds 2 artificial axon sections. The axonal section length is 60 micrometers and has diameters of axon from original morphology when present. See the code below for details:
 
 .. note::
 
