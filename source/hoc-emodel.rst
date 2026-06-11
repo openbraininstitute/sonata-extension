@@ -12,7 +12,7 @@ HOC Procedures
 ================ ================= ====================================================================
 Name             Arguments         Description
 ================ ================= ====================================================================
-init             gid               Numeric (``$1``) argument for the global identifier (legacy parameter, not used). You can pass 0 or any integer value.
+init             gid               Numeric (``$1``) argument for the global identifier (legacy parameter, not used).
                  morphology_dir    String (``$s2``) the path to morphology file directory
                  morphology_name   String (``$s3``) the name of the morphology file
 load_morphology  morphology_dir    String (``$s2``) from init(), the path to morphology file directory
@@ -94,7 +94,7 @@ The `replace_axon()` HOC `procedure <https://www.neuronsimulator.org/en/8.0.1/py
 BBP/OBI Default (BluePyEModel) `replace_axon` HOC Procedure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the  `replace axon` `proc` used in the BBP/OBI models. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and have diameters of axon from original morphology when present. The myelinated axon length is 1000 micrometers and has a uniform diameter from one of the original axon sections. 
+This is the  `replace axon` `proc` used in the BBP/OBI models. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and has diameters of axon from original morphology when present. The myelinated axon length is 1000 micrometers and has a uniform diameter from one of the original axon sections. 
 
 .. note::
 
@@ -257,7 +257,6 @@ This is the `replace axon <https://github.com/openbraininstitute/BluePyOpt/blob/
     nSecAxonal = 2
     soma[0] connect axon[0](0), 1
     axon[0] connect axon[1](0), 1
-    }
     }
 
 The diameters of the original axon morphology sections (if present) are used to create the new axon sections.
