@@ -12,7 +12,7 @@ HOC Procedures
 ================ ================= ====================================================================
 Name             Arguments         Description
 ================ ================= ====================================================================
-init             gid               Numeric (``$1``) argument for the global identifier (legacy parameter, not used). You can pass 0 or any integer value.
+init             gid               Numeric (``$1``) argument for the global identifier (legacy parameter, not used).
                  morphology_dir    String (``$s2``) the path to morphology file directory
                  morphology_name   String (``$s3``) the name of the morphology file
 load_morphology  morphology_dir    String (``$s2``) from init(), the path to morphology file directory
