@@ -258,7 +258,6 @@ This is the `replace axon <https://github.com/openbraininstitute/BluePyOpt/blob/
     soma[0] connect axon[0](0), 1
     axon[0] connect axon[1](0), 1
     }
-    }
 
 The diameters of the original axon morphology sections (if present) are used to create the new axon sections.
 The section IDs of the newly created initial axon sections and myelinated axon sections in BluePyEModel's `replace axon <https://github.com/openbraininstitute/BluePyEModel/blob/aea5174fcc8eecfba4333c402aebe7c00e26903e/bluepyemodel/evaluation/modifiers.py#L303>`_ `proc` are updated to the section IDs of the original axon morphology. See :ref:`section_id` for more details.
