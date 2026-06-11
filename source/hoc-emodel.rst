@@ -94,7 +94,7 @@ The `replace_axon()` HOC `procedure <https://www.neuronsimulator.org/en/8.0.1/py
 BBP/OBI Default (BluePyEModel) `replace_axon` HOC Procedure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the  `replace axon` `proc` used in the BBP/OBI models. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and have diameters of axon from original morphology when present. The myelinated axon length is 1000 micrometers and has a uniform diameter from one of the original axon sections. 
+This is the  `replace axon` `proc` used in the BBP/OBI models. It deletes the original axon and adds 2 artificial axon sections and a myelinated axon. The axonal section length is 60 micrometers and has diameters of axon from original morphology when present. The myelinated axon length is 1000 micrometers and has a uniform diameter from one of the original axon sections. 
 
 .. note::
 
