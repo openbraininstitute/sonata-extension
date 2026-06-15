@@ -224,7 +224,7 @@ This is for `virtual` nodes (i.e., source nodes of `projections`).
     Group              Field                           Type       Requirement   Description
     ================== =============================== ========== ============= ==================================================================================================
     /0                 ``model_type``                  utf8       Mandatory     `virtual`
-    /0                 ``model_template``              utf8       Optional      See details below. Deprecated for virtual populations; should be omitted.
+    /0                 ``model_template``              utf8       Optional      See details below.
     /                  ``node_type_id``                int        Mandatory     Set to -1. Foreign key to node type csv file not used at BBP..
     ================== =============================== ========== ============= ==================================================================================================
 
