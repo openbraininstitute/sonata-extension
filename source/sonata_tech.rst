@@ -289,13 +289,13 @@ Group column represents the HDF group where the dataset is located under /<popul
     /0            ``afferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
     /0            ``afferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0            ``afferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in um.  See :ref:`faq`.
-    /0            ``efferent_center_[x|y|z]``   float32    Mandatory   Same as ``afferent_center_[x|y|z]``, but for the synapse position at the axon of the presynaptic cell.
-    /0            ``efferent_surface_[x|y|z]``  float32    Mandatory   Same as ``efferent_center_[x|y|z]``, but the for the synapse location on the axon surface.
-    /0            ``efferent_section_id``       uint       Mandatory   Same as ``afferent_section_id``, but for source node.
-    /0            ``efferent_section_pos``      float32    Mandatory   Same as ``afferent_section_pos``, but for source node.
-    /0            ``efferent_section_type``     uint       Mandatory   Type of the efferent section.
-    /0            ``efferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
-    /0            ``efferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in µm.  See :ref:`faq`.
+    /0            ``efferent_center_[x|y|z]``   float32    Optional    Same as ``afferent_center_[x|y|z]``, but for the synapse position at the axon of the presynaptic cell. See note.
+    /0            ``efferent_surface_[x|y|z]``  float32    Optional    Same as ``efferent_center_[x|y|z]``, but the for the synapse location on the axon surface.
+    /0            ``efferent_section_id``       uint       Optional    Same as ``afferent_section_id``, but for source node.
+    /0            ``efferent_section_pos``      float32    Optional    Same as ``afferent_section_pos``, but for source node.
+    /0            ``efferent_section_type``     uint       Optional    Type of the efferent section.
+    /0            ``efferent_segment_id``       uint       Optional    Numerical index of the section of the cell (soma is index 0).
+    /0            ``efferent_segment_offset``   float32    Optional    If triple synapse addressing is being used, the offset within the segment in µm.  See :ref:`faq`.
     /0            ``conductance``               float32    Mandatory   The conductance of the synapse (nanosiemens); also referred to as ``g_syn``
     /0            ``decay_time``                float32    Mandatory   The decay time of the synapse (milliseconds).
     /0            ``depression_time``           float32    Mandatory   The depression time constant of the synapse (milliseconds), also referred to as ``d_syn``.
@@ -332,6 +332,8 @@ Group column represents the HDF group where the dataset is located under /<popul
 
 ``source_node_id`` and ``target_node_id`` datasets have an HDF5 attribute of type string named ``node_population`` defining the source and target node population name respectively.
 
+.. Note::
+   For the ``efferent*`` fields, they are optional only for `projection` style connectivity; ie: where there isn't a physical axon.
 
 Extra fields for plasticity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -406,14 +408,14 @@ Connection type is ``electrical``. Used for gap junctions between neurons
     /0        ``afferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
     /0        ``afferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in um.  See :ref:`faq`.
     /0        ``afferent_junction_id``      uint       Mandatory   An internal identifier for the simulator to perform the electrical coupling.
-    /0        ``efferent_center_[x|y|z]``   float32    Mandatory   Same as ``afferent_center_[x|y|z]``, but for the source cell.
-    /0        ``efferent_surface_[x|y|z]``  float32    Mandatory   Same as ``efferent_center_[x|y|z]``, but for the connection on the surface of the source cell.
-    /0        ``efferent_section_id``       uint       Mandatory   Same as ``afferent_section_id``, but for source node.
-    /0        ``efferent_section_pos``      float32    Mandatory   Same as ``afferent_section_pos``, but for source node.
-    /0        ``efferent_section_type``     uint       Mandatory   Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
-    /0        ``efferent_segment_id``       uint       Mandatory   Numerical index of the section of the cell (soma is index 0).
-    /0        ``efferent_segment_offset``   float32    Mandatory   If triple synapse addressing is being used, the offset within the segment in µm.  See :ref:`faq`.
-    /0        ``efferent_junction_id``      uint       Mandatory   Same as ``afferent_junction_id``, but for source node.
+    /0        ``efferent_center_[x|y|z]``   float32    Optional    Same as ``afferent_center_[x|y|z]``, but for the source cell.
+    /0        ``efferent_surface_[x|y|z]``  float32    Optional    Same as ``efferent_center_[x|y|z]``, but for the connection on the surface of the source cell.
+    /0        ``efferent_section_id``       uint       Optional    Same as ``afferent_section_id``, but for source node.
+    /0        ``efferent_section_pos``      float32    Optional    Same as ``afferent_section_pos``, but for source node.
+    /0        ``efferent_section_type``     uint       Optional    Neurite or soma type of the afferent as in morphIO: soma=1, axon=2, basal_dendrite=3, apical_dendrite=4.
+    /0        ``efferent_segment_id``       uint       Optional    Numerical index of the section of the cell (soma is index 0).
+    /0        ``efferent_segment_offset``   float32    Optional    If triple synapse addressing is being used, the offset within the segment in µm.  See :ref:`faq`.
+    /0        ``efferent_junction_id``      uint       Optional    Same as ``afferent_junction_id``, but for source node.
     /0        ``spine_length``              float32    Mandatory   Distance between the two surface positions in µm.
     /0        ``conductance``               float32    Mandatory   The conductance of the gap junction (nanosiemens); also referred to as ``g_syn``
     /         ``edge_type_id``              int        Mandatory   Links an edge to the underlying CSV file; not used at BBP.
