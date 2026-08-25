@@ -105,4 +105,4 @@ the main (upstream) repository:
     git pull --ff upstream master
     ```
 
-[github]: https://github.com/BlueBrain/sonata-extension
+[github]: https://github.com/openbraininstitute/sonata-extension
