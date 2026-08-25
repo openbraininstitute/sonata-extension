@@ -32,7 +32,7 @@ With that, the two representations are:
 
    The morph-tool_ utility can be helpful to load morphologies, and calculate the `section_id` that NEURON expects.
 
-   .. _morph-tool: https://github.com/BlueBrain/morph-tool
+   .. _morph-tool: https://github.com/openbraininstitute/morph-tool
 
 
 Why doesn't SONATA have global ids?
@@ -44,7 +44,7 @@ One of the goals of SONATA was to make composition easier: if there are global i
 As it stands, the ``(population_name, node_id)`` are globally unique, and should be used to identify cells.
 Relying on other IDs may make using reports, simulators, etc harder.
 
-SNAP handles it like this, as described `here <https://github.com/BlueBrain/snap/commit/c211d79ccc01bf2b0dcc621d12a5bba054a03ff7>`_.
+SNAP handles it like this, as described `here <https://github.com/openbraininstitute/snap/commit/c211d79ccc01bf2b0dcc621d12a5bba054a03ff7>`_.
 
 
 What do I do about a 'missing the 'node_population' attribute' errors?
