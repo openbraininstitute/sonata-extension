@@ -63,7 +63,7 @@ html_theme = 'obi_sphinx_theme'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'Circuit documentation'
+html_title = f'Circuit documentation {release}'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
