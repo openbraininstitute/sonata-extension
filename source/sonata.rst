@@ -1,4 +1,4 @@
-SONATA Circuit description
+SONATA Extended Data Format
 ===========================
 
 .. toctree::

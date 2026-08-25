@@ -29,8 +29,8 @@ The reference implementation to load data for this extension is provided by `lib
    :hidden:
 
    Home <self>
-   BlueConfig <blueconfig>
    SONATA <sonata>
+   BlueConfig <blueconfig>
    Additional documentation <technical>
    Legacy formats <legacy>
 
