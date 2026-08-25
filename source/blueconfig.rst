@@ -1122,3 +1122,11 @@ Neurodamus.
          in order to merge connections with base connectivity and avoid creating a new
          PopulationID (implying different seeding), this option should be set to 1.
          Default is disabled (0)
+
+
+.. toctree::
+   :hidden:
+
+   blueconfig-projection-example
+   circuit_files
+   recipe

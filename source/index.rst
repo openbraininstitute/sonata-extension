@@ -29,14 +29,8 @@ The reference implementation to load data for this extension is provided by `lib
    :hidden:
 
    Home <self>
-   blueconfig
-   blueconfig-projection-example
-   circuit_files
-   recipe
-   sonata
-   hoc-emodel
-   mod_files
-   NGV
-   faq
-   legacy
+   BlueConfig <blueconfig>
+   SONATA <sonata>
+   Additional documentation <technical>
+   Legacy formats <legacy>
 
