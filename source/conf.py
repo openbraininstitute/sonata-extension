@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.todo',
+    'sphinx.ext.doctest',
     'blueconfig_sphinx',
 ]
 
@@ -58,8 +59,7 @@ release = VERSION
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx-bluebrain-theme'
-html_theme_options = {'metadata_file': '../package.json'}
+html_theme = 'obi_sphinx_theme'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
