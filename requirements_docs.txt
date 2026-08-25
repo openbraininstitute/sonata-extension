@@ -1,3 +1,2 @@
-sphinx>=2.0.0
-sphinx-bluebrain-theme
-sphinx-autorun
+sphinx>=8.2,<10
+obi-sphinx-theme>=2.0.0
