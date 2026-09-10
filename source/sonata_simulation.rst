@@ -335,8 +335,8 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    ============================== ========== ============ ==========================================
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
-   module                         text       Mandatory    The type of stimulus dictating additional parameters (see addtional tables below). Supported values: "linear", "relative_linear", "pulse", "sinusoidal", "subthreshold", "hyperpolarizing", "synapse_replay", "seclamp", "noise", "shot_noise", "relative_shot_noise", "absolute_shot_noise", "ornstein_uhlenbeck", "relative_ornstein_uhlenbeck", "spatially_uniform_e_field".
-   input_type                     text       Mandatory    The type of the input with the reserved values : "spikes", "extracellular_stimulation", "current_clamp", "voltage_clamp", "conductance". Should correspond according to the module (see additional tables below). Currently, not validated by BBP simulation which will use the appropriate input_type regardless of the string passed.
+   input_type                     text       Mandatory    The type of the input; narrows the set of available modules.
+   module                         text       Mandatory    The type of stimulus dictating additional parameters (see additional tables below).
    delay                          float      Mandatory    Time in ms when input is activated. Not applicable for the "seclamp" module because the SEClamp is always on at time=0, see `NEURON SEClamp <https://nrn.readthedocs.io/en/9.0.1/progref/modelspec/programmatic/mechanisms/mech.html#SEClamp>`_.
    duration                       float      Mandatory    Time duration in ms for how long input is activated.
    node_set                       text       Optional     Node set which is affected by input. Mutually exclusive with ``compartment_set``.
@@ -348,7 +348,76 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    The simulation must declare the ``compartment_sets_file`` at the top level.
    The referenced compartment set must be valid, sorted, and free of duplicates (as in reports).
 
-Below are additional parameters used depending on the module (input_type)
+
+.. list-table:: Module / Type Reference
+   :header-rows: 1
+   :widths: 20 30 50
+
+   * - Module
+     - Type
+     - Reference
+   * - spikes
+     - ``synapse_replay``
+     - :ref:`spikes-synapse-replay`
+   * - extracellular_stimulation
+     - ``spatially_uniform_e_field``
+     - :ref:`extracellular_stimulation-spatially_uniform_e_field`
+   * - current_clamp
+     - ``linear``
+     - :ref:`current-clamp-linear`
+   * -
+     - ``relative_linear``
+     - :ref:`current-clamp-relative`
+   * -
+     - ``pulse``
+     - :ref:`current-clamp-pulse`
+   * -
+     - ``sinusoidal``
+     - :ref:`current-clamp-sinusoidal`
+   * -
+     - ``subthreshold``
+     - :ref:`current-clamp-subthreshold`
+   * -
+     - ``noise``
+     - :ref:`shot_noise-absolute_shot_noise-relative_shot_noise`
+   * -
+     - ``shot_noise``
+     - :ref:`shot_noise-absolute_shot_noise-relative_shot_noise`
+   * -
+     - ``relative_shot_noise``
+     - :ref:`shot_noise-absolute_shot_noise-relative_shot_noise`
+   * -
+     - ``absolute_shot_noise``
+     - :ref:`shot_noise-absolute_shot_noise-relative_shot_noise`
+   * -
+     - ``hyperpolarizing``
+     - :ref:`current-clamp-hyperpolarizing`
+   * -
+     - ``ornstein_uhlenbeck``
+     - :ref:`ornstein_uhlenbeck-relative_ornstein_uhlenbeck`
+   * -
+     - ``relative_ornstein_uhlenbeck``
+     - :ref:`ornstein_uhlenbeck-relative_ornstein_uhlenbeck`
+   * - voltage_clamp
+     - ``seclamp``
+     - :ref:`voltage_clamp-seclamp`
+   * - conductance
+     - ``shot_noise``
+     - :ref:`shot_noise-absolute_shot_noise-relative_shot_noise`
+   * -
+     - ``relative_shot_noise``
+     - :ref:`shot_noise-absolute_shot_noise-relative_shot_noise`
+   * -
+     - ``absolute_shot_noise``
+     - :ref:`shot_noise-absolute_shot_noise-relative_shot_noise`
+   * -
+     - ``ornstein_uhlenbeck``
+     - :ref:`ornstein_uhlenbeck-relative_ornstein_uhlenbeck`
+   * -
+     - ``relative_ornstein_uhlenbeck``
+     - :ref:`ornstein_uhlenbeck-relative_ornstein_uhlenbeck`
+
+.. _current-clamp-linear:
 
 linear (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -365,6 +434,8 @@ A continuous injection of current.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
+.. _current-clamp-relative:
+
 relative_linear (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -379,6 +450,8 @@ A continues injection of current, regulated according to the current a cell requ
    percent_end                    float      Optional     If given, The percentage of a cell's threshold current is interpolated such that the percentage reaches this value when the stimulus concludes. Otherwise, stays at percent_start.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
+
+.. _current-clamp-pulse:
 
 pulse (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~
@@ -396,6 +469,8 @@ Series of current pulse injections.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
+.. _current-clamp-sinusoidal:
+
 sinusoidal (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -412,6 +487,8 @@ Series of current pulse injections.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
+.. _current-clamp-subthreshold:
+
 subthreshold (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -425,6 +502,8 @@ A continuous injections of current, adjusted from the current a cell requires to
    percent_less                   integer    Mandatory    A percentage adjusted from 100 of a cell's threshold current. E.g. 20 will apply 80% of the threshold current. Using a negative value will give more than 100. E.g. -20 will inject 120% of the threshold current.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
+
+.. _current-clamp-hyperpolarizing:
 
 hyperpolarizing (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -454,41 +533,7 @@ example::
     }
   }
 
-synapse_replay (spikes)
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Spike events are created from the cells indicated in a file and delivered to their post synaptic targets. The weights of the replay synapses are set at t=0 ms and are not altered by any delayed connection.
-
-.. table::
-
-   ============================== ========== ============ ==========================================
-   Property                       Type       Requirement  Description
-   ============================== ========== ============ ==========================================
-   spike_file                     text       Mandatory    Indicates the location of the file with the spike info for injection. Spikes files are the :ref:`.h5 spikes files <sonata_spike_files>`.
-   ============================== ========== ============ ==========================================
-
-seclamp (voltage_clamp)
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Cells are held at indicated membrane voltage by injecting adapting current.
-
-.. table::
-
-   ============================== =========== ============ ==========================================
-   Property                       Type        Requirement  Description
-   ============================== =========== ============ ==========================================
-   voltage                        float       Mandatory    Specifies the initial membrane voltage in mV at which the targeted cells should be held at time = 0.
-                                                           In the case of ``duration_levels`` and ``voltage_levels``, this inital membrane voltage will be overridden by ``voltage_level[0]``.
-   duration_levels                list[float] Optional     Specifies the durations of each step stimulus. The first step begins at time = 0, and each subsequent step begins at the cumulative sum of all previous durations. 
-                                                           
-                                                           The sum of ``duration_levels`` must not exceed the ``duration`` property.
-                                                           
-                                                           If the sum of ``duration_levels`` is less than ``duration`` , the last value in ``voltage_levels`` will be maintained until the end.
-                                                           
-                                                           It is recommended that durations be multiples of the simulation time step (dt) (i.e., duration = n·dt for some integer n) to ensure proper alignment with NEURON’s fixed-step method where `Vector.play <https://www.neuronsimulator.org/en/9.0.1/progref/programming/math/vector.html#Vector.play>`_ updates occur only at discrete time steps (fadvance()).
-   voltage_levels                 list[float] Optional     Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus. ``voltage_levels[0]`` overrides the ``voltage`` property.
-   series_resistance              float       Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
-   ============================== =========== ============ ==========================================
+.. _current-clamp-noise:
 
 noise (current_clamp)
 ~~~~~~~~~~~~~~~~~~~~~
@@ -521,6 +566,49 @@ example::
        }
   }
 
+
+.. _spikes-synapse-replay:
+
+synapse_replay (spikes)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Spike events are created from the cells indicated in a file and delivered to their post synaptic targets. The weights of the replay synapses are set at t=0 ms and are not altered by any delayed connection.
+
+.. table::
+
+   ============================== ========== ============ ==========================================
+   Property                       Type       Requirement  Description
+   ============================== ========== ============ ==========================================
+   spike_file                     text       Mandatory    Indicates the location of the file with the spike info for injection. Spikes files are the :ref:`.h5 spikes files <sonata_spike_files>`.
+   ============================== ========== ============ ==========================================
+
+.. _voltage_clamp-seclamp:
+
+seclamp (voltage_clamp)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Cells are held at indicated membrane voltage by injecting adapting current.
+
+.. table::
+
+   ============================== =========== ============ ==========================================
+   Property                       Type        Requirement  Description
+   ============================== =========== ============ ==========================================
+   voltage                        float       Mandatory    Specifies the initial membrane voltage in mV at which the targeted cells should be held at time = 0.
+                                                           In the case of ``duration_levels`` and ``voltage_levels``, this inital membrane voltage will be overridden by ``voltage_level[0]``.
+   duration_levels                list[float] Optional     Specifies the durations of each step stimulus. The first step begins at time = 0, and each subsequent step begins at the cumulative sum of all previous durations. 
+                                                           
+                                                           The sum of ``duration_levels`` must not exceed the ``duration`` property.
+                                                           
+                                                           If the sum of ``duration_levels`` is less than ``duration`` , the last value in ``voltage_levels`` will be maintained until the end.
+                                                           
+                                                           It is recommended that durations be multiples of the simulation time step (dt) (i.e., duration = n·dt for some integer n) to ensure proper alignment with NEURON’s fixed-step method where `Vector.play <https://www.neuronsimulator.org/en/9.0.1/progref/programming/math/vector.html#Vector.play>`_ updates occur only at discrete time steps (fadvance()).
+   voltage_levels                 list[float] Optional     Specifies the membrane voltages the targeted cells should be held at in mV for each step stimulus. ``voltage_levels[0]`` overrides the ``voltage`` property.
+   series_resistance              float       Optional     Specifies the series resistance in M :math:`\Omega`. Default is 0.01 M :math:`\Omega`.
+   ============================== =========== ============ ==========================================
+
+.. _shot_noise-absolute_shot_noise-relative_shot_noise:
+
 shot_noise, absolute_shot_noise and relative_shot_noise (current_clamp or conductance)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -549,6 +637,8 @@ Note: fields marked Mandatory* depend on which shot_noise version is selected.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON SEClamp mechanism, if a conductance source, or a NEURON IClamp mechanism, if a current source. The SEClamp and IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a ConductanceSource mechanism or a MembraneCurrentSource mechanism, which are identical to SEClamp and IClamp, respectively, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
+.. _ornstein_uhlenbeck-relative_ornstein_uhlenbeck:
+
 ornstein_uhlenbeck and relative_ornstein_uhlenbeck (current_clamp or conductance)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Generate an `Ornstein-Uhlenbeck process <https://en.wikipedia.org/wiki/Ornstein%E2%80%93Uhlenbeck_process>`_ signal injected as a conductance or current. In the Relative version the parameters (mean, sigma) are computed relative to a cell's inverse input resistance (conductance) or threshold current (current_clamp), by scaling these with (mean_percent, sd_percent).
@@ -571,6 +661,8 @@ Note: fields marked Mandatory* depend on which ornstein_uhlenbeck version is sel
    random_seed                    integer    Optional     Override the random seed (to introduce correlations between cells).
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON SEClamp mechanism, if a conductance source, or a NEURON IClamp mechanism, if a current source. The SEClamp and IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a ConductanceSource mechanism or a MembraneCurrentSource mechanism, which are identical to SEClamp and IClamp, respectively, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
+
+.. _extracellular_stimulation-spatially_uniform_e_field:
 
 spatially_uniform_e_field (extracellular_stimulation)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
