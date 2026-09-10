@@ -377,6 +377,9 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    * -
      - ``subthreshold``
      - :ref:`current-clamp-subthreshold`
+   * - current_clamp
+     - ``replay``
+     - :ref:`current-clamp-replay`
    * -
      - ``noise``
      - :ref:`shot_noise-absolute_shot_noise-relative_shot_noise`
@@ -500,7 +503,23 @@ A continuous injections of current, adjusted from the current a cell requires to
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
    percent_less                   integer    Mandatory    A percentage adjusted from 100 of a cell's threshold current. E.g. 20 will apply 80% of the threshold current. Using a negative value will give more than 100. E.g. -20 will inject 120% of the threshold current.
-   represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If the noise signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
+   represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
+   ============================== ========== ============ ==========================================
+
+.. _current-clamp-replay:
+
+replay (current_clamp)
+~~~~~~~~~~~~~~~~~~~~~~
+
+Replay previously recorded currents into somas.
+
+.. table::
+
+   ============================== ========== ============ ==========================================
+   Property                       Type       Requirement  Description
+   ============================== ========== ============ ==========================================
+   path                           text       Mandatory    Path to the file with the current information for injection. Files are the :ref:`.h5 soma report <sonata_soma_report>`.
+   represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
 .. _current-clamp-hyperpolarizing:
