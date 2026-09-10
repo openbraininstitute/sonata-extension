@@ -160,6 +160,9 @@ Then, in your compartment report definition, set ``"sections": "compartment_set"
 
 The output HDF5 report format for these targeted compartment reports remains the same as described in the main :ref:`compartment_report_main` section.
 
+
+.. _sonata_soma_report:
+
 Soma report
 ^^^^^^^^^^^
 
