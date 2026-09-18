@@ -377,7 +377,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
    * -
      - ``subthreshold``
      - :ref:`current-clamp-subthreshold`
-   * - current_clamp
+   * -
      - ``replay``
      - :ref:`current-clamp-replay`
    * -
@@ -519,6 +519,7 @@ Replay previously recorded currents into somas.
    Property                       Type       Requirement  Description
    ============================== ========== ============ ==========================================
    path                           text       Mandatory    Path to the file with the current information for injection. Files are the :ref:`.h5 soma report <sonata_soma_report>`.
+   interpolate                    boolean    Mandatory    Whether the signal should be interpolated.  When the NEURON simulator is used, the interpolation provided by `Vector.play <https://www.neuronsimulator.org/en/9.0.0/progref/programming/math/vector.html#Vector.play>`_ is used.
    represents_physical_electrode  boolean    Optional     Default is False. If True, the signal will be implemented using a NEURON IClamp mechanism. The IClamp produce an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode. If False, in which case the signal will be implemented using a  MembraneCurrentSource mechanism, which is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
    ============================== ========== ============ ==========================================
 
