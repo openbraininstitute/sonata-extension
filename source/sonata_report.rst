@@ -1,7 +1,7 @@
 .. _report:
 
-SONATA reports
-==============
+Reports
+=======
 
 The goal of this document is to clarify the specification with respect to BBP needs.
 The original report documentation is `located here <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#output-file-formats>`_

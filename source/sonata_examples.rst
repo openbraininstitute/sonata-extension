@@ -1,8 +1,8 @@
 .. _sonata_examples:
 
 
-SONATA examples
-===============
+Examples and Usecases
+=====================
 
 Different examples are provided for different usecases.
 

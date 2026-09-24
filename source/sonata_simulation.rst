@@ -1,7 +1,7 @@
 .. _sonata_simulation:
 
-SONATA Simulation Configuration file
-====================================
+Simulation Configuration file
+=============================
 
 A simulation configuration file is a json formatted text file used for storing simulation parameters such as stimulus to drive activity, reports to collect data during run, and overrides to adapt the behavior according to experimental conditions and properties.
 
