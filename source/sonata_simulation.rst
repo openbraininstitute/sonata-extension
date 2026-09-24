@@ -427,7 +427,7 @@ Dictionary of dictionaries with each member describing one pattern of stimulus t
     For inputs that support ``represents_physical_electrode``, the value determines if the currents are included in extracellular signals.
     When `True`, the ``IClamp`` produces an electrode current which is not included in the calculation of extracellular signals, so this option should be used to represent a physical electrode.
     If the signal represents synaptic input, `represents_physical_electrode` should be set to False, in which case the signal will be implemented using ``MembraneCurrentSource`` mechanism.
-    This mechanims is is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
+    This mechanism is identical to IClamp, but produce a membrane current, which is included in the calculation of the extracellular signal.
 
 .. _current-clamp-linear:
 
