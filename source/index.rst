@@ -25,6 +25,10 @@ The definition of the various stimuli and reports supported by Neuron and CoreNe
 
 The reference implementation to load data for this extension is provided by `libsonata <https://github.com/openbraininstitute/libsonata>`_
 
+See :ref:`SONATA Overview <sonata_overview>` for a brief introduction.
+
+See :ref:`SONATA Tech <sonata_tech>` for more in depth coverage.
+
 .. toctree::
    :hidden:
 

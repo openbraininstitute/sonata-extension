@@ -1,7 +1,7 @@
 .. _sonata_config:
 
-SONATA Configuration file
-=========================
+Circuit Configuration file
+==========================
 
 .. _CircuitConfigVersion:
 

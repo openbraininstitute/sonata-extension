@@ -2,8 +2,8 @@
 .. |bbp| replace:: `BBP`
 
 
-SONATA Circuit overview
-=======================
+Circuit overview
+================
 
 This section describes the `SONATA` specification as used within |bbp|.
 

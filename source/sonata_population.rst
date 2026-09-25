@@ -2,8 +2,8 @@
 .. |bbp| replace:: `BBP`
 
 
-SONATA Population
-=================
+Populations
+===========
 
 
 To distinguish between nodes and edges contained or connecting different

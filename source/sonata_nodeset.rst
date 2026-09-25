@@ -1,7 +1,7 @@
 .. _sonata_nodeset:
 
-SONATA Node Sets
-----------------
+Node Sets
+---------
 
 Introduction
 ~~~~~~~~~~~~
