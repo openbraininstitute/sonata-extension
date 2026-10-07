@@ -128,6 +128,41 @@ A new `input_type`::`module` is defined for Poisson Spike:
         }
     }
 
+Connection Overrides
+--------------------
+
+The simulation config's :ref:`connection_overrides <connection_overrides>` act on the synapses of the single edge population.
+`Brian2` supports these properties:
+
+.. table::
+
+    ======================= =========================================================================================
+    Property                Description
+    ======================= =========================================================================================
+    name                    As in SONATA.
+    source                  As in SONATA.
+    target                  As in SONATA.
+    weight                  Factor on each synapse's weight `w` as loaded from the edges file; see below.
+    synapse_delay_override  Replaces each synapse's delay, in ms.
+    delay                   Time in ms at which the override takes effect; `0`, the default, applies it from the start.
+    ======================= =========================================================================================
+
+`weight` is always a factor on the weight the circuit gives each synapse, never on the synapse's current value, so overrides do not compound.
+A `weight` of `0` disconnects, a later `weight` of `1` restores the circuit's weights exactly, inhibitory (negative) weights included, and a `weight` of `0.5` halves them however many overrides came before.
+This is the SONATA definition of `weight` as a multiplier of the weight stored in the edges file, applied to the synapse model's `w`.
+
+`synapse_delay_override` is applied at `delay` too, rather than being ignored when `delay` is non-zero.
+`spont_minis`, `synapse_configure`, `modoverride`, `neuromodulation_dtc` and `neuromodulation_strength` have no `Brian2` counterpart, and setting any of them is an error.
+
+Ex: disconnecting the sugar neurons from the rest of the circuit between 200 and 400 ms:
+
+.. code-block:: json
+
+    "connection_overrides": [
+        {"name": "disconnect_sugar", "source": "sugar", "target": "All", "delay": 200, "weight": 0.0},
+        {"name": "reconnect_sugar", "source": "sugar", "target": "All", "delay": 400, "weight": 1.0}
+    ]
+
 Examples
 ========
 
@@ -283,3 +318,4 @@ Future Work
 * The initial implementation was conceived to support the `A leaky integrate-and-fire computational model based on the connectome of the entire adult Drosophila brain reveals insights into sensorimotor processing. <https://github.com/philshiu/Drosophila_brain_model>`_
 * The `inputs` block needs further refinement
 * Only a single population is currently supported
+* `connection_overrides` do not reach spikes replayed by :ref:`synapse_replay <spikes-synapse-replay>` inputs, which use their own copy of the synapses
