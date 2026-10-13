@@ -73,11 +73,11 @@ Group column represents the HDF group where the dataset is located under /<popul
     /0                 ``model_type``                  utf8       Mandatory     `biophysical`
     /0                 ``morph_class``                 utf8       Mandatory     Used to define the morphology classification.
                                                                                 Whether they are "PYR" or "INT", for example.
-    /0                 ``etype``                       utf8       Mandatory     Defines the electrical type of the node.
-    /0                 ``mtype``                       utf8       Mandatory     Defines the morphological type of the node.
+    /0                 ``etype``                       utf8       Mandatory     Defines the electrical type of the node. "N/A" if unknown.
+    /0                 ``mtype``                       utf8       Mandatory     Defines the morphological type of the node. "N/A" if unknown.
     /0                 ``me_combo``                    utf8       Optional      Deprecated Replaced by dynamics_params.
                                                                                 Foreign key to me combo tsv file.
-    /0                 ``synapse_class``               utf8       Mandatory     Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH".
+    /0                 ``synapse_class``               utf8       Mandatory     Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH", or "N/A" if unknown.
     /0                 ``region``                      utf8       Optional      Attribute assigning a brain region to the associated cell.
     /0/dynamics_params ``threshold_current``           float32    Mandatory     The minimal amplitude (in nA) of a step current clamp injection that triggers an action potential.
     /0/dynamics_params ``holding_current``             float32    Mandatory     The current clamp amplitude (in nA) necessary to hold the cell at a predefined holding voltage (typically around -85 mV for BBP).
@@ -196,9 +196,9 @@ The equivalent NEST model is: `<https://nest-simulator.readthedocs.io/en/v3.0/mo
     /0/dynamics_params ``tau_decay``                   float32    Mandatory     Synaptic decay time constant (for afferent synapses). (ms) cardinality is ``nb_receptors`` elements.
     /0/dynamics_params ``tau_rise``                    float32    Mandatory     Rise time of the synaptic conductance (for afferent synapses). (ms) cardinality is ``nb_receptors`` elements.
     /0                 ``x``, ``y``, ``z``             float32    Mandatory     The position of the center of the soma in the local world in µm.
-    /0                 ``etype``                       utf8       Mandatory     Electrical type of the node.
-    /0                 ``mtype``                       utf8       Mandatory     Morphological type of the node.
-    /0                 ``synapse_class``               utf8       Mandatory     Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH".
+    /0                 ``etype``                       utf8       Mandatory     Electrical type of the node. "N/A" if unknown.
+    /0                 ``mtype``                       utf8       Mandatory     Morphological type of the node. "N/A" if unknown.
+    /0                 ``synapse_class``               utf8       Mandatory     Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH", or "N/A" if unknown.
     /0                 ``region``                      utf8       Optional      Brain region of the cell.
     /0                 ``hemisphere``                  utf8       Optional      "left" or "right" hemisphere.
     /0                 ``model_type``                  utf8       Mandatory     `point_neuron`
@@ -249,9 +249,9 @@ This is for `integrate-and-fire <https://nrn.readthedocs.io/en/9.0.1/courses/hop
     /0                 ``layer``                       utf8       Optional?     Layer for the neuron.
     /0                 ``model_template``              utf8       Mandatory     See details below.
     /0                 ``model_type``                  utf8       Mandatory     `point_process`
-    /0                 ``etype``                       utf8       Mandatory     Defines the electrical type of the node.
-    /0                 ``mtype``                       utf8       Mandatory     Defines the morphological type of the node.
-    /0                 ``synapse_class``               utf8       Mandatory     Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH".
+    /0                 ``etype``                       utf8       Mandatory     Defines the electrical type of the node. "N/A" if unknown.
+    /0                 ``mtype``                       utf8       Mandatory     Defines the morphological type of the node. "N/A" if unknown.
+    /0                 ``synapse_class``               utf8       Mandatory     Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH", or "N/A" if unknown.
     /                  ``node_type_id``                int        Mandatory     Foreign key to Allen's node type file
     ================== =============================== ========== ============= =========================================================================================
 
