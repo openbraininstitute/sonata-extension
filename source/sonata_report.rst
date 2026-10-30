@@ -347,18 +347,18 @@ The ``method`` field of an LFP report block chooses what is written:
 
 * ``"by_cell"`` (default): each cell's contribution to each electrode.
   ``node_ids`` lists the reported cells, and ``data`` has a column for every cell and electrode.
-* ``"sum"``: what each electrode records, the sum of the contributions of the cells.
+* ``"sum"``: the contributions summed over the reported cells of each population.
   ``data`` has a column for every electrode.
 
-A summed report has one ``/report/{population_name}`` group for each population of the reported cells, holding the sum over that population's cells:
+A summed report has one ``/report/{population_name}`` for each population of the reported cells, holding the sum over that population's cells:
 
 * ``mapping/node_ids`` holds a single ``0``, which stands for all of the population's reported cells rather than for node 0.
 * ``mapping/index_pointers`` is ``[0, number of electrodes]``.
 * ``mapping/element_ids`` lists the electrodes, as in a per-cell report.
 
-When the cells come from several populations, the signal at an electrode is the sum over the groups.
-Summing a per-cell report over its nodes gives the summed report, up to float32 rounding.
-A summed report is smaller by the number of cells: 4 bytes per electrode and time step, against 4 bytes per cell, electrode and time step.
+Summing a per-cell report over the nodes of a population gives that population's summed report.
+When the reported cells come from several populations, nothing holds the total: the signal at an electrode is the sum of its column in each ``/report/{population_name}``.
+
 For example::
 
     "reports": {
