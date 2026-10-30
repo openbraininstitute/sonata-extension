@@ -358,7 +358,7 @@ A summed report has one ``/report/{population_name}`` for each population of the
 
 Summing a per-cell report over the nodes of a population gives that population's summed report.
 When the reported cells come from several populations, nothing holds the total: the signal at an electrode is the sum of its column in each ``/report/{population_name}``.
-An electrode's column can differ between populations: in each, its entry in ``mapping/element_ids`` is the ``electrode_id`` of ``/electrodes/{electrodename}/{population_name}`` in the electrodes file (:ref:`sonata_tech`).
+An electrode's column can differ between populations: in each, its entry in ``mapping/element_ids`` is its ``electrode_id``, held in ``/electrodes/{electrodename}/{population_name}`` of the electrodes file (:ref:`sonata_tech`).
 
 For example::
 
