@@ -72,7 +72,7 @@ Group column represents the HDF group where the dataset is located under /<popul
     /0                 ``model_template``              utf8       Mandatory     See details below.
     /0                 ``model_type``                  utf8       Mandatory     `biophysical`
     /0                 ``morph_class``                 utf8       Mandatory     Used to define the morphology classification.
-                                                                                Whether they are "PYR" or "INT", for example.
+                                                                                Whether they are "PYR" or "INT", for example. "N/A" if unknown.
     /0                 ``etype``                       utf8       Mandatory     Defines the electrical type of the node. "N/A" if unknown.
     /0                 ``mtype``                       utf8       Mandatory     Defines the morphological type of the node. "N/A" if unknown.
     /0                 ``me_combo``                    utf8       Optional      Deprecated Replaced by dynamics_params.
