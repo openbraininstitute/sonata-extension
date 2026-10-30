@@ -301,7 +301,7 @@ A specialized report for recording Local Field Potentials (LFPs) that captures t
 The report structure uses:
 
 * ``element_ids``: Electrode identifiers defined in the electrodes_file (:ref:`sonata_tech`)
-* ``node_ids``: Identifiers of the contributing cells
+* ``node_ids``: Identifiers of the contributing cells, or a single ``0`` in a summed report (see :ref:`lfp_report_method`)
 
 LFP reports require a pre-calculated weight file (electrodes file) that defines the contribution of each compartment to the LFP signal at each electrode position.
 The electrodes file is specified per-report via the ``electrodes_file`` field in each LFP report block.
@@ -338,12 +338,49 @@ For LFP reports, you need to specify ``"type": "lfp"``, ``"electrodes_file"``, a
         }
     }
 
+.. _lfp_report_method:
+
+Per-cell and summed LFP reports
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``method`` field of an LFP report block chooses what is written:
+
+* ``"by_cell"`` (default): each cell's contribution to each electrode.
+  ``node_ids`` lists the reported cells, and ``data`` has a column for every cell and electrode.
+* ``"sum"``: the contributions summed over the reported cells of each population.
+  ``data`` has a column for every electrode.
+
+A summed report has one ``/report/{population_name}`` for each population of the reported cells, holding the sum over that population's cells:
+
+* ``mapping/node_ids`` holds a single ``0``, which stands for all of the population's reported cells rather than for node 0.
+* ``mapping/index_pointers`` is ``[0, number of electrodes]``.
+* ``mapping/element_ids`` lists the electrodes, as in a per-cell report.
+
+Summing a per-cell report over the nodes of a population gives that population's summed report.
+When the reported cells come from several populations, nothing holds the total: the signal at an electrode is the sum of its column in each ``/report/{population_name}``.
+An electrode's column can differ between populations: in each, its entry in ``mapping/element_ids`` is its ``electrode_id``, held in ``/electrodes/{electrodename}/{population_name}`` of the electrodes file (:ref:`sonata_tech`).
+
+For example::
+
+    "reports": {
+        "lfp_sum": {
+            "type": "lfp",
+            "method": "sum",
+            "cells": "Mosaic",
+            "dt": 0.1,
+            "start_time": 0.0,
+            "end_time": 40.0,
+            "electrodes_file": "/path/to/electrodes_A.h5"
+        }
+    }
+
 Important Notes:
 
 * Each LFP report must specify its own ``electrodes_file``
 * LFP reports are independent of each other; each report applies its own weights independently
 * Electrode positions must be defined before simulation
 * Uses same HDF5 structure as compartment reports
+* ``method`` chooses per-cell (``"by_cell"``, the default) or summed (``"sum"``) output
 * element_ids correspond to electrode positions
 * Requires ``target_simulator`` set to ``"CORENEURON"``
 * Commonly used for analyzing population-level activity
