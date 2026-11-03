@@ -97,7 +97,7 @@ target_simulator
 *Optional*.
 
 A parameter specifying which simulator is expected to be able to simulate the circuit.
-Supported values : `NEURON` and `CORENEURON`, `LearningEngine`, and `Brian2`.
+Supported values : `NEURON` and `CORENEURON`, `LearningEngine`, `Brian2`, and `NEST`.
 Default is `NEURON`.
 
 
