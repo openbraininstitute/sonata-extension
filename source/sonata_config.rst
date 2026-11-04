@@ -212,6 +212,7 @@ There is also one additional field `type` used to denote the population type.
                                                   * :ref:`astrocyte <astrocyte_node_type>`
                                                   * :ref:`vasculature <vasculature_node_type>`
                                                   * :ref:`point_process <allen_point_node>`
+                                                  * :doc:`brian2_point <sonata_brian2>`
 
                                                Default is `biophysical`.
    spatial_segment_index_dir      Optional     Path to the directory containing the spatial index files.
@@ -307,6 +308,7 @@ There is also one additional field `type` used to denote the population type.
                                                   * `neuromodulatory`
                                                   * :ref:`Exp2Syn_synapse <allen_chemical_connection>`
                                                   * :ref:`point_process <allen_point_connection>`
+                                                  * :doc:`brian2_synapse <sonata_brian2>`
 
                                                Default is `chemical`.
    spatial_synapse_index_dir      Optional     Path to the directory containing the spatial index files.
