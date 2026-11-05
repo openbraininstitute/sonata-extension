@@ -679,7 +679,7 @@ The format of the weights file is described below:
                                                                                                                      DipoleReciprocity is the simplified form of this equation for current dipole sources.
                                                                                                                      LineSource means the analytic solution for line sources of current, in infinite homogeneous extracellular media.
                                                                                                                      PointSource refers to the analytic solution for point source approximation, for the same assumptions.
-  /electrodes/{electrodename}/{population_name} electrode_id            uint       1                   Mandatory     Index of the column corresponding to this electrode in /electrodes/{population_name}/scaling_factors
+  /electrodes/{electrodename}                   {population_name}       uint       1                   Mandatory     Index of the column corresponding to this electrode in /electrodes/{population_name}/scaling_factors (its electrode_id)
   /electrodes/{population_name}                 scaling_factors         float64    Total_comp x N_elec Mandatory     Scaling factor for each compartment in the corresponding neuron, in V/nA
   /{population_name}                            node_ids                uint       N_nodes             Mandatory     List of node ids. Node ids not listed here are to be ignored
   /{population_name}                            offsets                 uint       N_nodes + 1         Mandatory     The offset for each node in the scaling_factors field
