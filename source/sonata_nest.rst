@@ -7,24 +7,21 @@ Overview
 --------
 
 `NEST <https://nest-simulator.readthedocs.io/>`_ is a simulator for networks of point neurons.
-This document describes how such a network is encoded in SONATA so it can be read by `libsonata`
-and instantiated in NEST through the PyNEST ``Create``/``Connect`` API.
+This document describes how such a network is encoded in SONATA so it can be read by `libsonata` and instantiated in NEST through the PyNEST ``Create``/``Connect`` API.
 
 A NEST circuit uses ``target_simulator: "NEST"`` and is described by:
 
-- the circuit config: each population's ``type`` and ``model_template_dir``;
-- the nodes/edges files: the ``model_template`` of every node/edge and its per-node/per-edge
-  ``dynamics_params``;
-- model templates: one JSON file per template in ``model_template_dir``, naming the NEST model and
-  its parameters (as in :doc:`Brian2 <sonata_brian2>`);
+- the circuit config: each population's ``type`` and ``point_neuron_models_dir``;
+- the nodes/edges files: the ``model_template`` of every node/edge and its per-node/per-edge ``dynamics_params``;
+- model templates: one JSON file per template in ``point_neuron_models_dir``, naming the NEST model and its parameters (as in :doc:`Brian2 <sonata_brian2>`);
 - the simulation config: ``run`` and the spike inputs driving virtual populations.
 
-There is no global ``components`` section; model templates are located per population.
+``point_neuron_models_dir`` is the same property as in :ref:`components`, used for the templates of both neuron and edge (synapse) populations.
+It can be set per population, or once under ``components`` as a default that populations without their own value inherit.
 
-Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` and ``point_process``
-(interchangeable) for neurons, ``virtual`` for inputs. NEST SONATA defines no edge type, so edges
-use the default ``chemical``. With ``target_simulator: "NEST"`` these populations follow this page,
-not the field tables of :doc:`sonata_tech`.
+Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` and ``point_process`` (interchangeable) for neurons, ``virtual`` for inputs.
+NEST SONATA defines no edge type, so edges use the default ``chemical``.
+With ``target_simulator: "NEST"`` these populations follow this page, not the field tables of :doc:`sonata_tech`.
 
 Circuit Config
 --------------
@@ -35,9 +32,12 @@ Circuit Config
     Property                       Requirement  Description
     ============================== ============ ==================================================
     type                           Mandatory    ``point_neuron``, ``point_process`` or ``virtual`` (nodes); ``chemical`` (edges)
-    model_template_dir             Conditional  Directory holding the population's model templates and NESTML sources.
-                                                Mandatory for neuron and edge populations.
+    point_neuron_models_dir        Conditional  Directory holding the population's model templates and NESTML sources.
+                                                Mandatory for neuron and edge populations, either on the population or under ``components``.
     ============================== ============ ==================================================
+
+Template names (``<model_template>.json``, ``<model>.nestml``) must be unique within a directory.
+Populations that share a directory, including through the ``components`` default, must not reuse a name for different templates.
 
 .. code-block:: json
 
@@ -50,7 +50,7 @@ Circuit Config
           {
             "nodes_file": "S1/nodes.h5",
             "populations": {
-              "S1": {"type": "point_neuron", "model_template_dir": "model_templates/S1"}
+              "S1": {"type": "point_neuron", "point_neuron_models_dir": "model_templates/S1"}
             }
           },
           {
@@ -64,7 +64,7 @@ Circuit Config
             "populations": {
               "VPM__S1__chemical": {
                 "type": "chemical",
-                "model_template_dir": "model_templates/VPM__S1__chemical"
+                "point_neuron_models_dir": "model_templates/VPM__S1__chemical"
               }
             }
           }
@@ -75,21 +75,16 @@ Circuit Config
 Model Templates
 ---------------
 
-``<model_template_dir>/<model_template>.json``, shared by all nodes/edges with that
-``model_template``:
+``<point_neuron_models_dir>/<model_template>.json``, shared by all nodes/edges with that ``model_template``:
 
 .. table::
 
     ================== ============ =========================================================================
     Key                Requirement  Description
     ================== ============ =========================================================================
-    model              Mandatory    ``nest:<model>`` (built-in NEST model) or ``nestml:<model>`` (compiled from
-                                    ``<model_template_dir>/<model>.nestml`` on demand)
-    params             Optional     Parameters set on every node/edge using the template. For synapses,
-                                    ``weight`` and ``delay`` act as defaults for edges without values.
-    dynamics_params    Optional     Parameter name -> unit of the per-node/per-edge values read from
-                                    ``/0/dynamics_params/<name>``. Units are informational; NEST uses the
-                                    model's native units.
+    model              Mandatory    ``nest:<model>`` (built-in NEST model) or ``nestml:<model>`` (compiled from ``<point_neuron_models_dir>/<model>.nestml`` on demand)
+    params             Optional     Parameters set on every node/edge using the template. For synapses, ``weight`` and ``delay`` act as defaults for edges without values.
+    dynamics_params    Optional     Parameter name -> unit of the per-node/per-edge values read from ``/0/dynamics_params/<name>``. Units are informational; NEST uses the model's native units.
     ================== ============ =========================================================================
 
 .. code-block:: json
@@ -117,9 +112,8 @@ Neuron population, ``type`` ``point_neuron`` or ``point_process``:
 
 Values are applied in order: ``params``, then ``dynamics_params``.
 
-Virtual (input) population, ``type`` ``virtual``: only ``node_type_id`` and an empty ``/0``
-group are required. Its nodes are created as ``spike_train_injector`` and emit the spikes of the
-``synapse_replay`` inputs targeting them.
+Virtual (input) population, ``type`` ``virtual``: only ``node_type_id`` and an empty ``/0`` group are required.
+Its nodes are created as ``spike_train_injector`` and emit the spikes of the ``synapse_replay`` inputs targeting them.
 
 Edges
 -----
@@ -134,22 +128,19 @@ Synapse population, ``type`` ``chemical``:
     /0                 model_template                  utf8       Model template name (an ``@library`` enumeration is recommended)
     /0                 syn_weight                      float32    Optional per-edge weight
     /0                 delay                           float32    Optional per-edge delay (ms); clamped to the kernel resolution
-    /0/dynamics_params ...                             float32    Per-edge values of the template's ``dynamics_params``, e.g.
-                                                                  ``U``, ``u``, ``tau_rec``, ``tau_fac``, ``receptor_type``
+    /0/dynamics_params ...                             float32    Per-edge values of the template's ``dynamics_params``, e.g. ``U``, ``u``, ``tau_rec``, ``tau_fac``, ``receptor_type``
     ================== =============================== ========== ===========================================================
 
-The ``syn_spec`` of an edge is built from the template's ``model``, then ``params``, then
-``syn_weight``/``delay``, then ``dynamics_params``.
+The ``syn_spec`` of an edge is built from the template's ``model``, then ``params``, then ``syn_weight``/``delay``, then ``dynamics_params``.
 
 .. _nest_inputs:
 
 Simulation Config
 -----------------
 
-``run`` requires ``dt``, ``tstop`` and ``random_seed``. Spikes of virtual populations are given as
-:ref:`synapse_replay <spikes-synapse-replay>` inputs whose ``node_set`` selects ``virtual``
-nodes; spike times outside ``[delay, delay + duration)`` are dropped. Other input modules are not
-supported.
+``run`` requires ``dt``, ``tstop`` and ``random_seed``.
+Spikes of virtual populations are given as :ref:`synapse_replay <spikes-synapse-replay>` inputs whose ``node_set`` selects ``virtual`` nodes; spike times outside ``[delay, delay + duration)`` are dropped.
+Other input modules are not supported.
 
 .. code-block:: json
 
@@ -172,8 +163,7 @@ supported.
 Conversion from NEST SONATA
 ---------------------------
 
-Circuits in the `NEST SONATA format
-<https://nest-simulator.readthedocs.io/en/stable/nest_sonata/nest_sonata_guide.html>`_ map as follows:
+Circuits in the `NEST SONATA format <https://nest-simulator.readthedocs.io/en/stable/nest_sonata/nest_sonata_guide.html>`_ map as follows:
 
 .. list-table::
     :header-rows: 1
@@ -182,23 +172,17 @@ Circuits in the `NEST SONATA format
     * - NEST SONATA
       - SONATA extension
     * - ``components`` ``point_neuron_models_dir``
-      - ``model_template_dir`` of each neuron population; its node types' templates and ``.nestml``
-        sources are written there
+      - ``point_neuron_models_dir`` of each neuron population; its node types' templates and ``.nestml`` sources are written there
     * - ``components`` ``synaptic_models_dir``
-      - ``model_template_dir`` of each edge population; its edge types' templates and ``.nestml``
-        sources are written there
+      - ``point_neuron_models_dir`` of each edge population; its edge types' templates and ``.nestml`` sources are written there
     * - node types CSV row (``node_type_id``, ``model_template``, ``dynamics_params`` JSON)
-      - one model template per node type, with the JSON as ``params``; ``/0/model_template`` set from
-        ``node_type_id``
+      - one model template per node type, with the JSON as ``params``; ``/0/model_template`` set from ``node_type_id``
     * - ``model_type`` ``point_neuron``, ``point_process``, ``virtual``
       - population ``type``, unchanged
     * - edges (no ``model_type``)
       - population ``type`` ``chemical``
-    * - edge types CSV row (``edge_type_id``, ``model_template``, ``dynamics_params`` JSON,
-        ``delay``, ``syn_weight``)
-      - one model template per edge type (``nest:`` prefix added), with the JSON as ``params`` and
-        the CSV ``delay``/``syn_weight`` as ``params`` ``delay``/``weight``; ``/0/model_template``
-        set from ``edge_type_id``
+    * - edge types CSV row (``edge_type_id``, ``model_template``, ``dynamics_params`` JSON, ``delay``, ``syn_weight``)
+      - one model template per edge type (``nest:`` prefix added), with the JSON as ``params`` and the CSV ``delay``/``syn_weight`` as ``params`` ``delay``/``weight``; ``/0/model_template`` set from ``edge_type_id``
     * - per-edge ``delay``, ``syn_weight``
       - unchanged
     * - other per-edge datasets overriding the synapse JSON
