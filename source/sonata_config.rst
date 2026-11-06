@@ -73,6 +73,7 @@ They can be found also under :ref:`populations <population_config_dict>` where i
                                                     This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path the the actual HOC file.
    point_neuron_models_dir         Optional         Path to the templates.
                                                     This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path.
+                                                    For NEST circuits it holds the templates of both neuron and edge populations (see :doc:`sonata_nest`).
    mechanisms_dir                  Optional         Path to the MOD files for mechanisms which may need to be compiled in advance, depending on implementation.
    vasculature_file                Optional         Path to the .h5 file containing the vasculature morphology.
                                                     Only for `vasculature` node populations where it is mandatory.
@@ -97,7 +98,7 @@ target_simulator
 *Optional*.
 
 A parameter specifying which simulator is expected to be able to simulate the circuit.
-Supported values : `NEURON` and `CORENEURON`, `LearningEngine`, and `Brian2`.
+Supported values : `NEURON` and `CORENEURON`, `LearningEngine`, `Brian2`, and `NEST`.
 Default is `NEURON`.
 
 
