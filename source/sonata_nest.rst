@@ -112,6 +112,9 @@ Neuron population, ``type`` ``point_neuron``:
 
 Values are applied in order: ``params``, then ``dynamics_params``.
 
+Other node attributes, for example positions or a cell class such as ``ei``, are ordinary SONATA attributes under ``/0``.
+NEST ignores them. They can still select nodes in node sets.
+
 Virtual (input) population, ``type`` ``virtual``: only ``node_type_id`` and an empty ``/0`` group are required.
 Its nodes are created as ``spike_train_injector`` and emit the spikes of the ``synapse_replay`` inputs targeting them.
 
@@ -140,6 +143,7 @@ Simulation Config
 
 ``run`` requires ``dt``, ``tstop`` and ``random_seed``.
 Spikes of virtual populations are given as :ref:`synapse_replay <spikes-synapse-replay>` inputs whose ``node_set`` selects ``virtual`` nodes; spike times outside ``[delay, delay + duration)`` are dropped.
+The ``spike_file`` is a SONATA spike file: ``/spikes/<population>/node_ids`` and ``/spikes/<population>/timestamps`` for each virtual population it covers.
 Other input modules are not supported.
 
 .. code-block:: json
@@ -184,15 +188,23 @@ Circuits in the `NEST SONATA format <https://nest-simulator.readthedocs.io/en/st
     * - edges (no ``model_type``)
       - population ``type`` ``chemical``
     * - edge types CSV row (``edge_type_id``, ``model_template``, ``dynamics_params`` JSON, ``delay``, ``syn_weight``)
-      - one model template per edge type (``nest:`` prefix added), with the JSON as ``params`` and the CSV ``delay``/``syn_weight`` as ``params`` ``delay``/``weight``; ``/0/model_template`` set from ``edge_type_id``
+      - one model template per edge type (``nest:`` prefix added); ``/0/model_template`` set from ``edge_type_id``; ``params`` are the CSV ``delay``/``syn_weight`` (as ``delay``/``weight``) and the other CSV columns that NEST sets as parameters of the synapse model, with the parameters of the ``dynamics_params`` JSON on top, which win on conflicts as in NEST
+    * - other node types CSV columns (e.g. ``ei``, ``model_name``)
+      - per-node attributes under ``/0``: a column that is a number in every type is stored as a number, any other as an ``@library`` enumeration; ``NULL`` and empty values are dropped, and types without a value get NaN or an empty string; a dataset already stored per node in the HDF5 file takes precedence; NEST does not use them
+    * - other edge types CSV columns (e.g. ``source_query``, ``target_query``)
+      - per-edge attributes under ``/0``, with the same rules; NEST does not use them. A column that is a parameter of the synapse model is not an attribute but a template ``params`` entry, see the row above
     * - per-edge ``delay``, ``syn_weight``
       - unchanged
     * - other per-edge datasets overriding the synapse JSON
       - moved to ``/0/dynamics_params``
     * - ``inputs`` (``input_file``, ``node_set``)
-      - ``synapse_replay`` input (``spike_file``, ``node_set``)
+      - ``synapse_replay`` input (``spike_file``, ``node_set``); a spike file in the legacy layout (``/spikes/gids`` and ``/spikes/timestamps``) is rewritten to ``/spikes/<population>/node_ids`` and ``timestamps``, where the population is the one the ``node_set`` selects as a whole
     * - ``run`` (``dt``, ``tstop``)
       - simulation config ``run`` (plus ``random_seed``)
+    * - node sets files of the circuit and the simulation config
+      - merged into one ``node_sets.json`` that also holds one set per population
+    * - ``conditions``, ``output``, ``reports``, ``run`` ``nsteps_block``
+      - not converted: NEST ignores them, and the converter logs a warning that lists the ones it drops
 
 Future Work
 -----------
@@ -397,7 +409,8 @@ The input becomes a ``synapse_replay`` input whose ``spike_file`` is the copied 
     }
 
 Each type row becomes one model template.
-The CSV model gets the ``nest:`` prefix if it has none, the type JSON becomes ``params``, and the CSV ``delay`` and ``syn_weight`` become the ``delay`` and ``weight`` defaults of the synapse.
+The CSV model gets the ``nest:`` prefix if it has none, and the type JSON becomes ``params``.
+For a synapse, the CSV ``delay`` and ``syn_weight`` become the ``delay`` and ``weight`` defaults, and so does every other CSV column that NEST sets as a parameter of the synapse model; the JSON parameters overwrite them where both give the same name.
 ``dynamics_params`` lists the per-node and per-edge values stored in the HDF5 files, with their units:
 
 .. code-block:: text
@@ -481,8 +494,8 @@ Summary of the changes
       - ``params`` of the template
     * - ``adaptive.nestml`` in the node model directory
       - copied next to the templates of every population that uses it (``model_templates/exc``)
-    * - CSV ``delay`` and ``syn_weight``
-      - ``params`` ``delay`` and ``weight`` of the template (defaults for edges without values)
+    * - CSV ``delay``, ``syn_weight`` and other CSV columns that NEST sets as synapse parameters
+      - ``params`` ``delay``, ``weight`` and the parameters of the template (defaults for edges without values); the ``dynamics_params`` JSON overwrites them on conflicts
     * - per-edge ``syn_weight`` and ``delay``
       - unchanged in ``/0``
     * - per-node ``/0/dynamics_params/V_m``
