@@ -19,7 +19,7 @@ A NEST circuit uses ``target_simulator: "NEST"`` and is described by:
 ``point_neuron_models_dir`` is the same property as in :ref:`components`, used for the templates of both neuron and edge (synapse) populations.
 It can be set per population, or once under ``components`` as a default that populations without their own value inherit.
 
-Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` and ``point_process`` (interchangeable) for neurons, ``virtual`` for inputs.
+Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` for neurons and ``virtual`` for inputs.
 NEST SONATA defines no edge type, so edges use the default ``chemical``.
 With ``target_simulator: "NEST"`` these populations follow this page, not the field tables of :doc:`sonata_tech`.
 
@@ -31,7 +31,7 @@ Circuit Config
     ============================== ============ ==================================================
     Property                       Requirement  Description
     ============================== ============ ==================================================
-    type                           Mandatory    ``point_neuron``, ``point_process`` or ``virtual`` (nodes); ``chemical`` (edges)
+    type                           Mandatory    ``point_neuron`` or ``virtual`` (nodes); ``chemical`` (edges)
     point_neuron_models_dir        Conditional  Directory holding the population's model templates and NESTML sources.
                                                 Mandatory for neuron and edge populations, either on the population or under ``components``.
     ============================== ============ ==================================================
@@ -98,7 +98,7 @@ Model Templates
 Nodes
 -----
 
-Neuron population, ``type`` ``point_neuron`` or ``point_process``:
+Neuron population, ``type`` ``point_neuron``:
 
 .. table::
 
@@ -177,8 +177,10 @@ Circuits in the `NEST SONATA format <https://nest-simulator.readthedocs.io/en/st
       - ``point_neuron_models_dir`` of each edge population; its edge types' templates and ``.nestml`` sources are written there
     * - node types CSV row (``node_type_id``, ``model_template``, ``dynamics_params`` JSON)
       - one model template per node type, with the JSON as ``params``; ``/0/model_template`` set from ``node_type_id``
-    * - ``model_type`` ``point_neuron``, ``point_process``, ``virtual``
-      - population ``type``, unchanged
+    * - ``model_type`` ``point_neuron`` or ``point_process``
+      - population ``type`` ``point_neuron``
+    * - ``model_type`` ``virtual``
+      - population ``type`` ``virtual``, unchanged
     * - edges (no ``model_type``)
       - population ``type`` ``chemical``
     * - edge types CSV row (``edge_type_id``, ``model_template``, ``dynamics_params`` JSON, ``delay``, ``syn_weight``)
