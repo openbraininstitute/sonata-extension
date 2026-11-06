@@ -223,8 +223,9 @@ Each node of `node_set` receives its own Poisson train of `rate` (Hz) between `d
 Synapse replay
 **************
 
-The spikes of the :ref:`synapse_replay <spikes-synapse-replay>` `spike_file` are delivered through every edge population whose source is the file's population, to the targets in `node_set`.
-The file holds a single population, either
+The :ref:`synapse_replay <spikes-synapse-replay>` `spike_file` is a SONATA spike file with `/spikes/<population>/node_ids` and `/spikes/<population>/timestamps` for each population it covers.
+The spikes of each population are delivered through every edge population whose source is that population, to the targets in `node_set`.
+A population can be
 
 * a `virtual` population: the projection is driven, as for `NEURON` circuits; or
 * a `brian2_point` population: its spikes are replayed through its own edges, on top of the simulated activity.
