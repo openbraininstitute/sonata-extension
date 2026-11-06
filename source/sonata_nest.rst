@@ -6,8 +6,7 @@ Describing NEST Models with SONATA
 Overview
 --------
 
-`NEST <https://nest-simulator.readthedocs.io/>`_ is a simulator for networks of point neurons.
-This document describes how such a network is encoded in SONATA so it can be read by `libsonata` and instantiated in NEST through the PyNEST ``Create``/``Connect`` API.
+`NEST <https://nest-simulator.readthedocs.io/>`_ is a simulator for networks of point neurons. This document describes how such a network is encoded in SONATA so it can be read by `libsonata` and instantiated in NEST through the PyNEST ``Create``/``Connect`` API.
 
 A NEST circuit uses ``target_simulator: "NEST"`` and is described by:
 
@@ -16,12 +15,9 @@ A NEST circuit uses ``target_simulator: "NEST"`` and is described by:
 - model templates: one JSON file per template in ``point_neuron_models_dir``, naming the NEST model and its parameters (as in :doc:`Brian2 <sonata_brian2>`);
 - the simulation config: ``run`` and the spike inputs driving virtual populations.
 
-``point_neuron_models_dir`` is the same property as in :ref:`components`, used for the templates of both neuron and edge (synapse) populations.
-It can be set per population, or once under ``components`` as a default that populations without their own value inherit.
+``point_neuron_models_dir`` is the same property as in :ref:`components`, used for the templates of both neuron and edge (synapse) populations. It can be set per population, or once under ``components`` as a default that populations without their own value inherit.
 
-Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` for neurons and ``virtual`` for inputs.
-NEST SONATA defines no edge type, so edges use the default ``chemical``.
-With ``target_simulator: "NEST"`` these populations follow this page, not the field tables of :doc:`sonata_tech`.
+Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` for neurons and ``virtual`` for inputs. NEST SONATA defines no edge type, so edges use the default ``chemical``. With ``target_simulator: "NEST"`` these populations follow this page, not the field tables of :doc:`sonata_tech`.
 
 Circuit Config
 --------------
@@ -36,8 +32,7 @@ Circuit Config
                                                 Mandatory for neuron and edge populations, either on the population or under ``components``.
     ============================== ============ ==================================================
 
-Template names (``<model_template>.json``, ``<model>.nestml``) must be unique within a directory.
-Populations that share a directory, including through the ``components`` default, must not reuse a name for different templates.
+Template names (``<model_template>.json``, ``<model>.nestml``) must be unique within a directory. Populations that share a directory, including through the ``components`` default, must not reuse a name for different templates.
 
 .. code-block:: json
 
@@ -112,11 +107,9 @@ Neuron population, ``type`` ``point_neuron``:
 
 Values are applied in order: ``params``, then ``dynamics_params``.
 
-Other node attributes, for example positions or a cell class such as ``ei``, are ordinary SONATA attributes under ``/0``.
-NEST ignores them. They can still select nodes in node sets.
+Other node attributes, for example positions or a cell class such as ``ei``, are ordinary SONATA attributes under ``/0``. NEST ignores them. They can still select nodes in node sets.
 
-Virtual (input) population, ``type`` ``virtual``: only ``node_type_id`` and an empty ``/0`` group are required.
-Its nodes are created as ``spike_train_injector`` and emit the spikes of the ``synapse_replay`` inputs targeting them.
+Virtual (input) population, ``type`` ``virtual``: only ``node_type_id`` and an empty ``/0`` group are required. Its nodes are created as ``spike_train_injector`` and emit the spikes of the ``synapse_replay`` inputs targeting them.
 
 Edges
 -----
@@ -141,10 +134,7 @@ The ``syn_spec`` of an edge is built from the template's ``model``, then ``param
 Simulation Config
 -----------------
 
-``run`` requires ``dt``, ``tstop`` and ``random_seed``.
-Spikes of virtual populations are given as :ref:`synapse_replay <spikes-synapse-replay>` inputs whose ``node_set`` selects ``virtual`` nodes; spike times outside ``[delay, delay + duration)`` are dropped.
-The ``spike_file`` is a SONATA spike file: ``/spikes/<population>/node_ids`` and ``/spikes/<population>/timestamps`` for each virtual population it covers.
-Other input modules are not supported.
+``run`` requires ``dt``, ``tstop`` and ``random_seed``. Spikes of virtual populations are given as :ref:`synapse_replay <spikes-synapse-replay>` inputs whose ``node_set`` selects ``virtual`` nodes; spike times outside ``[delay, delay + duration)`` are dropped. The ``spike_file`` is a SONATA spike file: ``/spikes/<population>/node_ids`` and ``/spikes/<population>/timestamps`` for each virtual population it covers. Other input modules are not supported.
 
 .. code-block:: json
 
@@ -215,8 +205,7 @@ Future Work
 Example: Full Conversion
 ------------------------
 
-This example converts a small NEST SONATA circuit and shows every input and output file.
-The circuit has a population ``exc`` of four neurons with two node types (a built-in NEST model and a NESTML model), a virtual population ``input`` of two spike sources, and two edge populations: ``input_to_exc`` (``static_synapse``) and ``exc_to_exc`` (``tsodyks2_synapse`` with per-edge values).
+This example converts a small NEST SONATA circuit and shows every input and output file. The circuit has a population ``exc`` of four neurons with two node types (a built-in NEST model and a NESTML model), a virtual population ``input`` of two spike sources, and two edge populations: ``input_to_exc`` (``static_synapse``) and ``exc_to_exc`` (``tsodyks2_synapse`` with per-edge values).
 
 NEST SONATA input
 ~~~~~~~~~~~~~~~~~
@@ -270,8 +259,7 @@ NEST SONATA input
       }
     }
 
-The type CSVs give one model per type.
-``dynamics_params`` names a JSON file in the model directory, ``NULL`` means none:
+The type CSVs give one model per type. ``dynamics_params`` names a JSON file in the model directory, ``NULL`` means none:
 
 .. code-block:: text
 
@@ -345,8 +333,7 @@ SONATA-extension output
         ├── input_edges.h5
         └── exc_edges.h5
 
-The circuit config only describes the network.
-Each population has its ``type`` and its own ``point_neuron_models_dir``; the type CSVs and ``components`` are gone:
+The circuit config only describes the network. Each population has its ``type`` and its own ``point_neuron_models_dir``; the type CSVs and ``components`` are gone:
 
 .. code-block:: json
 
@@ -385,8 +372,7 @@ Each population has its ``type`` and its own ``point_neuron_models_dir``; the ty
       }
     }
 
-The run parameters and the spike input move to the simulation config.
-The input becomes a ``synapse_replay`` input whose ``spike_file`` is the copied file, active for the whole run:
+The run parameters and the spike input move to the simulation config. The input becomes a ``synapse_replay`` input whose ``spike_file`` is the copied file, active for the whole run:
 
 .. code-block:: json
 
@@ -408,10 +394,7 @@ The input becomes a ``synapse_replay`` input whose ``spike_file`` is the copied 
       }
     }
 
-Each type row becomes one model template.
-The CSV model gets the ``nest:`` prefix if it has none, and the type JSON becomes ``params``.
-For a synapse, the CSV ``delay`` and ``syn_weight`` become the ``delay`` and ``weight`` defaults, and so does every other CSV column that NEST sets as a parameter of the synapse model; the JSON parameters overwrite them where both give the same name.
-``dynamics_params`` lists the per-node and per-edge values stored in the HDF5 files, with their units:
+Each type row becomes one model template. The CSV model gets the ``nest:`` prefix if it has none, and the type JSON becomes ``params``. For a synapse, the CSV ``delay`` and ``syn_weight`` become the ``delay`` and ``weight`` defaults, and so does every other CSV column that NEST sets as a parameter of the synapse model; the JSON parameters overwrite them where both give the same name. ``dynamics_params`` lists the per-node and per-edge values stored in the HDF5 files, with their units:
 
 .. code-block:: text
 
@@ -443,8 +426,7 @@ For a synapse, the CSV ``delay`` and ``syn_weight`` become the ``delay`` and ``w
 
 ``node_sets.json`` has one node set per population, ``{"exc": {"population": "exc"}, "input": {"population": "input"}}``.
 
-In the HDF5 files, ``node_type_id`` and ``edge_type_id`` are kept and ``/0/model_template`` is added as an ``@library`` enumeration.
-The per-edge values that override the synapse model move into ``/0/dynamics_params``:
+In the HDF5 files, ``node_type_id`` and ``edge_type_id`` are kept and ``/0/model_template`` is added as an ``@library`` enumeration. The per-edge values that override the synapse model move into ``/0/dynamics_params``:
 
 .. code-block:: text
 
