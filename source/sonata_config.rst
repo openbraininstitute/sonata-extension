@@ -137,7 +137,9 @@ An *optional* dictionary containing provenance metadata used to build the popula
   =============================== =========== ===================================================
   Property                        Requirement Description
   =============================== =========== ===================================================
-  'bioname_dir'                   Mandatory   Folder path containing the bioname configurations
+  'bioname_dir'                   Optional    Folder path containing the bioname configurations
+  'nest_version'                  Optional    Version of NEST the circuit was built for. Mandatory for NEST circuits, see :doc:`sonata_nest`
+  'nestml_version'                Optional    Version of NESTML used for the ``nestml:`` models of a NEST circuit, see :doc:`sonata_nest`
   =============================== =========== ===================================================
 
 example::
