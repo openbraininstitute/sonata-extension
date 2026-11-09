@@ -75,7 +75,7 @@ Model Templates
     Key                Requirement  Description
     ================== ============ =========================================================================
     model              Mandatory    ``nest:<model>`` (built-in NEST model) or ``nestml:<model>`` (compiled from ``<point_neuron_models_dir>/<model>.nestml`` on demand)
-    params             Optional     Parameters set on every node/edge using the template. For synapses, ``weight`` and ``delay`` act as defaults for edges without values.
+    params             Optional     Parameters set on every node/edge using the template. For synapses, ``weight`` and ``delay`` act as defaults for edges without values, and ``weight`` has the unit of ``syn_weight``, see :ref:`Edges <nest_edges>`.
     dynamics_params    Optional     Parameter name -> unit of the per-node/per-edge values read from ``/0/dynamics_params/<name>``. Units are informational; NEST uses the model's native units.
     ================== ============ =========================================================================
 
@@ -125,6 +125,8 @@ Virtual (input) population, ``type`` ``virtual``, with the same fields as the vi
 
 When there is no applicable model template for a given model type (i.e. ``model_type=virtual``) the ``model_template`` field should be omitted. NEST creates the nodes of a virtual population as ``spike_train_injector`` and does not use a model template for them. They emit the spikes of the ``synapse_replay`` inputs targeting them.
 
+.. _nest_edges:
+
 Edges
 -----
 
@@ -136,12 +138,16 @@ Synapse population, ``type`` ``nest_chemical``:
     Group              Field                           Type       Description
     ================== =============================== ========== ===========================================================
     /0                 model_template                  utf8       Model template name
-    /0                 syn_weight                      float32    Optional per-edge weight
+    /0                 syn_weight                      float32    Optional per-edge weight; its unit and sign depend on the postsynaptic model, see below
     /0                 delay                           float32    Optional per-edge delay (ms); clamped to the kernel resolution
     /0/dynamics_params ...                             float32    Per-edge values of the template's ``dynamics_params``, e.g. ``U``, ``u``, ``tau_rec``, ``tau_fac``, ``receptor_type``
     ================== =============================== ========== ===========================================================
 
 The ``syn_spec`` of an edge is built from the template's ``model``, then ``params``, then ``syn_weight``/``delay``, then ``dynamics_params``.
+
+NEST does not convert weights: ``syn_weight``, and ``weight`` in the ``params`` of a synapse template, are in the native unit of the postsynaptic model. It is pA for current-based models (``*_psc_*``, e.g. ``iaf_psc_alpha``), nS for conductance-based models (``*_cond_*``) and mV for models with delta synapses (``iaf_psc_delta``, ``izhikevich``), where the weight is the jump of the membrane potential. A weight cannot be interpreted without the postsynaptic model.
+
+Excitatory weights are positive. Inhibitory weights are negative in current-based and delta models, and in conductance-based models with one synapse type (e.g. ``iaf_cond_alpha``), where a negative weight acts on the inhibitory conductance. The exception is conductance-based ``*_multisynapse`` models (e.g. ``aeif_cond_beta_multisynapse``): all weights are positive, NEST rejects negative ones, and the receptor port selected with ``receptor_type`` carries the sign through its reversal potential ``E_rev``.
 
 .. _nest_inputs:
 
