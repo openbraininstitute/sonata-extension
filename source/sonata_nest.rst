@@ -13,7 +13,6 @@ A NEST circuit uses ``target_simulator: "NEST"`` and is described by:
 - the circuit config: each population's ``type`` and ``point_neuron_models_dir``;
 - the nodes/edges files: the ``model_template`` of every node/edge and its per-node/per-edge ``dynamics_params``;
 - model templates: one JSON file per template in ``point_neuron_models_dir``, naming the NEST model and its parameters (as in :doc:`Brian2 <sonata_brian2>`);
-- the simulation config: ``run`` and the spike inputs driving virtual populations.
 
 ``point_neuron_models_dir`` is the same property as in :ref:`components`, used for the templates of both neuron and edge (synapse) populations. It can be set per population, or once under ``components`` as a default that populations without their own value inherit.
 
