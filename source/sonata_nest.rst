@@ -79,6 +79,8 @@ Model Templates
     dynamics_params    Optional     Parameter name -> unit of the per-node/per-edge values read from ``/0/dynamics_params/<name>``. Units are informational; NEST uses the model's native units.
     ================== ============ =========================================================================
 
+The names in ``params`` and ``dynamics_params`` are parameters of the NEST model, as NEST accepts them in ``Create`` and ``Connect``. ``nest.GetDefaults("<model>")`` lists them with their default values, together with some read-only entries such as ``recordables``, and the NEST model reference gives their units. For a ``nestml:`` model they are the names declared in the ``parameters`` and ``state`` blocks of the ``.nestml`` file, listed by ``nest.GetDefaults`` once the model is compiled and installed. NEST rejects any other name with an error when the network is built, and a reader should report the template and the model. Values are in the native units of the model; the units in ``dynamics_params`` are informational. libsonata does not check the names, since that needs NEST.
+
 .. code-block:: json
 
     {
