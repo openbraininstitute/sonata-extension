@@ -31,8 +31,6 @@ Circuit Config
                                                 Mandatory for neuron and edge populations, either on the population or under ``components``.
     ============================== ============ ==================================================
 
-Template names (``<model_template>.json``, ``<model>.nestml``) must be unique within a directory. Populations that share a directory, including through the ``components`` default, must not reuse a name for different templates.
-
 .. code-block:: json
 
     {
