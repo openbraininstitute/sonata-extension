@@ -16,7 +16,7 @@ A NEST circuit uses ``target_simulator: "NEST"`` and is described by:
 
 ``point_neuron_models_dir`` is the same property as in :ref:`components`, used for the templates of both neuron and edge (synapse) populations. It can be set per population, or once under ``components`` as a default that populations without their own value inherit.
 
-Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` for neurons and ``virtual`` for inputs. NEST SONATA defines no edge type, so edges use the default ``chemical``. With ``target_simulator: "NEST"`` these populations follow this page, not the field tables of :doc:`sonata_tech`.
+Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` for neurons and ``virtual`` for inputs. Each node file also stores the type in ``/0/model_type``. NEST SONATA defines no edge type, so edges use the default ``chemical``. With ``target_simulator: "NEST"`` these populations follow this page, not the field tables of :doc:`sonata_tech`.
 
 Circuit Config
 --------------
@@ -98,15 +98,30 @@ Neuron population, ``type`` ``point_neuron``:
     Group              Field                           Type       Description
     ================== =============================== ========== ===========================================================
     /0                 model_template                  utf8       Model template name
+    /0                 model_type                      utf8       ``point_neuron``
     /0/dynamics_params ...                             float32    Per-node values of the template's ``dynamics_params``
     /                  node_type_id                    int        Set to -1, or the source node type id
     ================== =============================== ========== ===========================================================
 
 Values are applied in order: ``params``, then ``dynamics_params``.
 
+``/0/model_type`` is mandatory, as in the point neuron fields of :doc:`sonata_tech`, and equals the ``type`` of the population in the circuit config. NEST does not read it. It makes the node file self-describing and lets node sets select on it.
+
 Other node attributes, for example positions or a cell class such as ``ei``, are ordinary SONATA attributes under ``/0``. NEST ignores them. They can still select nodes in node sets.
 
-Virtual (input) population, ``type`` ``virtual``: only ``node_type_id`` and an empty ``/0`` group are required. Its nodes are created as ``spike_train_injector`` and emit the spikes of the ``synapse_replay`` inputs targeting them.
+Virtual (input) population, ``type`` ``virtual``, with the same fields as the virtual population of :doc:`sonata_tech`:
+
+.. table::
+
+    ================== =============================== ========== ============= ===========================================================
+    Group              Field                           Type       Requirement   Description
+    ================== =============================== ========== ============= ===========================================================
+    /0                 model_type                      utf8       Mandatory     ``virtual``
+    /0                 model_template                  utf8       Optional      Normally omitted, see below
+    /                  node_type_id                    int        Mandatory     Set to -1, or the source node type id
+    ================== =============================== ========== ============= ===========================================================
+
+When there is no applicable model template for a given model type (i.e. ``model_type=virtual``) the ``model_template`` field should be omitted. NEST creates the nodes of a virtual population as ``spike_train_injector`` and does not use a model template for them. They emit the spikes of the ``synapse_replay`` inputs targeting them.
 
 Edges
 -----
@@ -169,9 +184,9 @@ Circuits in the `NEST SONATA format <https://nest-simulator.readthedocs.io/en/st
     * - node types CSV row (``node_type_id``, ``model_template``, ``dynamics_params`` JSON)
       - one model template per node type, with the JSON as ``params``; ``/0/model_template`` set from ``node_type_id``
     * - ``model_type`` ``point_neuron`` or ``point_process``
-      - population ``type`` ``point_neuron``
+      - population ``type`` ``point_neuron``, and ``/0/model_type`` ``point_neuron``
     * - ``model_type`` ``virtual``
-      - population ``type`` ``virtual``, unchanged
+      - population ``type`` ``virtual`` and ``/0/model_type`` ``virtual``
     * - edges (no ``model_type``)
       - population ``type`` ``chemical``
     * - edge types CSV row (``edge_type_id``, ``model_template``, ``dynamics_params`` JSON, ``delay``, ``syn_weight``)
@@ -423,15 +438,22 @@ Each type row becomes one model template. The CSV model gets the ``nest:`` prefi
 
 ``node_sets.json`` has one node set per population, ``{"exc": {"population": "exc"}, "input": {"population": "input"}}``.
 
-In the HDF5 files, ``node_type_id`` and ``edge_type_id`` are kept and ``/0/model_template`` is added as an ``@library`` enumeration. The per-edge values that override the synapse model move into ``/0/dynamics_params``:
+In the HDF5 files, ``node_type_id`` and ``edge_type_id`` are kept and ``/0/model_template`` (and ``/0/model_type`` for nodes) are added as ``@library`` enumerations. The per-edge values that override the synapse model move into ``/0/dynamics_params``:
 
 .. code-block:: text
 
     nodes.h5
     /nodes/exc/node_type_id                       [0, 0, 1, 1]
+    /nodes/exc/0/model_type                       [0, 0, 0, 0]
+    /nodes/exc/0/@library/model_type              ["point_neuron"]
     /nodes/exc/0/model_template                   [1, 1, 0, 0]
     /nodes/exc/0/@library/model_template          ["adaptive_type1", "iaf_psc_alpha_type0"]
     /nodes/exc/0/dynamics_params/V_m              [-70.0, -68.0, -65.0, -72.0]
+
+    input_nodes.h5
+    /nodes/input/node_type_id                     [0, 0]
+    /nodes/input/0/model_type                     [0, 0]
+    /nodes/input/0/@library/model_type            ["virtual"]
 
     input_edges.h5
     /edges/input_to_exc/edge_type_id              [100, 100, 100]
@@ -462,7 +484,7 @@ Summary of the changes
     * - ``node_types_file`` and ``edge_types_file`` CSVs
       - removed; each row is one template JSON, and ``node_type_id``/``edge_type_id`` are kept in the HDF5 files
     * - ``model_type`` ``point_process`` (node type 0)
-      - population ``type`` ``point_neuron``; ``virtual`` stays ``virtual``
+      - population ``type`` ``point_neuron``, and ``/0/model_type`` ``point_neuron``; ``virtual`` stays ``virtual`` in both
     * - edge populations without a type
       - ``type`` ``chemical``
     * - ``model_template`` in the CSV (``tsodyks2_synapse``)
