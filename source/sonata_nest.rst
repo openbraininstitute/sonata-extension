@@ -16,7 +16,7 @@ A NEST circuit uses ``target_simulator: "NEST"`` and is described by:
 
 ``point_neuron_models_dir`` is the same property as in :ref:`components`, used for the templates of both neuron and edge (synapse) populations. It can be set per population, or once under ``components`` as a default that populations without their own value inherit.
 
-Population types are the NEST SONATA ``model_type`` values: ``point_neuron`` for neurons and ``virtual`` for inputs. Each node file also stores the type in ``/0/model_type``. NEST SONATA defines no edge type, so edges use the default ``chemical``. With ``target_simulator: "NEST"`` these populations follow this page, not the field tables of :doc:`sonata_tech`.
+Population types are ``nest_point`` for neurons, ``nest_chemical`` for synapses and ``virtual`` for inputs. The ``nest_`` names are specific to NEST because ``point_neuron`` and ``chemical`` are already defined for other simulators, with other fields, and a simulator that loads populations by type could pick up a NEST population by mistake. NEST SONATA defines no edge type, and calls the neuron types ``point_neuron`` and ``point_process``. Each node file also stores the type in ``/0/model_type``. Only spike-transmitting synapse models are supported: gap junctions, rate and diffusion connections and ``sic_connection`` are not.
 
 Circuit Config
 --------------
@@ -26,7 +26,7 @@ Circuit Config
     ============================== ============ ==================================================
     Property                       Requirement  Description
     ============================== ============ ==================================================
-    type                           Mandatory    ``point_neuron`` or ``virtual`` (nodes); ``chemical`` (edges)
+    type                           Mandatory    ``nest_point`` or ``virtual`` (nodes); ``nest_chemical`` (edges)
     point_neuron_models_dir        Conditional  Directory holding the population's model templates and NESTML sources.
                                                 Mandatory for neuron and edge populations, either on the population or under ``components``.
     ============================== ============ ==================================================
@@ -42,7 +42,7 @@ Circuit Config
           {
             "nodes_file": "S1/nodes.h5",
             "populations": {
-              "S1": {"type": "point_neuron", "point_neuron_models_dir": "model_templates/S1"}
+              "S1": {"type": "nest_point", "point_neuron_models_dir": "model_templates/S1"}
             }
           },
           {
@@ -55,7 +55,7 @@ Circuit Config
             "edges_file": "VPM__S1__chemical/edges.h5",
             "populations": {
               "VPM__S1__chemical": {
-                "type": "chemical",
+                "type": "nest_chemical",
                 "point_neuron_models_dir": "model_templates/VPM__S1__chemical"
               }
             }
@@ -90,7 +90,7 @@ Model Templates
 Nodes
 -----
 
-Neuron population, ``type`` ``point_neuron``:
+Neuron population, ``type`` ``nest_point``:
 
 .. table::
 
@@ -98,14 +98,14 @@ Neuron population, ``type`` ``point_neuron``:
     Group              Field                           Type       Description
     ================== =============================== ========== ===========================================================
     /0                 model_template                  utf8       Model template name
-    /0                 model_type                      utf8       ``point_neuron``
+    /0                 model_type                      utf8       ``nest_point``
     /0/dynamics_params ...                             float32    Per-node values of the template's ``dynamics_params``
     /                  node_type_id                    int        Set to -1, or the source node type id
     ================== =============================== ========== ===========================================================
 
 Values are applied in order: ``params``, then ``dynamics_params``.
 
-``/0/model_type`` is mandatory, as in the point neuron fields of :doc:`sonata_tech`, and equals the ``type`` of the population in the circuit config. NEST does not read it. It makes the node file self-describing and lets node sets select on it.
+``/0/model_type`` is mandatory, as for the node populations of :doc:`sonata_tech`, and equals the ``type`` of the population in the circuit config. NEST does not read it. It makes the node file self-describing and lets node sets select on it.
 
 Other node attributes, for example positions or a cell class such as ``ei``, are ordinary SONATA attributes under ``/0``. NEST ignores them. They can still select nodes in node sets.
 
@@ -126,7 +126,7 @@ When there is no applicable model template for a given model type (i.e. ``model_
 Edges
 -----
 
-Synapse population, ``type`` ``chemical``:
+Synapse population, ``type`` ``nest_chemical``:
 
 .. table::
 
@@ -184,11 +184,11 @@ Circuits in the `NEST SONATA format <https://nest-simulator.readthedocs.io/en/st
     * - node types CSV row (``node_type_id``, ``model_template``, ``dynamics_params`` JSON)
       - one model template per node type, with the JSON as ``params``; ``/0/model_template`` set from ``node_type_id``
     * - ``model_type`` ``point_neuron`` or ``point_process``
-      - population ``type`` ``point_neuron``, and ``/0/model_type`` ``point_neuron``
+      - population ``type`` ``nest_point``, and ``/0/model_type`` ``nest_point``
     * - ``model_type`` ``virtual``
       - population ``type`` ``virtual`` and ``/0/model_type`` ``virtual``
     * - edges (no ``model_type``)
-      - population ``type`` ``chemical``
+      - population ``type`` ``nest_chemical``
     * - edge types CSV row (``edge_type_id``, ``model_template``, ``dynamics_params`` JSON, ``delay``, ``syn_weight``)
       - one model template per edge type (``nest:`` prefix added); ``/0/model_template`` set from ``edge_type_id``; ``params`` are the CSV ``delay``/``syn_weight`` (as ``delay``/``weight``) and the other CSV columns that NEST sets as parameters of the synapse model, with the parameters of the ``dynamics_params`` JSON on top, which win on conflicts as in NEST
     * - other node types CSV columns (e.g. ``ei``, ``model_name``)
@@ -359,7 +359,7 @@ The circuit config only describes the network. Each population has its ``type`` 
           {
             "nodes_file": "$BASE_DIR/network/nodes.h5",
             "populations": {
-              "exc": {"type": "point_neuron", "point_neuron_models_dir": "$BASE_DIR/model_templates/exc"}
+              "exc": {"type": "nest_point", "point_neuron_models_dir": "$BASE_DIR/model_templates/exc"}
             }
           },
           {
@@ -371,13 +371,13 @@ The circuit config only describes the network. Each population has its ``type`` 
           {
             "edges_file": "$BASE_DIR/network/input_edges.h5",
             "populations": {
-              "input_to_exc": {"type": "chemical", "point_neuron_models_dir": "$BASE_DIR/model_templates/input_to_exc"}
+              "input_to_exc": {"type": "nest_chemical", "point_neuron_models_dir": "$BASE_DIR/model_templates/input_to_exc"}
             }
           },
           {
             "edges_file": "$BASE_DIR/network/exc_edges.h5",
             "populations": {
-              "exc_to_exc": {"type": "chemical", "point_neuron_models_dir": "$BASE_DIR/model_templates/exc_to_exc"}
+              "exc_to_exc": {"type": "nest_chemical", "point_neuron_models_dir": "$BASE_DIR/model_templates/exc_to_exc"}
             }
           }
         ]
@@ -445,7 +445,7 @@ In the HDF5 files, ``node_type_id`` and ``edge_type_id`` are kept and ``/0/model
     nodes.h5
     /nodes/exc/node_type_id                       [0, 0, 1, 1]
     /nodes/exc/0/model_type                       [0, 0, 0, 0]
-    /nodes/exc/0/@library/model_type              ["point_neuron"]
+    /nodes/exc/0/@library/model_type              ["nest_point"]
     /nodes/exc/0/model_template                   [1, 1, 0, 0]
     /nodes/exc/0/@library/model_template          ["adaptive_type1", "iaf_psc_alpha_type0"]
     /nodes/exc/0/dynamics_params/V_m              [-70.0, -68.0, -65.0, -72.0]
@@ -484,9 +484,9 @@ Summary of the changes
     * - ``node_types_file`` and ``edge_types_file`` CSVs
       - removed; each row is one template JSON, and ``node_type_id``/``edge_type_id`` are kept in the HDF5 files
     * - ``model_type`` ``point_process`` (node type 0)
-      - population ``type`` ``point_neuron``, and ``/0/model_type`` ``point_neuron``; ``virtual`` stays ``virtual`` in both
+      - population ``type`` ``nest_point``, and ``/0/model_type`` ``nest_point``; ``virtual`` stays ``virtual`` in both
     * - edge populations without a type
-      - ``type`` ``chemical``
+      - ``type`` ``nest_chemical``
     * - ``model_template`` in the CSV (``tsodyks2_synapse``)
       - ``model`` with the ``nest:`` prefix added (``nest:tsodyks2_synapse``); ``nestml:`` models are kept as they are
     * - several types in one population
