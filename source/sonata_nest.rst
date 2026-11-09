@@ -97,7 +97,7 @@ Neuron population, ``type`` ``point_neuron``:
     ================== =============================== ========== ===========================================================
     Group              Field                           Type       Description
     ================== =============================== ========== ===========================================================
-    /0                 model_template                  utf8       Model template name (an ``@library`` enumeration is recommended)
+    /0                 model_template                  utf8       Model template name
     /0/dynamics_params ...                             float32    Per-node values of the template's ``dynamics_params``
     /                  node_type_id                    int        Set to -1, or the source node type id
     ================== =============================== ========== ===========================================================
@@ -118,7 +118,7 @@ Synapse population, ``type`` ``chemical``:
     ================== =============================== ========== ===========================================================
     Group              Field                           Type       Description
     ================== =============================== ========== ===========================================================
-    /0                 model_template                  utf8       Model template name (an ``@library`` enumeration is recommended)
+    /0                 model_template                  utf8       Model template name
     /0                 syn_weight                      float32    Optional per-edge weight
     /0                 delay                           float32    Optional per-edge delay (ms); clamped to the kernel resolution
     /0/dynamics_params ...                             float32    Per-edge values of the template's ``dynamics_params``, e.g. ``U``, ``u``, ``tau_rec``, ``tau_fac``, ``receptor_type``
