@@ -86,6 +86,8 @@ Model Templates
 
 The names in ``params`` and ``dynamics_params`` are parameters of the NEST model, as NEST accepts them in ``Create`` and ``Connect``. ``nest.GetDefaults("<model>")`` lists them with their default values, together with some read-only entries such as ``recordables``, and the NEST model reference gives their units. For a ``nestml:`` model they are the names declared in the ``parameters`` and ``state`` blocks of the ``.nestml`` file, listed by ``nest.GetDefaults`` once the model is compiled and installed. NEST rejects any other name with an error when the network is built, and a reader should report the template and the model. Values are in the native units of the model; the units in ``dynamics_params`` are informational. libsonata does not check the names, since that needs NEST.
 
+The datasets of ``/0/dynamics_params`` are 1-D, with one value per node or edge, so they cannot hold a list. A parameter that is a list in NEST, such as ``tau_syn`` or ``E_rev`` of a ``*_multisynapse`` model, belongs in the ``params`` of the template, and is the same for every node or edge that uses it. NEST sets the lists of a multisynapse model together, e.g. ``E_rev``, ``tau_rise`` and ``tau_decay`` of ``aeif_cond_beta_multisynapse``, so all of them go in ``params``. A reader reports a list-valued dataset as an error that names the population and the parameter. ``receptor_type`` is an integer, and a reader reports a value that is not a whole number as an error.
+
 .. code-block:: json
 
     {
@@ -143,7 +145,8 @@ Synapse population, ``type`` ``nest_chemical``:
     /0                 model_template                  utf8       Model template name
     /0                 syn_weight                      float32    Optional per-edge weight; its unit and sign depend on the postsynaptic model, see below
     /0                 delay                           float32    Optional per-edge delay (ms); clamped to the kernel resolution
-    /0/dynamics_params ...                             float32    Per-edge values of the template's ``dynamics_params``, e.g. ``U``, ``u``, ``tau_rec``, ``tau_fac``, ``receptor_type``
+    /0/dynamics_params ...                             float32    Per-edge values of the template's ``dynamics_params``, e.g. ``U``, ``u``, ``tau_rec``, ``tau_fac``
+    /0/dynamics_params receptor_type                   int        Optional per-edge receptor port of a multisynapse postsynaptic model, as the NEST ``receptor_type``: a whole number from 1
     ================== =============================== ========== ===========================================================
 
 The ``syn_spec`` of an edge is built from the template's ``model``, then ``params``, then ``syn_weight``/``delay``, then ``dynamics_params``.
