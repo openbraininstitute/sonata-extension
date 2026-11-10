@@ -114,8 +114,6 @@ Values are applied in order: ``params``, then ``dynamics_params``.
 
 ``/0/model_type`` is mandatory, as for the node populations of :doc:`sonata_tech`, and equals the ``type`` of the population in the circuit config. NEST does not read it. It makes the node file self-describing and lets node sets select on it.
 
-Other node attributes, for example positions or a cell class such as ``ei``, are ordinary SONATA attributes under ``/0``. NEST ignores them. They can still select nodes in node sets.
-
 Virtual (input) population, ``type`` ``virtual``, with the same fields as the virtual population of :doc:`sonata_tech`:
 
 .. table::
