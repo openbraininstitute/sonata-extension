@@ -128,7 +128,7 @@ Virtual (input) population, ``type`` ``virtual``, with the same fields as the vi
     /                  node_type_id                    int        Mandatory     Set to -1, or the source node type id
     ================== =============================== ========== ============= ===========================================================
 
-When there is no applicable model template for a given model type (i.e. ``model_type=virtual``) the ``model_template`` field should be omitted. NEST creates the nodes of a virtual population as ``spike_train_injector`` and does not use a model template for them. They emit the spikes of the ``synapse_replay`` inputs targeting them.
+When there is no applicable model template for a given model type (i.e. ``model_type=virtual``) the ``model_template`` field should be omitted. NEST creates no nodes for a virtual population and does not use a model template for it. Its spikes come from the ``synapse_replay`` inputs (see :ref:`Simulation Config <nest_inputs>`) and are delivered through the edge populations whose source it is.
 
 .. _nest_edges:
 
@@ -159,7 +159,7 @@ Excitatory weights are positive. Inhibitory weights are negative in current-base
 Simulation Config
 -----------------
 
-``run`` requires ``dt``, ``tstop`` and ``random_seed``. Spikes of virtual populations are given as :ref:`synapse_replay <spikes-synapse-replay>` inputs whose ``node_set`` selects ``virtual`` nodes; spike times outside ``[delay, delay + duration)`` are dropped. The ``spike_file`` is a SONATA spike file: ``/spikes/<population>/node_ids`` and ``/spikes/<population>/timestamps`` for each virtual population it covers. Other input modules are not supported.
+``run`` requires ``dt``, ``tstop`` and ``random_seed``. Spikes are given as :ref:`synapse_replay <spikes-synapse-replay>` inputs, with the meaning of :doc:`sonata_simulation`: the ``node_set`` of an input is the set of nodes affected by it, i.e. the targets. The ``spike_file`` is a SONATA spike file: ``/spikes/<population>/node_ids`` and ``/spikes/<population>/timestamps`` for each population it covers. The spikes of each population are delivered through every edge population whose source is that population, to the targets in ``node_set``, with the synapse model, weight and delay of each edge. The population can be a ``virtual`` population, or a ``nest_point`` population whose spikes are then replayed through its own edges on top of its simulated activity. Spike times outside ``[delay, delay + duration)`` are dropped, and the others are not shifted. An input whose ``node_set`` contains no target of those edge populations delivers nothing, which NEST reports as an error. Other input modules are not supported.
 
 .. code-block:: json
 
@@ -172,7 +172,7 @@ Simulation Config
           "input_type": "spikes",
           "module": "synapse_replay",
           "spike_file": "inputs/vpm_spikes.h5",
-          "node_set": "VPM",
+          "node_set": "S1",
           "delay": 0.0,
           "duration": 1000.0
         }
@@ -213,11 +213,11 @@ Circuits in the `NEST SONATA format <https://nest-simulator.readthedocs.io/en/st
     * - other per-edge datasets overriding the synapse JSON
       - moved to ``/0/dynamics_params``
     * - ``inputs`` (``input_file``, ``node_set``)
-      - ``synapse_replay`` input (``spike_file``, ``node_set``); a spike file in the legacy layout (``/spikes/gids`` and ``/spikes/timestamps``) is rewritten to ``/spikes/<population>/node_ids`` and ``timestamps``, where the population is the one the ``node_set`` selects as a whole
+      - ``synapse_replay`` input (``spike_file``, ``node_set``). NEST SONATA names the source population in ``node_set``, whereas here it selects the targets: the converter adds a node set ``<population>_targets`` to ``node_sets.json``, the union of the target populations of the edge populations that leave the source population, and uses it. A spike file in the legacy layout (``/spikes/gids`` and ``/spikes/timestamps``) is rewritten to ``/spikes/<population>/node_ids`` and ``timestamps``, where the population is the one the NEST SONATA ``node_set`` names
     * - ``run`` (``dt``, ``tstop``)
       - simulation config ``run`` (plus ``random_seed``)
     * - node sets files of the circuit and the simulation config
-      - merged into one ``node_sets.json`` that also holds one set per population
+      - merged into one ``node_sets.json`` that also holds one set per population, and the ``<population>_targets`` set of each input
     * - ``conditions``, ``output``, ``reports``, ``run`` ``nsteps_block``
       - not converted: NEST ignores them, and the converter logs a warning that lists the ones it drops
 
@@ -398,7 +398,7 @@ The circuit config only describes the network. Each population has its ``type`` 
       }
     }
 
-The run parameters and the spike input move to the simulation config. The input becomes a ``synapse_replay`` input whose ``spike_file`` is the copied file, active for the whole run:
+The run parameters and the spike input move to the simulation config. The input becomes a ``synapse_replay`` input whose ``spike_file`` is the copied file, active for the whole run. Its ``node_set`` is ``input_targets``, the targets of the edges that leave ``input``, which are in ``exc``:
 
 .. code-block:: json
 
@@ -413,7 +413,7 @@ The run parameters and the spike input move to the simulation config. The input 
           "input_type": "spikes",
           "module": "synapse_replay",
           "spike_file": "$BASE_DIR/inputs/spikes.h5",
-          "node_set": "input",
+          "node_set": "input_targets",
           "delay": 0.0,
           "duration": 100.0
         }
@@ -450,7 +450,7 @@ Each type row becomes one model template. The CSV model gets the ``nest:`` prefi
       "dynamics_params": {"U": "1", "receptor_type": "1", "u": "1"}
     }
 
-``node_sets.json`` has one node set per population, ``{"exc": {"population": "exc"}, "input": {"population": "input"}}``.
+``node_sets.json`` has one node set per population, and a compound node set ``input_targets`` with the target populations of the edges that leave ``input``: ``{"exc": {"population": "exc"}, "input": {"population": "input"}, "input_targets": ["exc"]}``.
 
 In the HDF5 files, ``node_type_id`` and ``edge_type_id`` are kept and ``/0/model_template`` (and ``/0/model_type`` for nodes) are added as ``@library`` enumerations. The per-edge values that override the synapse model move into ``/0/dynamics_params``:
 
@@ -520,8 +520,8 @@ Summary of the changes
     * - per-edge ``U`` and ``receptor_type`` in ``/0``
       - moved to ``/0/dynamics_params``; ``u`` is added with the values of ``U``, because the template declares ``u`` and NEST SONATA exporters set the initial ``u`` to the per-edge ``U``
     * - ``inputs`` ``input_spikes`` (``module`` ``h5``, ``input_file``)
-      - simulation config ``synapse_replay`` input (``spike_file``), with ``delay`` 0 and ``duration`` equal to ``tstop``
+      - simulation config ``synapse_replay`` input (``spike_file``), with ``node_set`` ``input_targets``, ``delay`` 0 and ``duration`` equal to ``tstop``
     * - ``run`` ``dt``, ``tstop``
       - simulation config ``run``, plus ``random_seed``
     * - node sets
-      - ``node_sets.json`` with one set per population
+      - ``node_sets.json`` with one set per population, plus ``input_targets``
