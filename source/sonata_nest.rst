@@ -160,7 +160,65 @@ Excitatory weights are positive. Inhibitory weights are negative in current-base
 Simulation Config
 -----------------
 
-``run`` requires ``dt``, ``tstop`` and ``random_seed``. Spikes are given as :ref:`synapse_replay <spikes-synapse-replay>` inputs, with the meaning of :doc:`sonata_simulation`: the ``node_set`` of an input is the set of nodes affected by it, i.e. the targets. The ``spike_file`` is a SONATA spike file: ``/spikes/<population>/node_ids`` and ``/spikes/<population>/timestamps`` for each population it covers. The spikes of each population are delivered through every edge population whose source is that population, to the targets in ``node_set``, with the synapse model, weight and delay of each edge. The population can be a ``virtual`` population, or a ``nest_point`` population whose spikes are then replayed through its own edges on top of its simulated activity. Spike times outside ``[delay, delay + duration)`` are dropped, and the others are not shifted. An input whose ``node_set`` contains no target of those edge populations delivers nothing, which NEST reports as an error. Other input modules are not supported.
+``run`` requires ``dt``, ``tstop`` and ``random_seed``. NEST builds every ``nest_point`` node, whatever the top-level ``node_set``, which only gives the default ``cells`` of the reports. ``conditions``, ``run`` ``spike_threshold``, ``integration_method`` and ``nsteps_block``, and the ``represents_physical_electrode`` property of the current clamps, have no NEST counterpart: they are ignored, and the simulator logs a warning for each.
+
+Inputs
+~~~~~~
+
+The ``node_set`` of an input selects the nodes it acts on, as in :doc:`sonata_simulation`.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 30 20 50
+
+    * - ``module``
+      - ``input_type``
+      - Description
+    * - ``linear``, ``pulse``, ``sinusoidal``
+      - ``current_clamp``
+      - Current injected into the ``nest_point`` nodes of the ``node_set``, see below.
+    * - ``synapse_replay``
+      - ``spikes``
+      - Spikes delivered through the edges of their population, see below.
+
+Other modules, and ``compartment_set``, are not supported.
+
+Current clamps
+**************
+
+The amplitudes are in nA, as in :doc:`sonata_simulation`, and NEST takes pA: NEST multiplies them by 1000. The currents of the inputs that act on the same node add up. The nodes of ``virtual`` populations in the ``node_set`` are ignored, and a ``node_set`` without any ``nest_point`` node is an error. The current is zero before ``delay`` and from ``delay + duration`` on, and between them it is the one below. NEST works in steps of ``run.dt``: it rounds ``delay`` and the other times to the nearest step, sets the current at the start of each step, and cannot inject before its second step, so a window that starts earlier starts at ``2 * run.dt``.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 20 80
+
+    * - ``module``
+      - Current
+    * - ``linear``
+      - ``amp_start``, or a ramp from ``amp_start`` to ``amp_end`` over the ``duration`` if ``amp_end`` is given. NEST sets the ramp at every ``run.dt`` step.
+    * - ``pulse``
+      - Pulses of ``amp_start`` and ``width`` ms, one every ``1000 / frequency`` ms from ``delay``. The last pulse is cut at ``delay + duration``, and a ``width`` longer than ``1000 / frequency`` is an error.
+    * - ``sinusoidal``
+      - ``amp_start * sin(2 * pi * frequency * (t - delay))``, with ``frequency`` in Hz and ``t - delay`` in s, so the phase is 0 at ``delay``. The property ``dt`` has no effect, because NEST evaluates the current at every step.
+
+.. code-block:: json
+
+    "inputs": {
+      "ramp": {
+        "input_type": "current_clamp",
+        "module": "linear",
+        "node_set": "S1",
+        "delay": 100.0,
+        "duration": 500.0,
+        "amp_start": 0.05,
+        "amp_end": 0.2
+      }
+    }
+
+Spike replay
+************
+
+The ``node_set`` of a :ref:`synapse_replay <spikes-synapse-replay>` input is the set of nodes affected by it, i.e. the targets. The ``spike_file`` is a SONATA spike file: ``/spikes/<population>/node_ids`` and ``/spikes/<population>/timestamps`` for each population it covers. The spikes of each population are delivered through every edge population whose source is that population, to the targets in ``node_set``, with the synapse model, weight and delay of each edge. The population can be a ``virtual`` population, or a ``nest_point`` population whose spikes are then replayed through its own edges on top of its simulated activity. Spike times outside ``[delay, delay + duration)`` are dropped, and the others are not shifted. An input whose ``node_set`` contains no target of those edge populations delivers nothing, which NEST reports as an error.
 
 .. code-block:: json
 
@@ -179,6 +237,42 @@ Simulation Config
         }
       }
     }
+
+Outputs
+~~~~~~~
+
+NEST writes the spikes of every ``nest_point`` population to the ``spikes_file`` of the ``output`` section, one group per population. Reports are soma reports of the membrane potential: ``type`` ``compartment``, ``sections`` ``soma`` and ``variable_name`` ``v``. NEST records ``V_m`` with a multimeter and writes it in mV, with one group per population. ``cells`` defaults to the top-level ``node_set``, or to all the ``nest_point`` nodes without one. The frames are at ``start_time + k * dt`` for the times before the smaller of ``end_time`` and ``tstop``, and the frame at time 0 is the potential before the first step. A ``dt`` smaller than ``run.dt`` is raised to ``run.dt``, as in :doc:`sonata_simulation`, and any other ``dt`` that is not a multiple of ``run.dt`` is an error. Other report types and variables are not supported.
+
+Connection Overrides
+~~~~~~~~~~~~~~~~~~~~
+
+The :ref:`connection_overrides <connection_overrides>` of the simulation config act on the synapses that connect ``source`` to ``target``, of every edge population between their populations. They include the synapses created for the ``synapse_replay`` inputs, and ``source`` may select ``virtual`` nodes. NEST supports these properties:
+
+.. list-table::
+    :header-rows: 1
+    :widths: 25 75
+
+    * - Property
+      - Description
+    * - ``name``, ``source``, ``target``
+      - As in :doc:`sonata_simulation`.
+    * - ``weight``
+      - Factor on the weight each synapse has in the circuit (``syn_weight``, or the template ``weight``), never on its current value, so overrides do not compound. A ``weight`` of 0 disconnects, a later ``weight`` of 1 restores the circuit weights exactly, and a ``weight`` of 0.5 halves them whatever overrides came before. NEST rejects a result that the synapse model does not accept, such as a negative weight on a conductance-based ``*_multisynapse`` model.
+    * - ``synapse_delay_override``
+      - Replaces the delay of each synapse, in ms. NEST fixes the range of the delays when the simulation starts, so the simulator sets it to cover the delays of the circuit and of all the overrides.
+    * - ``delay``
+      - Time in ms at which the override takes effect; 0, the default, applies it from the start. It must be a multiple of ``run.dt``. Unlike in the base specification, ``synapse_delay_override`` is applied at ``delay`` too, and not only ``weight``.
+
+``spont_minis``, ``synapse_configure``, ``modoverride``, ``neuromodulation_dtc`` and ``neuromodulation_strength`` are NEURON features, and setting any of them is an error. A synapse affected by several overrides takes the factor of the last one in effect.
+
+Ex: disconnecting the ``S1`` neurons from the rest of the circuit between 200 and 400 ms:
+
+.. code-block:: json
+
+    "connection_overrides": [
+      {"name": "disconnect_S1", "source": "S1", "target": "All", "delay": 200, "weight": 0.0},
+      {"name": "reconnect_S1", "source": "S1", "target": "All", "delay": 400, "weight": 1.0}
+    ]
 
 Conversion from NEST SONATA
 ---------------------------
@@ -226,7 +320,7 @@ Future Work
 -----------
 
 * NESTML synapses co-generated with a postsynaptic neuron (e.g. STDP) are not supported.
-* Current inputs and recordings are not yet defined for NEST.
+* Other input modules, report types and variables are not defined for NEST.
 
 Example: Full Conversion
 ------------------------
