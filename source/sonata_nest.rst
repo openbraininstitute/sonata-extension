@@ -29,8 +29,6 @@ Circuit Config
     type                           Mandatory    ``nest_point`` or ``virtual`` (nodes); ``nest_chemical`` (edges)
     point_neuron_models_dir        Conditional  Directory holding the population's model templates and NESTML sources.
                                                 Mandatory for neuron and edge populations, either on the population or under ``components``.
-    nest_version                   Mandatory    Version of NEST the circuit was built for, e.g. ``3.10.0``. Under ``components`` ``provenance``.
-    nestml_version                 Optional     Version of NESTML used for the ``nestml:`` models, e.g. ``9.0.1``. Under ``components`` ``provenance``.
     ============================== ============ ==================================================
 
 .. code-block:: json
@@ -39,7 +37,6 @@ Circuit Config
       "version": 2,
       "target_simulator": "NEST",
       "node_sets_file": "node_sets.json",
-      "components": {"provenance": {"nest_version": "3.10.0"}},
       "networks": {
         "nodes": [
           {
@@ -66,8 +63,6 @@ Circuit Config
         ]
       }
     }
-
-``nest_version`` and ``nestml_version`` are in the ``provenance`` dictionary of ``components`` (see :ref:`components`). Parameter names and defaults can change between NEST and NESTML versions, so a circuit records the versions it was built for: ``nest_version`` is the NEST version, as in ``nest.__version__``, and ``nestml_version`` is the NESTML version used to compile the circuit's ``nestml:`` models, and is only set if there are any. A simulator that finds a different major or minor version in use, or no ``nest_version``, should warn and carry on. libsonata does not read or check them.
 
 Model Templates
 ---------------
@@ -146,8 +141,10 @@ Synapse population, ``type`` ``nest_chemical``:
     /0                 syn_weight                      float32    Optional per-edge weight; its unit and sign depend on the postsynaptic model, see below
     /0                 delay                           float32    Optional per-edge delay (ms); clamped to the kernel resolution
     /0/dynamics_params ...                             float32    Per-edge values of the template's ``dynamics_params``, e.g. ``U``, ``u``, ``tau_rec``, ``tau_fac``
-    /0/dynamics_params receptor_type                   int        Optional per-edge receptor port of a multisynapse postsynaptic model, as the NEST ``receptor_type``: a whole number from 1
+    /0/dynamics_params receptor_type                   uint       Optional per-edge receptor port of the postsynaptic model, as the NEST ``receptor_type``
     ================== =============================== ========== ===========================================================
+
+``receptor_type`` is the port of the postsynaptic model that receives the spikes of the edge. It is unsigned, because NEST rejects a negative port. A model with a single input port, such as ``iaf_psc_alpha``, accepts only ``0``, and a ``*_multisynapse`` model numbers its ports from 1, one per element of its list parameters (e.g. ``E_rev``). The name is the ``syn_spec`` key of NEST, so that every name in ``dynamics_params`` is a NEST parameter name.
 
 The ``syn_spec`` of an edge is built from the template's ``model``, then ``params``, then ``syn_weight``/``delay``, then ``dynamics_params``.
 
@@ -462,7 +459,6 @@ The circuit config only describes the network. Each population has its ``type`` 
       "target_simulator": "NEST",
       "manifest": {"$BASE_DIR": "."},
       "node_sets_file": "$BASE_DIR/node_sets.json",
-      "components": {"provenance": {"nest_version": "3.10.0"}},
       "networks": {
         "nodes": [
           {
@@ -590,8 +586,6 @@ Summary of the changes
       - SONATA extension (in this example)
     * - ``components`` ``point_neuron_models_dir`` and ``synaptic_models_dir``
       - one ``point_neuron_models_dir`` per population: ``model_templates/exc``, ``model_templates/input_to_exc``, ``model_templates/exc_to_exc``
-    * - no NEST version
-      - ``components`` ``provenance`` ``nest_version``
     * - ``node_types_file`` and ``edge_types_file`` CSVs
       - removed; each row is one template JSON, and ``node_type_id``/``edge_type_id`` are kept in the HDF5 files
     * - ``model_type`` ``point_process`` (node type 0)
