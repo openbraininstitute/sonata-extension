@@ -14,4 +14,5 @@ SONATA Extended Data Format
    sonata_report
    sonata_examples
    sonata_brian2
+   sonata_nest
    sonata_version_history

@@ -73,6 +73,7 @@ They can be found also under :ref:`populations <population_config_dict>` where i
                                                     This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path the the actual HOC file.
    point_neuron_models_dir         Optional         Path to the templates.
                                                     This is used in concatenation with the `model_template` property (see :doc:`sonata_tech`) to retrieve the path.
+                                                    For Brian2 and NEST circuits it holds the templates of both neuron and edge populations (see :doc:`sonata_brian2` and :doc:`sonata_nest`).
    mechanisms_dir                  Optional         Path to the MOD files for mechanisms which may need to be compiled in advance, depending on implementation.
    vasculature_file                Optional         Path to the .h5 file containing the vasculature morphology.
                                                     Only for `vasculature` node populations where it is mandatory.
@@ -97,7 +98,7 @@ target_simulator
 *Optional*.
 
 A parameter specifying which simulator is expected to be able to simulate the circuit.
-Supported values : `NEURON` and `CORENEURON`, `LearningEngine`, and `Brian2`.
+Supported values : `NEURON` and `CORENEURON`, `LearningEngine`, `Brian2`, and `NEST`.
 Default is `NEURON`.
 
 
@@ -213,6 +214,7 @@ There is also one additional field `type` used to denote the population type.
                                                   * :ref:`vasculature <vasculature_node_type>`
                                                   * :ref:`point_process <allen_point_node>`
                                                   * :doc:`brian2_point <sonata_brian2>`
+                                                  * :ref:`nest_point <sonata_nest>`
 
                                                Default is `biophysical`.
    spatial_segment_index_dir      Optional     Path to the directory containing the spatial index files.
@@ -309,6 +311,7 @@ There is also one additional field `type` used to denote the population type.
                                                   * :ref:`Exp2Syn_synapse <allen_chemical_connection>`
                                                   * :ref:`point_process <allen_point_connection>`
                                                   * :doc:`brian2_synapse <sonata_brian2>`
+                                                  * :ref:`nest_chemical <sonata_nest>`
 
                                                Default is `chemical`.
    spatial_synapse_index_dir      Optional     Path to the directory containing the spatial index files.
