@@ -1,3 +1,5 @@
+.. _sonata_brian2:
+
 Describing Brian 2 Models with SONATA
 =====================================
 
@@ -23,6 +25,20 @@ A `Brian2` circuit has one or more node populations of `type` `brian2_point`, an
 * Edge populations have the `type` `brian2_synapse`.
   An edge population connects any node population to a `brian2_point` population; edges into a `virtual` population are not allowed.
   Each edge population becomes one `Synapses <https://brian2.readthedocs.io/en/stable/reference/brian2.synapses.synapses.Synapses.html>`_ object, and all its edges use the same synapse model template.
+
+A `Brian2` circuit uses `target_simulator: "Brian2"`, and the population types of its circuit config are restricted:
+
+.. table::
+
+    ============================== ============ =========================================================================================
+    Property                       Requirement  Description
+    ============================== ============ =========================================================================================
+    type                           Mandatory    `brian2_point` or `virtual` (nodes); `brian2_synapse` (edges). Other types are an error.
+    point_neuron_models_dir        Conditional  Directory holding the population's model templates.
+                                                Mandatory for `brian2_point` and `brian2_synapse` populations, either on the population or under `components`.
+    ============================== ============ =========================================================================================
+
+The input populations keep the generic `virtual` type, as for :doc:`NEST <sonata_nest>`: a virtual population has no simulator-specific fields, so one type serves every simulator.
 
 Physiology
 ----------
@@ -50,6 +66,9 @@ Neuron model templates
 
 Each different set of parameters and equations is stored in a `.json` file under the population's `point_neuron_models_dir`, as specified in :ref:`components` (set once under `components`, or per population).
 A node's `model_template` field names it as `json:<name>`, which resolves to `<point_neuron_models_dir>/<name>.json`.
+The prefix names the file format, as `hoc:` does in :doc:`sonata_tech`.
+`Brian2` has no library of built-in models: the equations of the template are the model, so there is no simulator prefix such as the `nest:` of a :doc:`NEST <sonata_nest>` template's `model`.
+`<name>` is a plain file name: a reader rejects a name with a path separator or `..`, so that no template is read from outside `point_neuron_models_dir`.
 
 A neuron model template has these keys:
 
@@ -59,7 +78,7 @@ A neuron model template has these keys:
     Key                Requirement  Description
     ================== ============ =========================================================================================
     params             Mandatory    `model`, `method`, `threshold`, `reset` and `refractory`, passed to `NeuronGroup`.
-                                    Multiline values can be wrapped in a list to make them more readable.
+                                    `model` can be a list of lines, which are joined with newlines, to make it more readable.
     namespace          Optional     Constants shared by all nodes of the population, as `name: [value, unit]`.
     dynamics_params    Optional     Per-node parameters, as `name: unit`; the values are read from `/0/dynamics_params/<name>` in the nodes file.
     initial            Optional     Initial values of state variables, as `name: [value, unit]`.
@@ -72,6 +91,10 @@ Units are names from `brian2.units`, or `"1"` for dimensionless values.
 * A per-node parameter must be declared in `model` as a constant of its dimension, e.g. `v_th : volt (constant)`, and must not also appear in `namespace`.
 * `model` must declare `I_inj : amp`: the loader replaces it with the sum of the current injections of the simulation config's `inputs`.
 * `initial` values are set after the `NeuronGroup` is created; the simulation config's `conditions` `v_init` then sets `v` of every node.
+
+The strings of a template are `Brian2` equations and statements, not Python code.
+A reader passes only the keys listed here to `NeuronGroup` and `Synapses`, with an explicit `namespace`, and never evaluates a template string itself (e.g. with `eval` or `exec`); keys not listed here are not passed to `Brian2`.
+`Brian2` parses the strings with its own parser, which rejects attribute access, indexing and tuples, and resolves names only to the variables of the template, its `namespace`, and the units and default functions of `Brian2`.
 
 Thus, an example model template would be:
 
@@ -117,11 +140,13 @@ A synapse model template has these keys:
     ================== ============ =========================================================================================
     Key                Requirement  Description
     ================== ============ =========================================================================================
-    params             Mandatory    `model` and `on_pre`, passed to `Synapses`, and `delay` as `[value, unit]`, the delay of every synapse.
-    dynamics           Optional     Per-edge values, as `name: unit`; the values are read from `/0/<name>` in the edges file, e.g. the weight `w`.
+    params             Mandatory    `model` and `on_pre`, passed to `Synapses`, and optionally `delay` as `[value, unit]`, the delay of every synapse (0 ms by default).
+    dynamics_params    Optional     Per-edge values, as `name: unit`; the values are read from `/0/dynamics_params/<name>` in the edges file, e.g. the weight `w`.
+                                    When that dataset is absent, `/0/<name>` is read instead, as in circuits written before `dynamics_params` (e.g. the `/0/w` of FlyWire).
+    dynamics           Optional     The earlier name of `dynamics_params`, still read for existing circuits. A template has at most one of the two.
     ================== ============ =========================================================================================
 
-Listing `delay` in `dynamics` (e.g. `"delay": "ms"`) gives each synapse the axonal delay stored in the edges file's standard `/0/delay` dataset, instead of the `params` `delay`.
+Listing `delay` in `dynamics_params` (e.g. `"delay": "ms"`) gives each synapse the axonal delay stored in the edges file's standard `/0/delay` dataset, as for :doc:`NEST <sonata_nest>`, instead of the `params` `delay`.
 
 .. code-block:: json
 
@@ -131,28 +156,30 @@ Listing `delay` in `dynamics` (e.g. `"delay": "ms"`) gives each synapse the axon
         "on_pre": "g += w",
         "delay": [1.8, "ms"]
       },
-      "dynamics": {
+      "dynamics_params": {
         "w": "mV",
         "delay": "ms"
       }
     }
 
+With this template, the edges file has the datasets `/0/dynamics_params/w` and `/0/delay`.
+
 Nodes
 -----
 
-The following are required for all `brian2_point` populations - they have the `type` of `brian2_point` for purposes of the SONATA circuit config file.
+These are the fields of a `brian2_point` population - it has the `type` of `brian2_point` for purposes of the SONATA circuit config file.
 
 .. table::
 
-    ================== =============================== ========== =========================================================================================
-    Group              Field                           Type       Description
-    ================== =============================== ========== =========================================================================================
-    /0                 model_template                  utf8       The neuron model template, as `json:<name>`; the same for all nodes of the population (an `@library` enumeration is recommended).
-    /0                 model_type                      utf8       `brian2_point`
-    /0                 synapse_class                   utf8       Defines the synapse type of the node; whether the neuron is inhibitory or excitatory. "EXC" or "INH".
-    /0/dynamics_params ...                             float32    Per-node values of the template's `dynamics_params`
-    /                  node_type_id                    int        Set to -1.
-    ================== =============================== ========== =========================================================================================
+    ================== =============================== ========== ============ =========================================================================================
+    Group              Field                           Type       Requirement  Description
+    ================== =============================== ========== ============ =========================================================================================
+    /0                 model_template                  utf8       Mandatory    The neuron model template, as `json:<name>`; the same for all nodes of the population (an `@library` enumeration is recommended).
+    /0                 model_type                      utf8       Mandatory    `brian2_point`
+    /0                 synapse_class                   utf8       Optional     Whether the neuron is excitatory or inhibitory: "EXC" or "INH". The simulator does not read it.
+    /0/dynamics_params ...                             float32    Conditional  Per-node values of the template's `dynamics_params`; mandatory for each name the template lists.
+    /                  node_type_id                    int        Mandatory    The node type, or -1 when the circuit has no node types file.
+    ================== =============================== ========== ============ =========================================================================================
 
 Values in the `model_template` `dynamics_params` section are read from the `dynamics_params`, and a per node value is registered in the simulator.
 For the example model template above, there would be `/0/dynamics_params/v_th`.
@@ -162,26 +189,27 @@ For the example model template above, there would be `/0/dynamics_params/v_th`.
 Edges
 -----
 
-The following are required for all models - it has the `type` of `brian2_synapse` for purposes of the SONATA circuit config file.
+These are the fields of a `brian2_synapse` population - it has the `type` of `brian2_synapse` for purposes of the SONATA circuit config file.
 
 .. table::
 
-    ================== =============================== ========== =========================================================================================
-    Group              Field                           Type       Description
-    ================== =============================== ========== =========================================================================================
-    /0                 model_template                  utf8       The synapse model template, as `json:<name>`; the same for all edges of the population (an `@library` enumeration is recommended).
-    /0                 ...                             float32    Per-edge values of the template's `dynamics`, e.g. `w`.
-    /0                 delay                           float32    Optional: the axonal delay in ms, used when the template lists `delay` in `dynamics`.
-    /                  edge_type_id                    int        Set to -1.
-    /                  source_node_id                  uint       The id of the presynaptic node.
-    /                  target_node_id                  uint       The id of the postsynaptic node.
-    /indices           ...                                        The SONATA edge indices (e.g. written with `libsonata.EdgePopulation.write_indices`).
-    ================== =============================== ========== =========================================================================================
+    ================== =============================== ========== ============ =========================================================================================
+    Group              Field                           Type       Requirement  Description
+    ================== =============================== ========== ============ =========================================================================================
+    /0                 model_template                  utf8       Mandatory    The synapse model template, as `json:<name>`; the same for all edges of the population (an `@library` enumeration is recommended).
+    /0/dynamics_params ...                             float32    Conditional  Per-edge values of the template's `dynamics_params`, e.g. `w`.
+    /0                 ...                             float32    Conditional  Per-edge values stored before `dynamics_params` existed, e.g. `w`; read when `/0/dynamics_params/<name>` is absent.
+    /0                 delay                           float32    Conditional  The axonal delay in ms; mandatory when the template lists `delay` in `dynamics_params`.
+    /                  edge_type_id                    int        Mandatory    The edge type, or -1 when the circuit has no edge types file.
+    /                  source_node_id                  uint       Mandatory    The id of the presynaptic node.
+    /                  target_node_id                  uint       Mandatory    The id of the postsynaptic node.
+    /indices           ...                                        Mandatory    The SONATA edge indices (e.g. written with `libsonata.EdgePopulation.write_indices`).
+    ================== =============================== ========== ============ =========================================================================================
 
 `source_node_id` and `target_node_id` datasets have an HDF5 attribute of type string named `node_population` defining the source and target node population name respectively.
 
-An edge population holds at most one edge per (source, target) pair.
-A circuit converted from one with several synapses per connection merges them into one edge; `sonata-simplify` sums their signed weights and uses the weight-weighted mean of their delays.
+An edge population can hold several edges between the same source and target, e.g. one per synaptic contact.
+To save memory, `sonata-simplify` merges the contacts of each (source, target) pair into one edge: it sums their weights, which share the sign of the source, and takes the mean of their delays weighted by the magnitude of their weights.
 
 Inputs
 ------
@@ -193,7 +221,7 @@ The simulation config's `inputs` are applied as follows; the `node_set` of an in
     ============================== ============== =========================================================================================
     `module`                       `input_type`   Description
     ============================== ============== =========================================================================================
-    `linear`, `pulse`              current_clamp  Current injected through `I_inj`. Inputs with the same `node_set` are summed.
+    `linear`, `pulse`              current_clamp  Current injected through `I_inj`, with amplitudes in nA as in SONATA. The currents of all inputs that act on a node add up.
     `sinusoidal`                   current_clamp  As above; its `dt` must equal the simulation's `dt`.
     `poisson`                      spikes         Independent Poisson spike trains kicking the membrane potential directly; see below.
     `synapse_replay`               spikes         Spikes of the file's population delivered through that population's edges; see below.
@@ -230,7 +258,7 @@ A population can be
 * a `virtual` population: the projection is driven, as for `NEURON` circuits; or
 * a `brian2_point` population: its spikes are replayed through its own edges, on top of the simulated activity.
 
-Spikes later than `duration` are dropped, and `delay` is added to the times of the others.
+Spike times are absolute: spikes outside `[delay, delay + duration)` are dropped, and the others are delivered at their times in the file, as in :doc:`NEST <sonata_nest>` and neurodamus.
 `Brian2` allows one spike per source and time step, so a second spike of the same source within one `dt` is dropped.
 
 .. code-block:: json
@@ -372,6 +400,8 @@ Only the `w` (or weight) is different per synapses, so it is stored along with t
     /edges/drosophila__drosophila__brian2_synapse/source_node_id Dataset {14687178}
     /edges/drosophila__drosophila__brian2_synapse/target_node_id Dataset {14687178}
 
+This circuit predates `dynamics_params` for edges: its synapse template lists `w` under `dynamics`, and the weights are stored in `/0/w`.
+Both are still read, so the circuit is valid as it is.
 
 Circuit Config
 **************
@@ -444,7 +474,8 @@ A circuit exported by `sonata-simplify` (`adex_brian2`) from an extracted cortic
 Physiology
 **********
 
-For the neuron model template (`models/adex.json`), the parameters fitted per neuron are `dynamics_params`; those shared by all neurons are in `namespace`:
+As in the :doc:`NEST <sonata_nest>` export of `sonata-simplify`, each population has its own `point_neuron_models_dir`, `model_templates/<population>`.
+For the neuron model template (`model_templates/S1nonbarrel_neurons/adex.json`), the parameters fitted per neuron are `dynamics_params`; those shared by all neurons are in `namespace`:
 
 .. code-block:: json
 
@@ -498,7 +529,8 @@ For the neuron model template (`models/adex.json`), the parameters fitted per ne
       }
     }
 
-For the synapse template (`models/synapse.json`), used by both edge populations, the sign of `w` encodes the polarity: positive weights are excitatory, negative ones inhibitory.
+Both edge populations use the same synapse template (`synapse.json`, in the directory of each edge population).
+The sign of `w` encodes the polarity: positive weights are excitatory, negative ones inhibitory, as for the conductance-based models of :doc:`NEST <sonata_nest>` with one synapse type.
 Each synapse has its own delay:
 
 .. code-block:: json
@@ -509,7 +541,7 @@ Each synapse has its own delay:
         "on_pre": "g_ex_post += (w > 0*nS) * w\ng_in_post += (w < 0*nS) * (-w)",
         "delay": [0.67, "ms"]
       },
-      "dynamics": {
+      "dynamics_params": {
         "w": "nS",
         "delay": "ms"
       }
@@ -523,6 +555,7 @@ Nodes
 .. code-block::
 
     /nodes/S1nonbarrel_neurons/0/@library/model_template Dataset {1}
+    /nodes/S1nonbarrel_neurons/0/@library/model_type Dataset {1}
     /nodes/S1nonbarrel_neurons/0/model_template Dataset {n}
     /nodes/S1nonbarrel_neurons/0/model_type Dataset {n}
     /nodes/S1nonbarrel_neurons/0/synapse_class Dataset {n}
@@ -530,19 +563,20 @@ Nodes
     /nodes/S1nonbarrel_neurons/0/dynamics_params/g_L Dataset {n}
     [... one dataset per entry of the template's dynamics_params ...]
     /nodes/S1nonbarrel_neurons/node_type_id Dataset {n}
+    /nodes/VPM/0/@library/model_type Dataset {1}
     /nodes/VPM/0/model_type Dataset {m}
     /nodes/VPM/node_type_id Dataset {m}
 
 Edges
 *****
 
-One edge per (source, target) pair: `k` recurrent connections and `l` thalamic ones.
+`sonata-simplify` merges the contacts of each (source, target) pair into one edge: `k` recurrent connections and `l` thalamic ones.
 
 .. code-block::
 
     /edges/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical/0/@library/model_template Dataset {1}
     /edges/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical/0/model_template Dataset {k}
-    /edges/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical/0/w Dataset {k}
+    /edges/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical/0/dynamics_params/w Dataset {k}
     /edges/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical/0/delay Dataset {k}
     /edges/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical/edge_type_id Dataset {k}
     /edges/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical/source_node_id Dataset {k}
@@ -550,7 +584,7 @@ One edge per (source, target) pair: `k` recurrent connections and `l` thalamic o
     /edges/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical/indices [...]
     /edges/VPM__S1nonbarrel_neurons__chemical/0/@library/model_template Dataset {1}
     /edges/VPM__S1nonbarrel_neurons__chemical/0/model_template Dataset {l}
-    /edges/VPM__S1nonbarrel_neurons__chemical/0/w Dataset {l}
+    /edges/VPM__S1nonbarrel_neurons__chemical/0/dynamics_params/w Dataset {l}
     /edges/VPM__S1nonbarrel_neurons__chemical/0/delay Dataset {l}
     /edges/VPM__S1nonbarrel_neurons__chemical/edge_type_id Dataset {l}
     /edges/VPM__S1nonbarrel_neurons__chemical/source_node_id Dataset {l}
@@ -563,9 +597,6 @@ Circuit Config
 .. code-block:: json
 
     {
-      "components": {
-        "point_neuron_models_dir": "models"
-      },
       "node_sets_file": "node_sets.json",
       "target_simulator": "Brian2",
       "networks": {
@@ -573,7 +604,10 @@ Circuit Config
           {
             "nodes_file": "nodes.h5",
             "populations": {
-              "S1nonbarrel_neurons": {"type": "brian2_point"},
+              "S1nonbarrel_neurons": {
+                "type": "brian2_point",
+                "point_neuron_models_dir": "model_templates/S1nonbarrel_neurons"
+              },
               "VPM": {"type": "virtual"}
             }
           }
@@ -582,18 +616,37 @@ Circuit Config
           {
             "edges_file": "edges.h5",
             "populations": {
-              "S1nonbarrel_neurons__S1nonbarrel_neurons__chemical": {"type": "brian2_synapse"},
-              "VPM__S1nonbarrel_neurons__chemical": {"type": "brian2_synapse"}
+              "S1nonbarrel_neurons__S1nonbarrel_neurons__chemical": {
+                "type": "brian2_synapse",
+                "point_neuron_models_dir": "model_templates/S1nonbarrel_neurons__S1nonbarrel_neurons__chemical"
+              },
+              "VPM__S1nonbarrel_neurons__chemical": {
+                "type": "brian2_synapse",
+                "point_neuron_models_dir": "model_templates/VPM__S1nonbarrel_neurons__chemical"
+              }
             }
           }
         ]
       }
     }
 
+Node Sets
+*********
+
+One node set per population, and `VPM_targets`, the target populations of the edge populations that leave `VPM`, as in the :doc:`NEST <sonata_nest>` export:
+
+.. code-block:: json
+
+    {
+      "S1nonbarrel_neurons": {"population": "S1nonbarrel_neurons"},
+      "VPM": {"population": "VPM"},
+      "VPM_targets": ["S1nonbarrel_neurons"]
+    }
+
 Simulation Config
 *****************
 
-Thalamic spikes replayed onto all neurons, with the node sets `All` (`S1nonbarrel_neurons`) and `VPM`:
+Thalamic spikes replayed onto all neurons:
 
 .. code-block:: json
 
@@ -613,7 +666,7 @@ Thalamic spikes replayed onto all neurons, with the node sets `All` (`S1nonbarre
           "input_type": "spikes",
           "module": "synapse_replay",
           "spike_file": "vpm_spikes.h5",
-          "node_set": "All",
+          "node_set": "VPM_targets",
           "delay": 0,
           "duration": 1000
         }
@@ -629,6 +682,6 @@ Future Work
 
 * The initial implementation was conceived to support the `A leaky integrate-and-fire computational model based on the connectome of the entire adult Drosophila brain reveals insights into sensorimotor processing. <https://github.com/philshiu/Drosophila_brain_model>`_
 * The `inputs` block needs further refinement: relative and noise current clamps are not supported.
-* One neuron model template per `brian2_point` population and one synapse model template per edge population.
-* One edge per (source, target) pair in an edge population.
-* Short-term plasticity, receptor kinetics, the extracellular calcium scaling of `u_hill_coefficient` and spontaneous release are not described yet.
+* One neuron model template per `brian2_point` population and one synapse model template per edge population, whereas :doc:`NEST <sonata_nest>` allows one per node or edge type.
+* Short-term plasticity can be written in a synapse template, with per-edge `U`, `tau_rec`, `tau_fac` and `u` in `/0/dynamics_params` as the :doc:`NEST <sonata_nest>` export stores them, but no template for it is described yet.
+* Receptor kinetics, the extracellular calcium scaling of `u_hill_coefficient` and spontaneous release are not described yet.

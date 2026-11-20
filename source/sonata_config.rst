@@ -213,7 +213,7 @@ There is also one additional field `type` used to denote the population type.
                                                   * :ref:`astrocyte <astrocyte_node_type>`
                                                   * :ref:`vasculature <vasculature_node_type>`
                                                   * :ref:`point_process <allen_point_node>`
-                                                  * :doc:`brian2_point <sonata_brian2>`
+                                                  * :ref:`brian2_point <sonata_brian2>`
                                                   * :ref:`nest_point <sonata_nest>`
 
                                                Default is `biophysical`.
@@ -310,7 +310,7 @@ There is also one additional field `type` used to denote the population type.
                                                   * `neuromodulatory`
                                                   * :ref:`Exp2Syn_synapse <allen_chemical_connection>`
                                                   * :ref:`point_process <allen_point_connection>`
-                                                  * :doc:`brian2_synapse <sonata_brian2>`
+                                                  * :ref:`brian2_synapse <sonata_brian2>`
                                                   * :ref:`nest_chemical <sonata_nest>`
 
                                                Default is `chemical`.
